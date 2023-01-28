@@ -71,11 +71,13 @@ export class UserService {
   }
 
   async getUserByLogin(login: string): Promise<User> {
-    return await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: login }, { username: login }],
       },
     });
+    if (!user) throw new BadRequestException("user_not_found");
+    return user;
   }
 
   async createSession(
@@ -102,7 +104,13 @@ export class UserService {
     return session;
   }
 
-  async deleteSession(response: Response, sessionId: string, userId: string) {
+  async deleteSession(
+    response: Response,
+    sessionId: string,
+    userId: string,
+  ): Promise<{ message: string }> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
     const session = await this.prisma.session.findUnique({
       where: {
         id: sessionId,
@@ -119,7 +127,12 @@ export class UserService {
     return { message: "session deleted" };
   }
 
-  async insertRefreshToken(userId: string, refreshToken: string) {
+  async insertRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
     const encryptedToken = await encrypt(refreshToken);
     return await this.prisma.user.update({
       where: { id: userId },
@@ -127,7 +140,9 @@ export class UserService {
     });
   }
 
-  async deleteRefreshToken(userId: string) {
+  async deleteRefreshToken(userId: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
     return await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken: null },
@@ -139,6 +154,8 @@ export class UserService {
   }
 
   async verifyEmail(userId: string, token: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
     const emailVerification = await this.prisma.emailVerification.findFirst({
       where: {
         userId,
