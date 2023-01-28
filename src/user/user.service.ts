@@ -119,7 +119,12 @@ export class UserService {
       },
     });
     if (!session) throw new BadRequestException("session_not_found");
-    response.clearCookie("refreshToken");
+    response.clearCookie("refreshToken", {
+      httpOnly: true,
+      path: "/",
+      sameSite: "none",
+      secure: true,
+    });
     await this.prisma.session.delete({
       where: {
         id: sessionId,
