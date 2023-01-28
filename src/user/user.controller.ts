@@ -18,6 +18,8 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserForFrontend } from "../type";
+import { formatUser } from "../utils/utils";
 
 @ApiTags("User")
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -25,31 +27,29 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles(Role.ADMIN)
   @Get()
-  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<User> {
-    return this.userService.getUserById(user.id);
-  }
-
-  @Roles(Role.ADMIN)
-  @Get("/:id")
-  async getUser(@Param("id") userId: string): Promise<User> {
-    return this.userService.getUserById(userId);
-  }
-
-  @Roles(Role.ADMIN)
-  @Get("/all")
   async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
-  @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+  @Get("/current")
+  async getCurrentUser(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<UserForFrontend> {
+    return formatUser(await this.userService.getUserById(user.id));
   }
 
-  @Get(":id")
-  async getUserById(@Param("userId") userId: string): Promise<User> {
+  @Get(":userId")
+  async getUserById(@Param("userId") userId: string): Promise<UserForFrontend> {
     return this.userService.getUserById(userId);
+  }
+
+  @Post()
+  async createUser(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserForFrontend> {
+    return this.userService.create(createUserDto);
   }
 
   @Post("verify")
@@ -70,7 +70,7 @@ export class UserController {
     return this.userService.verifyEmail(user.id, token);
   }
 
-  @Patch(":id")
+  @Patch(":userId")
   async updateUser(
     @Param("userId") userId: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -78,7 +78,7 @@ export class UserController {
     return this.userService.updateUser(userId, updateUserDto);
   }
 
-  @Delete(":id")
+  @Delete(":userId")
   async deleteUser(
     @Param("userId") userId: string,
   ): Promise<{ message: string }> {

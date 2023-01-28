@@ -15,6 +15,7 @@ import { Request, Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
 import { LocalGuard } from "./guards/local-auth.guard";
 import { Session } from "@prisma/client";
+import { UserForFrontend } from "../type";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -25,7 +26,9 @@ export class AuthController {
   ) {}
 
   @Post("register")
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserForFrontend> {
     return this.userService.create(createUserDto);
   }
 

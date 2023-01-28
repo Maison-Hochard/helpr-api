@@ -8,6 +8,8 @@ import { PrismaService } from "../prisma.service";
 import { Response } from "express";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtPayload } from "../auth/auth.service";
+import { formatUser } from "../utils/utils";
+import { UserForFrontend } from "../type";
 
 @Injectable()
 export class UserService {
@@ -17,7 +19,7 @@ export class UserService {
     private configService: ConfigService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<UserForFrontend> {
     const findUser = await this.prisma.user.findFirst({
       where: {
         OR: [
@@ -38,7 +40,7 @@ export class UserService {
     });
     const url = await this.createVerificationUrl(user, false);
     await this.mailingService.sendNewUser(user, url);
-    return user;
+    return formatUser(user);
   }
 
   async createVerificationUrl(
@@ -88,14 +90,8 @@ export class UserService {
         userId: user.id,
         authToken,
       },
-      select: {
-        id: true,
-        userId: true,
-        authToken: true,
+      include: {
         user: true,
-        createdAt: true,
-        updatedAt: true,
-        deletedAt: true,
       },
     });
     response.cookie("refreshToken", resetToken, {
