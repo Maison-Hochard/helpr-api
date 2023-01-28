@@ -100,6 +100,7 @@ export class UserService {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
       sameSite: "none",
+      secure: true,
     });
     await this.insertRefreshToken(user.id, resetToken);
     return session;
