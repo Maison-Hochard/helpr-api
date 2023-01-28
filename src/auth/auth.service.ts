@@ -9,6 +9,7 @@ import { ConfigService } from "@nestjs/config";
 /*import { OAuth2Client } from "google-auth-library";*/
 import { User } from "@prisma/client";
 import { decrypt } from "../utils";
+import { PrismaService } from "../prisma.service";
 
 export interface JwtPayload {
   id: string;
@@ -27,6 +28,7 @@ export interface JwtPayload {
 @Injectable()
 export class AuthService {
   constructor(
+    private prisma: PrismaService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -65,7 +67,7 @@ export class AuthService {
     });
   }
 
-  async refreshToken(request): Promise<{ authToken: string }> {
+  async refreshToken(request): Promise<User> {
     const refreshToken = request.cookies.refreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException("refresh_token_not_provided");
@@ -78,10 +80,14 @@ export class AuthService {
       refreshToken,
       user.refreshToken,
     );
+    const authToken = await this.createAccessToken(user);
     if (decryptedRefreshToken) {
-      return {
-        authToken: await this.createAccessToken(user),
-      };
+      return await this.prisma.user.update({
+        where: { id: payload.id },
+        data: {
+          authToken,
+        },
+      });
     } else {
       throw new UnauthorizedException("invalid_refresh_token");
     }
