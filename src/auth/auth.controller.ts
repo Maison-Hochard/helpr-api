@@ -34,24 +34,34 @@ export class AuthController {
   async login(
     @Body("login") login: string,
     @Body("password") password: string,
-    @Res({ passthrough: true }) response,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<Session> {
     const user = await this.authService.validateUser(login, password);
     const authToken = await this.authService.createAccessToken(user);
-    return await this.userService.createSession(user, authToken);
+    const resetToken = await this.authService.createRefreshToken(user);
+    return await this.userService.createSession(
+      user,
+      authToken,
+      resetToken,
+      response,
+    );
   }
 
-  /*@HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK)
   @Post("logout")
-  async logout(@Req() request: Request, @Res({ passthrough: true }) response) {
-    return this.authService.logout(request, response);
-  }*/
+  async logout(
+    @Body("sessionId") sessionId: number,
+    @Body("userId") userId: number,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ message: string }> {
+    return this.userService.deleteSession(response, sessionId, userId);
+  }
 
-  /*@HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK)
   @Post("refresh")
-  async refresh(@Req() request: Request) {
+  async refresh(@Req() request: Request): Promise<{ authToken: string }> {
     return this.authService.refreshToken(request);
-  }*/
+  }
 
   /*@Post("google")
   async googleAuth(

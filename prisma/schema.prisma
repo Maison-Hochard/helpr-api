@@ -25,6 +25,8 @@ model User {
   profilePicture    String?
   resetPassword     ResetPassword[]
   emailVerification EmailVerification[]
+  isVerified        Boolean             @default(false)
+  refreshToken      String?
   role              Int?                @default(1)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt

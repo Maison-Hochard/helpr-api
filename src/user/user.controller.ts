@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
@@ -15,7 +6,7 @@ import { Role, Roles } from "../auth/decorators/role.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { Session, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 
 @ApiTags("User")
@@ -29,20 +20,15 @@ export class UserController {
     return this.userService.getUserById(user.id);
   }
 
-  @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
-  }
-
   @Roles(Role.ADMIN)
   @Get("/all")
   async getAllUsers() {
     return this.userService.getAllUsers();
   }
 
-  /*@Get()
-  async getCurrentUser(@CurrentUser() user: JwtPayload) {
-    return this.userService.getUserById(user.id);
+  @Post()
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.create(createUserDto);
   }
 
   @Get(":id")
@@ -50,7 +36,7 @@ export class UserController {
     return this.userService.getUserById(id);
   }
 
-  @Post("verify")
+  /*@Post("verify")
   async sendNewToken(@CurrentUser() user: JwtPayload) {
     await this.userService.createVerificationUrl(user.id, true);
     return {

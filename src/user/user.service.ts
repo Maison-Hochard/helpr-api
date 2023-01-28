@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { MailingService } from "../mailing/mailing.service";
 import { utils } from "../utils/bcrypt";
 import { ConfigService } from "@nestjs/config";
-import { User, ResetPassword, Session } from "@prisma/client";
+import { User, ResetPassword } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
+import { Response } from "express";
 
 @Injectable()
 export class UserService {
@@ -68,8 +68,13 @@ export class UserService {
     });
   }
 
-  async createSession(user: User, authToken: string): Promise<Session> {
-    return await this.prisma.session.create({
+  async createSession(
+    user: User,
+    authToken: string,
+    resetToken: string,
+    response: Response,
+  ) {
+    const session = await this.prisma.session.create({
       data: {
         userId: user.id,
         authToken,
@@ -83,6 +88,49 @@ export class UserService {
         updatedAt: true,
         deletedAt: true,
       },
+    });
+    const jwtRefreshTokenExpiration = this.configService.get(
+      "jwt.refresh_token_expiration",
+    );
+    const maxAge = jwtRefreshTokenExpiration * 1000;
+    response.cookie("refreshToken", resetToken, {
+      httpOnly: true,
+      maxAge: maxAge,
+      path: "/",
+    });
+    await this.insertRefreshToken(user.id, resetToken);
+    return session;
+  }
+
+  async deleteSession(response: Response, sessionId: number, userId: number) {
+    const session = await this.prisma.session.findUnique({
+      where: {
+        id: sessionId,
+      },
+    });
+    if (!session) throw new BadRequestException("session_not_found");
+    response.clearCookie("resetToken");
+    await this.prisma.session.delete({
+      where: {
+        id: sessionId,
+      },
+    });
+    await this.deleteRefreshToken(userId);
+    return { message: "session deleted" };
+  }
+
+  async insertRefreshToken(userId: number, refreshToken: string) {
+    const encryptedToken = await utils.encrypt(refreshToken);
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: encryptedToken },
+    });
+  }
+
+  async deleteRefreshToken(userId: number) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: null },
     });
   }
 
@@ -109,12 +157,6 @@ export class UserService {
     const url = await this.createVerificationUrl(user.id, false);
     await this.mailingService.sendNewUser(user, url);
     return user;
-  }
-
-  async insertRefreshToken(id: number, refreshToken: string) {
-    const userToInsert = await this.userRepository.findOne({ where: { id } });
-    userToInsert.refreshToken = await utils.encrypt(refreshToken);
-    await this.userRepository.save(userToInsert);
   }
 
   async removeRefreshToken(id: number) {
