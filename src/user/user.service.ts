@@ -99,6 +99,7 @@ export class UserService {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
+      sameSite: "none",
     });
     await this.insertRefreshToken(user.id, resetToken);
     return session;
@@ -171,16 +172,6 @@ export class UserService {
       where: { id: emailVerification.id },
     });
     return { message: "email_verified" };
-  }
-
-  async updatePassword(userId: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new BadRequestException("user_not_found");
-    const hashedPassword = await encrypt(password);
-    return await this.prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
   }
 
   async updateUser(
