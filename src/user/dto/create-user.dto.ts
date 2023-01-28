@@ -5,10 +5,6 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsString()
-  @MinLength(8)
-  password: string;
-
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
@@ -22,5 +18,11 @@ export class CreateUserDto {
   lastname: string;
 
   @IsString()
-  avatar?: string;
+  @MinLength(8)
+  password: string;
+
+  @IsString()
+  profilePicture?: string;
+
+  role?: number;
 }

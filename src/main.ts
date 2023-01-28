@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import * as cookieParser from "cookie-parser";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
+import { PrismaService } from "./prisma.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
     origin: ["http://localhost:8080", process.env.FRONTEND_URL],
     credentials: true,
   });
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap().then(() => console.log("Server is running on port 3000"));

@@ -1,26 +1,96 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { InjectRepository } from "@nestjs/typeorm";
 import { MailingService } from "../mailing/mailing.service";
-import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
 import { utils } from "../utils/bcrypt";
-import { VerifCode } from "./entities/verif-code.entity";
 import { ConfigService } from "@nestjs/config";
+import { User, ResetPassword, Session } from "@prisma/client";
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(VerifCode)
-    private verifCodeRepository: Repository<VerifCode>,
+    private prisma: PrismaService,
     private mailingService: MailingService,
     private configService: ConfigService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const findUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: createUserDto.email },
+          { username: createUserDto.username },
+        ],
+      },
+    });
+    if (findUser) {
+      throw new BadRequestException("user_already_exists");
+    }
+    const hashedPassword = await utils.encrypt(createUserDto.password);
+    const user = await this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        password: hashedPassword,
+      },
+    });
+    const url = await this.createVerificationUrl(user, false);
+    await this.mailingService.sendNewUser(user, url);
+    return user;
+  }
+
+  async createVerificationUrl(user: User, isEmail: boolean): Promise<string> {
+    const resetEntity: ResetPassword =
+      await this.prisma.emailVerification.create({
+        data: {
+          userId: user.id,
+          token: await utils.generateCode(),
+        },
+      });
+    const url = `${this.configService.get("app.url")}/verify-user-${
+      resetEntity.token
+    }`;
+    if (isEmail) {
+      await this.mailingService.sendNewVerification(user, url);
+    }
+    return url;
+  }
+
+  async getUserById(id: number): Promise<User> {
+    return await this.prisma.user.findUnique({ where: { id } });
+  }
+
+  async getUserByLogin(login: string): Promise<User> {
+    return await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: login }, { username: login }],
+      },
+    });
+  }
+
+  async createSession(user: User, authToken: string): Promise<Session> {
+    return await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        authToken,
+      },
+      select: {
+        id: true,
+        userId: true,
+        authToken: true,
+        user: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+      },
+    });
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.prisma.user.findMany();
+  }
+
+  /*async create(createUserDto: CreateUserDto) {
     const findUser = await this.userRepository.findOne({
       where: [
         { email: createUserDto.email },
@@ -128,5 +198,5 @@ export class UserService {
     } else {
       throw new BadRequestException("invalid_code");
     }
-  }
+  }*/
 }

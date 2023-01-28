@@ -7,16 +7,16 @@ import { ApiTags } from "@nestjs/swagger";
 export class ResetPasswordController {
   constructor(private readonly resetPasswordService: ResetPasswordService) {}
 
-  @Post()
+  /*@Post()
   async forgotPassword(@Body("email") email: string) {
     return await this.resetPasswordService.createResetToken(email);
-  }
+  }*/
 
-  @Post(":token")
+  /*@Post(":token")
   async resetPassword(
     @Body("password") password: string,
     @Param("token") token: string,
   ) {
     return await this.resetPasswordService.resetPassword(token, password);
-  }
+  }*/
 }

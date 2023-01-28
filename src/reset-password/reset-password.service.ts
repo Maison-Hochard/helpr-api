@@ -1,7 +1,4 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Reset } from "./entities/reset.entity";
-import { Repository } from "typeorm";
 import { MailingService } from "../mailing/mailing.service";
 import { UserService } from "../user/user.service";
 import { ConfigService } from "@nestjs/config";
@@ -10,13 +7,12 @@ import { utils } from "../utils/bcrypt";
 @Injectable()
 export class ResetPasswordService {
   constructor(
-    @InjectRepository(Reset) private resetRepository: Repository<Reset>,
     private readonly mailingService: MailingService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
   ) {}
 
-  async createResetToken(email: string) {
+  /*async createResetToken(email: string) {
     const user = await this.userService.getUserByLogin(email);
     if (!user) {
       throw new BadRequestException("user_not_found");
@@ -31,9 +27,9 @@ export class ResetPasswordService {
     return {
       message: "reset_token_created",
     };
-  }
+  }*/
 
-  async resetPassword(token: string, password: string) {
+  /*async resetPassword(token: string, password: string) {
     const reset = await this.resetRepository.findOne({ where: { token } });
     if (!reset) {
       throw new BadRequestException("invalid_token");
@@ -49,5 +45,5 @@ export class ResetPasswordService {
     return {
       message: "password_reset",
     };
-  }
+  }*/
 }

@@ -14,6 +14,7 @@ import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
 import { LocalGuard } from "./guards/local-auth.guard";
+import { Session } from "@prisma/client";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -34,28 +35,29 @@ export class AuthController {
     @Body("login") login: string,
     @Body("password") password: string,
     @Res({ passthrough: true }) response,
-  ) {
+  ): Promise<Session> {
     const user = await this.authService.validateUser(login, password);
-    return this.authService.getTokens(user, response);
+    const authToken = await this.authService.createAccessToken(user);
+    return await this.userService.createSession(user, authToken);
   }
 
-  @HttpCode(HttpStatus.OK)
+  /*@HttpCode(HttpStatus.OK)
   @Post("logout")
   async logout(@Req() request: Request, @Res({ passthrough: true }) response) {
     return this.authService.logout(request, response);
-  }
+  }*/
 
-  @HttpCode(HttpStatus.OK)
+  /*@HttpCode(HttpStatus.OK)
   @Post("refresh")
   async refresh(@Req() request: Request) {
     return this.authService.refreshToken(request);
-  }
+  }*/
 
-  @Post("google")
+  /*@Post("google")
   async googleAuth(
     @Body("token") token: string,
     @Res({ passthrough: true }) response: Response,
   ) {
     return this.authService.googleAuth(token, response);
-  }
+  }*/
 }

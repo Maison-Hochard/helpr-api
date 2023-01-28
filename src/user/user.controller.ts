@@ -9,13 +9,14 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
 import { Role, Roles } from "../auth/decorators/role.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { Session, User } from "@prisma/client";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @ApiTags("User")
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -28,10 +29,20 @@ export class UserController {
     return this.userService.getUserById(user.id);
   }
 
+  @Post()
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.create(createUserDto);
+  }
+
   @Roles(Role.ADMIN)
   @Get("/all")
   async getAllUsers() {
     return this.userService.getAllUsers();
+  }
+
+  /*@Get()
+  async getCurrentUser(@CurrentUser() user: JwtPayload) {
+    return this.userService.getUserById(user.id);
   }
 
   @Get(":id")
@@ -66,5 +77,5 @@ export class UserController {
   @Delete(":id")
   async deleteUser(@Param("id") id: number) {
     return this.userService.deleteUser(id);
-  }
+  }*/
 }

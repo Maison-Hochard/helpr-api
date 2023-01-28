@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
-import { User } from "../user/entities/user.entity";
+import { User } from "@prisma/client";
+
 @Injectable()
 export class MailingService {
   constructor(private readonly mailerService: MailerService) {}
@@ -73,7 +74,7 @@ export class MailingService {
       });
   }
 
-  async sendResetPassword(user: User, resetUrl: string): Promise<void> {
+  /*async sendResetPassword(user: User, resetUrl: string): Promise<void> {
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -91,9 +92,9 @@ export class MailingService {
       .catch((err) => {
         console.log(err);
       });
-  }
+  }*/
 
-  async sendResetPasswordSuccess(user: User): Promise<void> {
+  /*async sendResetPasswordSuccess(user: User): Promise<void> {
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -110,25 +111,5 @@ export class MailingService {
       .catch((err) => {
         console.log(err);
       });
-  }
-
-  async sendTicketReceived(user: User, ticket_name: string): Promise<void> {
-    await this.mailerService
-      .sendMail({
-        to: user.email,
-        subject: "Ticket received",
-        template: "ticket-received",
-        context: {
-          username: user.username,
-          ticket_name: ticket_name,
-        },
-        attachments: this.attachments,
-      })
-      .then(() => {
-        console.log("Email sent");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  }*/
 }

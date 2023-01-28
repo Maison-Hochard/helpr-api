@@ -1,25 +1,21 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { utils } from "../utils/bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { OAuth2Client } from "google-auth-library";
-import { User } from "../user/entities/user.entity";
+/*import { OAuth2Client } from "google-auth-library";*/
+import { Session, User } from "@prisma/client";
 
 export interface JwtPayload {
   id: number;
 }
 
-interface GooglePayload {
+/*interface GooglePayload {
   email: string;
   given_name: string;
   family_name: string;
   picture: string;
-}
+}*/
 
 @Injectable()
 export class AuthService {
@@ -37,7 +33,7 @@ export class AuthService {
     return user;
   }
 
-  async createAccessToken(user) {
+  async createAccessToken(user): Promise<string> {
     const payload: JwtPayload = { id: user.id };
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get("jwt.access_token_secret"),
@@ -45,15 +41,15 @@ export class AuthService {
     });
   }
 
-  async createRefreshToken(user) {
+  /*async createRefreshToken(user) {
     const payload: JwtPayload = { id: user.id };
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get("jwt.refresh_token_secret"),
       expiresIn: this.configService.get("jwt.refresh_token_expiration"),
     });
-  }
+  }*/
 
-  async getTokens(user, response) {
+  /*async getTokens(user, response) {
     const accessToken = await this.createAccessToken(user);
     const refreshToken = await this.createRefreshToken(user);
     await this.userService.insertRefreshToken(user.id, refreshToken);
@@ -66,31 +62,9 @@ export class AuthService {
       })
       .status(200);
     return { accessToken };
-  }
+  }*/
 
-  async refreshToken(request) {
-    const refreshToken = request.cookies.refreshToken;
-    if (!refreshToken) {
-      throw new UnauthorizedException("refresh_token_not_provided");
-    }
-    const payload = await this.jwtService.verifyAsync(refreshToken, {
-      secret: this.configService.get("jwt.refresh_token_secret"),
-    });
-    const user = await this.userService.getUserById(payload.id);
-    const decryptedRefreshToken = await utils.decrypt(
-      refreshToken,
-      user.refreshToken,
-    );
-    if (decryptedRefreshToken) {
-      return {
-        accessToken: await this.createAccessToken(user),
-      };
-    } else {
-      throw new UnauthorizedException("invalid_refresh_token");
-    }
-  }
-
-  async logout(request, response) {
+  /*async logout(request, response) {
     const refreshToken = request.cookies.refreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException("refresh_token_not_provided");
@@ -105,9 +79,9 @@ export class AuthService {
       sameSite: "none",
     });
     return { message: "success" };
-  }
+  }*/
 
-  async googleAuth(token, response) {
+  /*async googleAuth(token, response) {
     const client = new OAuth2Client(this.configService.get("google.client_id"));
     client.setCredentials({ access_token: token });
     const googleUser = await client.request({
@@ -131,5 +105,5 @@ export class AuthService {
       const createdUser = await this.userService.create(newUser);
       return this.getTokens(createdUser, response);
     }
-  }
+  }*/
 }
