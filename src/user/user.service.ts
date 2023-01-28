@@ -170,6 +170,8 @@ export class UserService {
     userId: string,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
     return await this.prisma.user.update({
       where: { id: userId },
       data: updateUserDto,
@@ -177,8 +179,9 @@ export class UserService {
   }
 
   async deleteUser(userId: string): Promise<{ message: string }> {
-    const user = await this.prisma.user.delete({ where: { id: userId } });
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException("user_not_found");
+    await this.prisma.user.delete({ where: { id: userId } });
     return { message: "user deleted" };
   }
 }
