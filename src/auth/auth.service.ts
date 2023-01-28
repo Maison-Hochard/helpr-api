@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserService } from "../user/user.service";
-import { utils } from "../utils/bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 /*import { OAuth2Client } from "google-auth-library";*/
 import { User } from "@prisma/client";
+import { decrypt } from "../utils";
 
 export interface JwtPayload {
   id: string;
@@ -43,7 +43,7 @@ export class AuthService {
 
   async validateUser(login: string, password: string): Promise<User> {
     const user = await this.userService.getUserByLogin(login);
-    if (!user || !(await utils.decrypt(password, user.password))) {
+    if (!user || !(await decrypt(password, user.password))) {
       throw new BadRequestException("invalid_credentials");
     }
     return user;
@@ -74,7 +74,7 @@ export class AuthService {
       secret: this.configService.get("jwt.refresh_token_secret"),
     });
     const user = await this.userService.getUserById(payload.id);
-    const decryptedRefreshToken = await utils.decrypt(
+    const decryptedRefreshToken = await decrypt(
       refreshToken,
       user.refreshToken,
     );

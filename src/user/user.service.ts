@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { MailingService } from "../mailing/mailing.service";
-import { utils } from "../utils/bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { User, ResetPassword } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { Response } from "express";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtPayload } from "../auth/auth.service";
-import { formatUser } from "../utils/utils";
+import { encrypt, formatUser, generateCode } from "../utils";
 import { UserForFrontend } from "../type";
 
 @Injectable()
@@ -31,7 +30,7 @@ export class UserService {
     if (findUser) {
       throw new BadRequestException("user_already_exists");
     }
-    const hashedPassword = await utils.encrypt(createUserDto.password);
+    const hashedPassword = await encrypt(createUserDto.password);
     const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -51,7 +50,7 @@ export class UserService {
       await this.prisma.emailVerification.create({
         data: {
           userId: user.id,
-          token: await utils.generateCode(),
+          token: await generateCode(),
         },
       });
     const url = `${this.configService.get("frontend.url")}/verify-user-${
@@ -121,7 +120,7 @@ export class UserService {
   }
 
   async insertRefreshToken(userId: string, refreshToken: string) {
-    const encryptedToken = await utils.encrypt(refreshToken);
+    const encryptedToken = await encrypt(refreshToken);
     return await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken: encryptedToken },
@@ -160,7 +159,7 @@ export class UserService {
   async updatePassword(userId: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException("user_not_found");
-    const hashedPassword = await utils.encrypt(password);
+    const hashedPassword = await encrypt(password);
     return await this.prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },

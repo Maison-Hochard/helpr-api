@@ -1,8 +1,7 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { MailingService } from "../mailing/mailing.service";
 import { UserService } from "../user/user.service";
 import { ConfigService } from "@nestjs/config";
-import { utils } from "../utils/bcrypt";
 
 @Injectable()
 export class ResetPasswordService {

@@ -19,7 +19,7 @@ import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserForFrontend } from "../type";
-import { formatUser } from "../utils/utils";
+import { formatUser } from "../utils";
 
 @ApiTags("User")
 @UseGuards(JwtAuthGuard, RoleGuard)
