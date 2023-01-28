@@ -24,6 +24,9 @@ export const config = () => ({
       password: process.env.MAILER_PASSWORD,
     },
   },
+  stripe: {
+    secret_key: process.env.STRIPE_SECRET_KEY,
+  },
   frontend_url: process.env.FRONTEND_URL,
   cookie_domain: process.env.COOKIE_DOMAIN,
 });

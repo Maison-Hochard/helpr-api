@@ -9,6 +9,7 @@ import { CronModule } from "./cron/cron.module";
 import { AuthModule } from "./auth/auth.module";
 import { ResetPasswordModule } from "./reset-password/reset-password.module";
 import { config } from "../config";
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { config } from "../config";
     CronModule,
     AuthModule,
     ResetPasswordModule,
+    StripeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

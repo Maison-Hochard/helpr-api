@@ -46,6 +46,7 @@ specifiers:
   rimraf: ^3.0.2
   rxjs: ^7.2.0
   source-map-support: ^0.5.20
+  stripe: ^11.8.0
   supertest: ^6.1.3
   ts-jest: 28.0.8
   ts-loader: ^9.2.3
@@ -84,6 +85,7 @@ dependencies:
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
   rxjs: 7.8.0
+  stripe: 11.8.0
   typeorm: 0.3.11_pa4ea3wjef6s4gsskhbyci3cte
 
 devDependencies:
@@ -6392,6 +6394,14 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
     dev: true
+
+  /stripe/11.8.0:
+    resolution: {integrity: sha512-aGwrJDqYzpjQj0ejt7oN7BE7kUjZFxhUz/gDeyDCS7CBpZhDb26Eb6z9sS8KdbsbmuS8rkkn2lBY4koK7L1ZCw==}
+    engines: {node: '>=12.*'}
+    dependencies:
+      '@types/node': 16.18.11
+      qs: 6.11.0
+    dev: false
 
   /style-data/2.0.0:
     resolution: {integrity: sha512-8RJ+MnHlwFUrf3B3gUjs9KIrOk0TppHHwfIHfBd6QjYmZcuzN1OGqeMkWA3ZnD6GiRWJjCVouY/l11v4rlfnPA==}
