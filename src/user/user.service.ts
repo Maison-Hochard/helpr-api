@@ -53,7 +53,7 @@ export class UserService {
           token: await generateCode(),
         },
       });
-    const url = `${this.configService.get("frontend.url")}/verify-user-${
+    const url = `${this.configService.get("frontend_url")}/verify-user-${
       resetEntity.token
     }`;
     if (isEmail) {

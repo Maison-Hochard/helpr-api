@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { JwtPayload } from "../auth/auth.service";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class MailingService {
@@ -74,7 +75,7 @@ export class MailingService {
       });
   }
 
-  /*async sendResetPassword(user: User, resetUrl: string): Promise<void> {
+  async sendResetPassword(user: User, resetUrl: string): Promise<void> {
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -92,9 +93,9 @@ export class MailingService {
       .catch((err) => {
         console.log(err);
       });
-  }*/
+  }
 
-  /*async sendResetPasswordSuccess(user: User): Promise<void> {
+  async sendResetPasswordSuccess(user: User): Promise<void> {
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -111,5 +112,5 @@ export class MailingService {
       .catch((err) => {
         console.log(err);
       });
-  }*/
+  }
 }
