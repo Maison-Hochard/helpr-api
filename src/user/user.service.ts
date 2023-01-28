@@ -93,11 +93,10 @@ export class UserService {
         refreshToken: encryptedRefreshToken,
       },
     });
-    const isSecure = this.configService.get("env") === "production";
     response.cookie("refreshToken", resetToken, {
       httpOnly: true,
       sameSite: "none",
-      secure: isSecure,
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
     });
