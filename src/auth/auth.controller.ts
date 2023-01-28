@@ -10,12 +10,13 @@ import {
 } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { CreateUserDto } from "../user/dto/create-user.dto";
-import { AuthService } from "./auth.service";
+import { AuthService, JwtPayload } from "./auth.service";
 import { Request, Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
 import { LocalGuard } from "./guards/local-auth.guard";
-import { Session } from "@prisma/client";
-import { UserForFrontend } from "../type";
+import { User } from "@prisma/client";
+import { CurrentUser } from "./decorators/current-user.decorator";
+import { JwtAuthGuard } from "./guards/jwt.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -26,9 +27,7 @@ export class AuthController {
   ) {}
 
   @Post("register")
-  async register(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserForFrontend> {
+  async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
@@ -38,7 +37,7 @@ export class AuthController {
     @Body("login") login: string,
     @Body("password") password: string,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<Session> {
+  ): Promise<User> {
     const user = await this.authService.validateUser(login, password);
     const authToken = await this.authService.createAccessToken(user);
     const resetToken = await this.authService.createRefreshToken(user);
@@ -52,12 +51,12 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post("logout")
+  @UseGuards(JwtAuthGuard)
   async logout(
-    @Body("sessionId") sessionId: string,
-    @Body("userId") userId: string,
+    @CurrentUser() user: JwtPayload,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
-    return this.userService.deleteSession(response, sessionId, userId);
+    return this.userService.deleteRefreshToken(user.id, response);
   }
 
   @HttpCode(HttpStatus.OK)

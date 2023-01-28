@@ -1,8 +1,7 @@
 import { User } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
-import { UserForFrontend } from "./type";
 
-export const formatUser = (user: User): UserForFrontend => {
+export const formatUser = (user: User): User => {
   delete user.password;
   delete user.refreshToken;
   return user;

@@ -18,7 +18,6 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { UserForFrontend } from "../type";
 import { formatUser } from "../utils";
 
 @ApiTags("User")
@@ -34,21 +33,17 @@ export class UserController {
   }
 
   @Get("/current")
-  async getCurrentUser(
-    @CurrentUser() user: JwtPayload,
-  ): Promise<UserForFrontend> {
+  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<User> {
     return formatUser(await this.userService.getUserById(user.id));
   }
 
   @Get(":userId")
-  async getUserById(@Param("userId") userId: string): Promise<UserForFrontend> {
+  async getUserById(@Param("userId") userId: string): Promise<User> {
     return this.userService.getUserById(userId);
   }
 
   @Post()
-  async createUser(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserForFrontend> {
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 

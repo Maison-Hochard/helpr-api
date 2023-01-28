@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "darwin-arm64"]
@@ -19,32 +16,21 @@ model User {
   firstname         String
   lastname          String
   password          String
-  session           Session[]
   stripeCustomerId  String?
-  Subscription      Subscription[]
-  profilePicture    String?
-  resetPassword     ResetPassword[]
-  emailVerification EmailVerification[]
-  isVerified        Boolean             @default(false)
-  refreshToken      String?
-  role              Int?                @default(1)
   createdAt         DateTime            @default(now())
+  profilePicture    String?
   updatedAt         DateTime            @updatedAt
-}
-
-model Session {
-  id        String    @id @default(cuid())
-  authToken String    @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  role              Int?                @default(1)
+  isVerified        Boolean             @default(false)
+  refreshToken      String?             @unique
+  authToken         String?             @unique
+  emailVerification EmailVerification[]
+  resetPassword     ResetPassword[]
+  Subscription      Subscription[]
 }
 
 model Subscription {
   id            String  @id @default(cuid())
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
   stripeId      String  @unique
   stripeStatus  String?
@@ -53,20 +39,21 @@ model Subscription {
   endsAt        Int?
   startDate     Int
   lastEventDate Int
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ResetPassword {
   id        String   @id @default(cuid())
   token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailVerification {
   id        String   @id @default(cuid())
   token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
