@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
@@ -8,6 +17,7 @@ import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @ApiTags("User")
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -16,13 +26,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getCurrentUser(@CurrentUser() user: JwtPayload) {
+  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<User> {
     return this.userService.getUserById(user.id);
   }
 
   @Roles(Role.ADMIN)
+  @Get("/:id")
+  async getUser(@Param("id") userId: string): Promise<User> {
+    return this.userService.getUserById(userId);
+  }
+
+  @Roles(Role.ADMIN)
   @Get("/all")
-  async getAllUsers() {
+  async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
@@ -32,13 +48,15 @@ export class UserController {
   }
 
   @Get(":id")
-  async getUserById(@Param("id") id: number) {
-    return this.userService.getUserById(id);
+  async getUserById(@Param("userId") userId: string): Promise<User> {
+    return this.userService.getUserById(userId);
   }
 
-  /*@Post("verify")
-  async sendNewToken(@CurrentUser() user: JwtPayload) {
-    await this.userService.createVerificationUrl(user.id, true);
+  @Post("verify")
+  async sendNewToken(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<{ message: string }> {
+    await this.userService.createVerificationUrl(user, true);
     return {
       message: "new_token_sent",
     };
@@ -54,14 +72,16 @@ export class UserController {
 
   @Patch(":id")
   async updateUser(
-    @Param("id") id: number,
+    @Param("userId") userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.updateUser(id, updateUserDto);
+    return this.userService.updateUser(userId, updateUserDto);
   }
 
   @Delete(":id")
-  async deleteUser(@Param("id") id: number) {
-    return this.userService.deleteUser(id);
-  }*/
+  async deleteUser(
+    @Param("userId") userId: string,
+  ): Promise<{ message: string }> {
+    return this.userService.deleteUser(userId);
+  }
 }

@@ -3,7 +3,6 @@ import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import Stripe from "stripe";
-import process from "process";
 
 @Injectable()
 export class StripeService {
@@ -20,7 +19,7 @@ export class StripeService {
   }
 
   async createCheckoutSession(
-    userId: number,
+    userId: string,
     priceId: string,
     quantity: number,
   ): Promise<Stripe.Checkout.Session> {

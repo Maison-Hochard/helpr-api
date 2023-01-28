@@ -6,6 +6,8 @@ import { ConfigService } from "@nestjs/config";
 import { User, ResetPassword } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { Response } from "express";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { JwtPayload } from "../auth/auth.service";
 
 @Injectable()
 export class UserService {
@@ -39,7 +41,10 @@ export class UserService {
     return user;
   }
 
-  async createVerificationUrl(user: User, isEmail: boolean): Promise<string> {
+  async createVerificationUrl(
+    user: JwtPayload,
+    isEmail: boolean,
+  ): Promise<string> {
     const resetEntity: ResetPassword =
       await this.prisma.emailVerification.create({
         data: {
@@ -47,7 +52,7 @@ export class UserService {
           token: await utils.generateCode(),
         },
       });
-    const url = `${this.configService.get("app.url")}/verify-user-${
+    const url = `${this.configService.get("frontend.url")}/verify-user-${
       resetEntity.token
     }`;
     if (isEmail) {
@@ -56,8 +61,12 @@ export class UserService {
     return url;
   }
 
-  async getUserById(id: number): Promise<User> {
-    return await this.prisma.user.findUnique({ where: { id } });
+  async getUserById(userId: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new BadRequestException("user_not_found");
+    }
+    return user;
   }
 
   async getUserByLogin(login: string): Promise<User> {
@@ -89,20 +98,16 @@ export class UserService {
         deletedAt: true,
       },
     });
-    const jwtRefreshTokenExpiration = this.configService.get(
-      "jwt.refresh_token_expiration",
-    );
-    const maxAge = jwtRefreshTokenExpiration * 1000;
     response.cookie("refreshToken", resetToken, {
       httpOnly: true,
-      maxAge: maxAge,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
     });
     await this.insertRefreshToken(user.id, resetToken);
     return session;
   }
 
-  async deleteSession(response: Response, sessionId: number, userId: number) {
+  async deleteSession(response: Response, sessionId: string, userId: string) {
     const session = await this.prisma.session.findUnique({
       where: {
         id: sessionId,
@@ -119,7 +124,7 @@ export class UserService {
     return { message: "session deleted" };
   }
 
-  async insertRefreshToken(userId: number, refreshToken: string) {
+  async insertRefreshToken(userId: string, refreshToken: string) {
     const encryptedToken = await utils.encrypt(refreshToken);
     return await this.prisma.user.update({
       where: { id: userId },
@@ -127,7 +132,7 @@ export class UserService {
     });
   }
 
-  async deleteRefreshToken(userId: number) {
+  async deleteRefreshToken(userId: string) {
     return await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken: null },
@@ -138,107 +143,47 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  /*async create(createUserDto: CreateUserDto) {
-    const findUser = await this.userRepository.findOne({
-      where: [
-        { email: createUserDto.email },
-        { username: createUserDto.username },
-      ],
+  async verifyEmail(userId: string, token: string) {
+    const emailVerification = await this.prisma.emailVerification.findFirst({
+      where: {
+        userId,
+        token,
+      },
     });
-    if (findUser) {
-      throw new BadRequestException("user_already_exists");
-    }
-    const hashedPassword = await utils.encrypt(createUserDto.password);
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
+    if (!emailVerification) throw new BadRequestException("invalid_token");
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { isVerified: true },
     });
-    await this.userRepository.save(user);
-    const url = await this.createVerificationUrl(user.id, false);
-    await this.mailingService.sendNewUser(user, url);
-    return user;
+    await this.prisma.emailVerification.delete({
+      where: { id: emailVerification.id },
+    });
+    return { message: "email_verified" };
   }
 
-  async removeRefreshToken(id: number) {
-    return await this.userRepository.update(id, { refreshToken: null });
-  }
-
-  async getUserById(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async updatePassword(userId: string, password: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException("user_not_found");
-    return user;
-  }
-
-  async getUserByLogin(login: string) {
-    return this.userRepository.findOne({
-      where: [{ username: login }, { email: login }],
+    const hashedPassword = await utils.encrypt(password);
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
     });
   }
 
-  async getAllUsers() {
-    return {
-      status: "success",
-      message: "users_found",
-      content: await this.userRepository.find(),
-    };
-  }
-
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new BadRequestException("user_not_found");
-    await this.userRepository.update(id, updateUserDto);
-    const updatedUser = await this.userRepository.findOne({ where: { id } });
-    return {
-      status: "success",
-      message: "user_updated",
-      content: { user: updatedUser },
-    };
-  }
-
-  async updatePassword(id: number, password: string) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    user.password = password;
-    await this.userRepository.save(user);
-    return user;
-  }
-
-  async deleteUser(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new BadRequestException("user_not_found");
-    await this.userRepository.delete(id);
-    return { message: "user_deleted" };
-  }
-
-  async createVerificationUrl(id: number, sendMail: boolean) {
-    const user = await this.userRepository.findOne({ where: { id: id } });
-    const verif_code = new VerifCode();
-    verif_code.email = user.email;
-    verif_code.code = Math.floor(100000 + Math.random() * 900000).toString();
-    const verifCode = this.verifCodeRepository.create(verif_code);
-    await this.verifCodeRepository.save(verifCode);
-    const verifyUrl = `${this.configService.get(
-      "frontend_url",
-    )}/app/confirm-account-${verifCode.code}`;
-    if (sendMail) {
-      await this.mailingService.sendNewVerification(user, verifyUrl);
-    }
-    return verifyUrl;
-  }
-
-  async verifyEmail(id: number, code: string) {
-    const userToVerify = await this.userRepository.findOne({ where: { id } });
-    const verifCode = await this.verifCodeRepository.findOne({
-      where: { code: code, email: userToVerify.email },
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: updateUserDto,
     });
-    if (verifCode && verifCode.code === code) {
-      userToVerify.isVerified = true;
-      await this.userRepository.save(userToVerify);
-      await this.verifCodeRepository.delete({ email: userToVerify.email });
-      return {
-        message: "email_verified",
-      };
-    } else {
-      throw new BadRequestException("invalid_code");
-    }
-  }*/
+  }
+
+  async deleteUser(userId: string): Promise<{ message: string }> {
+    const user = await this.prisma.user.delete({ where: { id: userId } });
+    if (!user) throw new BadRequestException("user_not_found");
+    return { message: "user deleted" };
+  }
 }

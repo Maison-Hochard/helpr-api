@@ -1,12 +1,4 @@
 export const config = () => ({
-  database: {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    name: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    synchronize: process.env.SYNCHRONIZE === "true",
-  },
   jwt: {
     access_token_secret: process.env.ACCESS_TOKEN_SECRET,
     refresh_token_secret: process.env.REFRESH_TOKEN_SECRET,

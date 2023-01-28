@@ -11,7 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { User } from "@prisma/client";
 
 export interface JwtPayload {
-  id: number;
+  id: string;
   role: number;
   email: string;
   username: string;

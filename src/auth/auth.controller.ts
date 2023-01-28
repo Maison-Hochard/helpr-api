@@ -50,8 +50,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("logout")
   async logout(
-    @Body("sessionId") sessionId: number,
-    @Body("userId") userId: number,
+    @Body("sessionId") sessionId: string,
+    @Body("userId") userId: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
     return this.userService.deleteSession(response, sessionId, userId);
