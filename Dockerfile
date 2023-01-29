@@ -14,7 +14,7 @@ ARG STRIPE_SECRET_KEY
 ARG FRONTEND_URL
 ARG NODE_ENV
 
-WORKDIR /app
+WORKDIR /api
 
 RUN npm install -g pnpm
 
@@ -27,11 +27,11 @@ RUN pnpm build
 
 FROM node:18-alpine as helpr-api
 
-WORKDIR /app
+WORKDIR /api
 
 RUN npm install -g pnpm
 
-COPY --from=builder /app .
+COPY --from=builder /api .
 
 RUN npx prisma generate
 
