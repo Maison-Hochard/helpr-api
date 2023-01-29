@@ -61,7 +61,7 @@ export class UserService {
     return url;
   }
 
-  async getUserById(userId: string): Promise<User> {
+  async getUserById(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new BadRequestException("user_not_found");
@@ -104,7 +104,7 @@ export class UserService {
   }
 
   async deleteRefreshToken(
-    userId: string,
+    userId: number,
     response: Response,
   ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -125,7 +125,7 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  async verifyEmail(userId: string, token: string) {
+  async verifyEmail(userId: number, token: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException("user_not_found");
     const emailVerification = await this.prisma.emailVerification.findFirst({
@@ -146,7 +146,7 @@ export class UserService {
   }
 
   async updateUser(
-    userId: string,
+    userId: number,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -157,7 +157,7 @@ export class UserService {
     });
   }
 
-  async deleteUser(userId: string): Promise<{ message: string }> {
+  async deleteUser(userId: number): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException("user_not_found");
     await this.prisma.user.delete({ where: { id: userId } });

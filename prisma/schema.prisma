@@ -9,7 +9,6 @@ datasource db {
 }
 
 model User {
-  id                String              @id @default(cuid())
   loginType         String?             @default("email")
   username          String              @unique
   email             String              @unique
@@ -19,19 +18,18 @@ model User {
   stripeCustomerId  String?
   createdAt         DateTime            @default(now())
   profilePicture    String?
-  updatedAt         DateTime            @updatedAt
+  updatedAt         DateTime?           @updatedAt
   role              Int?                @default(1)
   isVerified        Boolean             @default(false)
   refreshToken      String?             @unique
   authToken         String?             @unique
+  id                Int                 @id @default(autoincrement())
   emailVerification EmailVerification[]
   resetPassword     ResetPassword[]
   Subscription      Subscription[]
 }
 
 model Subscription {
-  id            String  @id @default(cuid())
-  userId        String
   stripeId      String  @unique
   stripeStatus  String?
   stripePriceId String?
@@ -39,21 +37,23 @@ model Subscription {
   endsAt        Int?
   startDate     Int
   lastEventDate Int
+  id            Int     @id @default(autoincrement())
+  userId        Int
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ResetPassword {
-  id        String   @id @default(cuid())
   token     String   @unique
-  userId    String
   createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailVerification {
-  id        String   @id @default(cuid())
   token     String   @unique
-  userId    String
   createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

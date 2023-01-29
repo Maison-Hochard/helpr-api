@@ -12,7 +12,7 @@ import { decrypt } from "../utils";
 import { PrismaService } from "../prisma.service";
 
 export interface JwtPayload {
-  id: string;
+  id: number;
   role: number;
   email: string;
   username: string;

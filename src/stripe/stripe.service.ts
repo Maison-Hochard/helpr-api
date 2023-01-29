@@ -19,7 +19,7 @@ export class StripeService {
   }
 
   async createCheckoutSession(
-    userId: string,
+    userId: number,
     priceId: string,
     quantity: number,
   ): Promise<Stripe.Checkout.Session> {
