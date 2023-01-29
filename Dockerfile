@@ -18,7 +18,7 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
+RUN apk add --update --no-cache openssl1.1-compat python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
 
 COPY . .
 
@@ -33,6 +33,8 @@ RUN npm install -g pnpm
 
 COPY --from=builder /app .
 
+RUN npx prisma generate
+
 CMD ["pnpm", "start"]
 
-EXPOSE 3000
+EXPOSE 8080
