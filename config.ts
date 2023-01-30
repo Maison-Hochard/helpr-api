@@ -6,9 +6,6 @@ export const config = () => ({
     auth_token_expiration: process.env.AUTH_TOKEN_EXPIRATION,
     refresh_token_expiration: process.env.REFRESH_TOKEN_EXPIRATION,
   },
-  google: {
-    client_id: process.env.GOOGLE_CLIENT_ID,
-  },
   mailer: {
     host: process.env.MAILER_HOST,
     port: process.env.MAILER_PORT,
