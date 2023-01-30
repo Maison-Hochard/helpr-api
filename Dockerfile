@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:18-alpine as helpr-api
 
 ARG DATABASE_URL
 ARG MAILER_HOST
@@ -9,35 +9,24 @@ ARG AUTH_TOKEN_SECRET
 ARG REFRESH_TOKEN_SECRET
 ARG AUTH_TOKEN_EXPIRATION
 ARG REFRESH_TOKEN_EXPIRATION
-ARG GOOGLE_CLIENT_ID
 ARG STRIPE_SECRET_KEY
 ARG FRONTEND_URL
 ARG APP_ENV
+ARG API_URL
 
-WORKDIR /api
+WORKDIR /app
 
 RUN npm install -g pnpm
 
-RUN apk add --update --no-cache openssl1.1-compat python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
+RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
 
 COPY . .
 
-COPY package.json package.json
-
 RUN pnpm install
+RUN pnpm build
 
 RUN npx prisma generate
 
-RUN pnpm build
-
-FROM node:18-alpine as helpr-api
-
-WORKDIR /api
-
-RUN npm install -g pnpm
-
-COPY --from=builder /api .
-
 CMD ["pnpm", "start"]
 
-EXPOSE 8080
+EXPOSE 3000
