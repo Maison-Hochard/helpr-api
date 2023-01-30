@@ -10,6 +10,8 @@ import { AuthModule } from "./auth/auth.module";
 import { ResetPasswordModule } from "./reset-password/reset-password.module";
 import { config } from "../config";
 import { StripeModule } from "./stripe/stripe.module";
+import { LinearModule } from "./linear/linear.module";
+import { GithubModule } from "./github/github.module";
 
 @Module({
   imports: [
@@ -19,12 +21,14 @@ import { StripeModule } from "./stripe/stripe.module";
       cache: true,
       load: [config],
     }),
+    LinearModule,
     UserModule,
     MailingModule,
     CronModule,
     AuthModule,
     ResetPasswordModule,
     StripeModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [AppService],
