@@ -2,41 +2,65 @@ import { Injectable } from "@nestjs/common";
 import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
-import Stripe from "stripe";
+import { LinearClient } from "@linear/sdk";
+import { TeamResponse } from "./linear.type";
 
 @Injectable()
 export class LinearService {
-  private stripe;
-
   constructor(
     private prisma: PrismaService,
     private mailingService: MailingService,
     private configService: ConfigService,
-  ) {
-    this.stripe = new Stripe(this.configService.get("stripe.secret_key"), {
-      apiVersion: "2022-11-15",
+  ) {}
+
+  async getTeams(accessToken: string) {
+    const linearClient = new LinearClient({
+      apiKey: accessToken,
     });
+    const graphQLClient = linearClient.client;
+    const { data } = await graphQLClient.rawRequest(
+      `query Teams {
+       teams {
+       nodes {
+          id
+          name
+          projects {
+            nodes {
+              name
+              id
+            }
+          }
+          }
+       }
+    }`,
+    );
+    const teams = data as TeamResponse;
+    return teams.teams.nodes;
   }
 
-  async createCheckoutSession(
-    userId: number,
-    priceId: string,
-    quantity: number,
-  ): Promise<Stripe.Checkout.Session> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const url = `${this.configService.get("app.url")}/stripe/checkout-success`;
-    return await this.stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity,
-        },
-      ],
-      customer_email: user.email,
-      success_url: `${url}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: url,
+  async createWebhook(teamId: string, accessToken: string) {
+    const linearClient = new LinearClient({
+      apiKey: accessToken,
     });
+    const graphQLClient = linearClient.client;
+    await graphQLClient.rawRequest(
+      `mutation CreateWebhook($input: WebhookCreateInput!) {
+        webhookCreate(input: $input) {
+          success
+          webhook {
+            id
+            enabled
+          }
+        }
+      }
+    `,
+      {
+        input: {
+          url: "https://8fca-78-126-205-77.eu.ngrok.io/linear/webhook",
+          resourceTypes: ["Issue"],
+          teamId: teamId,
+        },
+      },
+    );
   }
 }

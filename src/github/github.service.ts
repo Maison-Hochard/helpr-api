@@ -5,8 +5,6 @@ import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class GithubService {
-  private stripe;
-
   constructor(
     private prisma: PrismaService,
     private mailingService: MailingService,
