@@ -86,6 +86,7 @@ export class UserService {
     response: Response,
   ): Promise<User> {
     const encryptedRefreshToken = await encrypt(resetToken);
+    const app_env = this.configService.get("env");
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
@@ -93,13 +94,23 @@ export class UserService {
         refreshToken: encryptedRefreshToken,
       },
     });
-    response.cookie("refreshToken", resetToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      path: "/",
-      sameSite: "none",
-      secure: true,
-    });
+    switch (app_env) {
+      case "development":
+        response.cookie("refreshToken", resetToken, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          path: "/",
+        });
+        break;
+      case "production":
+        response.cookie("refreshToken", resetToken, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          path: "/",
+          sameSite: "none",
+          secure: true,
+        });
+    }
     return formatUser(user);
   }
 
