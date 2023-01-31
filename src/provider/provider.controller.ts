@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
-import { Body, Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, UseGuards } from "@nestjs/common";
 import { ProviderService } from "./provider.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
