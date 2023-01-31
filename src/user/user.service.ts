@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
-import { User, ResetPassword } from "@prisma/client";
+import { User, ResetPassword, ProviderCredentials } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtPayload } from "../auth/auth.service";

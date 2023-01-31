@@ -55,7 +55,7 @@ export class LinearService {
     const teams = await this.getTeams(accessToken);
     await Promise.all(
       teams.map((team) => this.createWebhook(team.id, accessToken)),
-    );
+    ); // TODO: handle errors
     return { message: "Linear credentials created" };
   }
 

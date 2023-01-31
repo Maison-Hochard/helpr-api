@@ -12,6 +12,7 @@ import { config } from "../config";
 import { StripeModule } from "./stripe/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
+import { ProviderModule } from "./provider/provider.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { GithubModule } from "./github/github.module";
       cache: true,
       load: [config],
     }),
+    ProviderModule,
     LinearModule,
     UserModule,
     MailingModule,
