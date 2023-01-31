@@ -9,24 +9,35 @@ datasource db {
 }
 
 model User {
-  loginType         String?             @default("email")
-  username          String              @unique
-  email             String              @unique
-  firstname         String
-  lastname          String
-  password          String
-  stripeCustomerId  String?
-  createdAt         DateTime            @default(now())
-  profilePicture    String?
-  updatedAt         DateTime?           @updatedAt
-  role              Int?                @default(1)
-  isVerified        Boolean             @default(false)
-  refreshToken      String?             @unique
-  authToken         String?             @unique
-  id                Int                 @id @default(autoincrement())
-  emailVerification EmailVerification[]
-  resetPassword     ResetPassword[]
-  Subscription      Subscription[]
+  loginType           String?               @default("email")
+  username            String                @unique
+  email               String                @unique
+  firstname           String
+  lastname            String
+  password            String
+  stripeCustomerId    String?
+  createdAt           DateTime              @default(now())
+  profilePicture      String?
+  updatedAt           DateTime?             @updatedAt
+  role                Int?                  @default(1)
+  isVerified          Boolean               @default(false)
+  refreshToken        String?               @unique
+  authToken           String?               @unique
+  id                  Int                   @id @default(autoincrement())
+  emailVerification   EmailVerification[]
+  resetPassword       ResetPassword[]
+  Subscription        Subscription[]
+  ProviderCredentials ProviderCredentials[]
+}
+
+model ProviderCredentials {
+  id          Int    @id @default(autoincrement())
+  providerId  String
+  provider    String
+  accessToken String
+  userId      Int
+  expiresAt   Int?
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
