@@ -26,7 +26,24 @@ export class GithubController {
   async createCredential(
     @CurrentUser() user: JwtPayload,
     @Body("accessToken") accessToken: string,
-  ) {}
+  ) {
+    return await this.githubService.createCredentials(user.id, accessToken);
+  }
+
+  @Post("branches")
+  async createBranch(
+    @CurrentUser() user: JwtPayload,
+    @Body("accessToken") accessToken: string,
+    @Body("repo") repo: string,
+    @Body("branch") branch: string,
+  ) {
+    return await this.githubService.createBranch(
+      user.id,
+      accessToken,
+      repo,
+      branch,
+    );
+  }
 
   @Get("teams")
   async getTeams(@Body("accessToken") accessToken: string) {}
