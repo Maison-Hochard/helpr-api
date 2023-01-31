@@ -1,10 +1,11 @@
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { UserService } from "../user/user.service";
 
 import { Public } from "../auth/decorators/public.decorator";
 import { LinearService } from "./linear.service";
+import { JwtPayload } from "../auth/auth.service";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("linear")
@@ -35,6 +36,19 @@ export class LinearController {
     return {
       message: "webhook_created",
     };
+  }
+
+  @Get("user")
+  async getUser(@CurrentUser() user: JwtPayload) {
+    return await this.linearService.getUser(user.id);
+  }
+
+  @Post("credentials")
+  async createCredential(
+    @CurrentUser() user: JwtPayload,
+    @Body("accessToken") accessToken: string,
+  ) {
+    return await this.linearService.createCredentials(user.id, accessToken);
   }
 
   @Get("teams")

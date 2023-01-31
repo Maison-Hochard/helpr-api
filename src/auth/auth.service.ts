@@ -8,7 +8,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 /*import { OAuth2Client } from "google-auth-library";*/
 import { User } from "@prisma/client";
-import { decrypt } from "../utils";
+import { compare } from "../utils";
 import { PrismaService } from "../prisma.service";
 
 export interface JwtPayload {
@@ -45,7 +45,7 @@ export class AuthService {
 
   async validateUser(login: string, password: string): Promise<User> {
     const user = await this.userService.getUserByLogin(login);
-    if (!user || !(await decrypt(password, user.password))) {
+    if (!user || !(await compare(password, user.password))) {
       throw new BadRequestException("invalid_credentials");
     }
     return user;
@@ -76,7 +76,7 @@ export class AuthService {
       secret: this.configService.get("jwt.refresh_token_secret"),
     });
     const user = await this.userService.getUserById(payload.id);
-    const decryptedRefreshToken = await decrypt(
+    const decryptedRefreshToken = await compare(
       refreshToken,
       user.refreshToken,
     );

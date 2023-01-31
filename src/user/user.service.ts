@@ -6,7 +6,7 @@ import { User, ResetPassword } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtPayload } from "../auth/auth.service";
-import { encrypt, formatUser, generateCode } from "../utils";
+import { hash, formatUser, generateCode } from "../utils";
 import { Response } from "express";
 
 @Injectable()
@@ -29,7 +29,7 @@ export class UserService {
     if (findUser) {
       throw new BadRequestException("user_already_exists");
     }
-    const hashedPassword = await encrypt(createUserDto.password);
+    const hashedPassword = await hash(createUserDto.password);
     const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -85,7 +85,7 @@ export class UserService {
     resetToken: string,
     response: Response,
   ): Promise<User> {
-    const encryptedRefreshToken = await encrypt(resetToken);
+    const encryptedRefreshToken = await hash(resetToken);
     const app_env = this.configService.get("env");
     await this.prisma.user.update({
       where: { id: user.id },

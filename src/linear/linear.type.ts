@@ -22,6 +22,16 @@ export type Label = {
   name: string;
 };
 
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  teams: {
+    nodes: Team[];
+  };
+};
+
 export type TeamResponse = {
   teams: {
     nodes: Team[];

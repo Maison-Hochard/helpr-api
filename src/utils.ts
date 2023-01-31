@@ -14,12 +14,12 @@ export const generateCode = async (): Promise<string> => {
   );
 };
 
-export const encrypt = async (ToHash: string): Promise<string> => {
+export const hash = async (ToHash: string): Promise<string> => {
   const saltRounds = 10;
   return bcrypt.hash(ToHash, saltRounds);
 };
 
-export const decrypt = async (
+export const compare = async (
   ToDeHash: string,
   Hash: string,
 ): Promise<boolean> => {

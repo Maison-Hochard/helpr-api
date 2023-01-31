@@ -4,7 +4,7 @@ import { UserService } from "../user/user.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { ResetPassword } from "@prisma/client";
-import { encrypt, generateCode } from "../utils";
+import { hash, generateCode } from "../utils";
 
 @Injectable()
 export class ResetPasswordService {
@@ -47,7 +47,7 @@ export class ResetPasswordService {
     if (!resetEntity) {
       throw new BadRequestException("invalid_token");
     }
-    const hashedPassword = await encrypt(password);
+    const hashedPassword = await hash(password);
     await this.prisma.user.update({
       where: {
         id: resetEntity.userId,
