@@ -15,15 +15,7 @@ export class LinearController {
   @Public()
   @Post("webhook")
   async webhook(@Body() body) {
-    if (body.data && body.data.action === "create") {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
+    return await this.linearService.handleWebhook(body);
   }
 
   @Post("create-webhook")

@@ -4,11 +4,13 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
+import { GithubService } from "../github/github.service";
 
 @Injectable()
 export class LinearService {
   constructor(
     private prisma: PrismaService,
+    private githubService: GithubService,
     private mailingService: MailingService,
     private configService: ConfigService,
     private userService: UserService,
@@ -25,15 +27,54 @@ export class LinearService {
     });
   }
 
+  async handleWebhook(body: any) {
+    if (body.data) {
+      const { title, number, labels, team } = body.data;
+      const prefix = (
+        labels && labels[0].name ? labels[0].name : "feature"
+      ).toLowerCase();
+      const teamName = (team && team.name ? team.name : title).toLowerCase();
+      const branchName = `${prefix}/${teamName}-${number}`;
+      const linearUser = await this.prisma.providerCredentials.findFirst({
+        where: {
+          providerId: body.data.creatorId,
+        },
+      });
+      if (!linearUser) return;
+      const githubUser = await this.prisma.providerCredentials.findFirst({
+        where: {
+          provider: "github",
+          userId: linearUser.userId,
+        },
+      });
+      if (!githubUser) return;
+      return await this.githubService.createBranch(
+        linearUser.userId,
+        githubUser.accessToken,
+        "nuxtjs-boilerplate",
+        branchName,
+      );
+    }
+  }
+
   async createWebhook(teamId: string, accessToken: string) {
     const linearClient = new LinearClient({
       apiKey: accessToken,
     });
-    return await linearClient.createWebhook({
-      url: "https://8fca-78-126-205-77.eu.ngrok.io/linear/webhook",
+    const env = this.configService.get("env");
+    const webhookProdUrl =
+      this.configService.get("api_url") + "/linear/webhook";
+    const webhookDevUrl =
+      "https://eb3c-2a02-8440-5340-5e69-518c-252e-d6b3-5338.eu.ngrok.io/linear/webhook";
+    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
+    console.log(finalUrl);
+    const response = await linearClient.createWebhook({
+      url: finalUrl,
       resourceTypes: ["Issue"],
       teamId: teamId,
     });
+    console.log(response);
+    return response;
   }
 
   async createCredentials(userId: number, accessToken: string) {
@@ -53,9 +94,10 @@ export class LinearService {
       },
     });
     const teams = await this.getTeams(accessToken);
-    await Promise.all(
-      teams.map((team) => this.createWebhook(team.id, accessToken)),
-    ); // TODO: handle errors
+    const areaTeam = teams.find((team) => team.name === "Area");
+    if (areaTeam) {
+      await this.createWebhook(areaTeam.id, accessToken);
+    }
     return { message: "Linear credentials created" };
   }
 
