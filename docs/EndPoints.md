@@ -41,7 +41,17 @@ Permet de supprimer des informations à partir de l'API.
 
 ## Exemples de réponse
 
-+++ HTTP 201
++++ [!badge variant='success' text='200']
+Si les informations de connexion sont correctes, vous recevrez une réponse de succès avec le code HTTP 200 et le corps de la réponse contiendra un jeton d'authentification JWT:
+```HTTP/1.1 200 OK
+Content-Type: application/json
+```
+```json
+{
+  "token": "Exemple token ..."
+}
+```
++++ [!badge variant='warning' text='201']
 Si la création de l'utilisateur est réussie, vous recevrez une réponse de succès avec le code HTTP 201 et le corps de la réponse contiendra les informations sur l'utilisateur créé:
 ```HTTP/1.1 201 Created
 Content-Type: application/json
@@ -49,33 +59,13 @@ Content-Type: application/json
 ```json
 {
 "id": 1,
-"firstname": "Hugo",
-"lastname": "Richard",
-"email": "hrichard206@gmail.com",
-"username": "HugoRCD"
+"firstname": "John",
+"lastname": "Doe",
+"email": "johndoe@gmail.com",
+"username": "johnDoe"
 }
 ```
-+++ HTTP 409
-Si le nom d'utilisateur ou l'adresse e-mail est déjà pris, vous recevrez une réponse d'erreur avec le code HTTP 409 et le corps de la réponse contiendra un message d'erreur:
-```HTTP/1.1 409 Conflict
-Content-Type: application/json
-```
-```json
-{
-  "message": "Username or email already taken"
-}
-```
-+++ HTTP 200
-Si les informations de connexion sont correctes, vous recevrez une réponse de succès avec le code HTTP 200 et le corps de la réponse contiendra un jeton d'authentification JWT:
-```HTTP/1.1 200 OK
-Content-Type: application/json
-```
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4iLCJpYXQiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-}
-```
-+++ HTTP 401
++++ [!badge variant='danger' text='401']
 Si les informations de connexion sont incorrectes, vous recevrez une réponse d'erreur avec le code HTTP 401 et le corps de la réponse contiendra un message d'erreur:
 ```HTTP/1.1 401 Unauthorized
 Content-Type: application/json
@@ -83,6 +73,16 @@ Content-Type: application/json
 ```json
 {
   "message": "Username or password is incorrect"
+}
+```
++++ [!badge variant='danger' text='409']
+Si le nom d'utilisateur ou l'adresse e-mail est déjà pris, vous recevrez une réponse d'erreur avec le code HTTP 409 et le corps de la réponse contiendra un message d'erreur:
+```HTTP/1.1 409 Conflict
+Content-Type: application/json
+```
+```json
+{
+  "message": "Username or email already taken"
 }
 ```
 +++

@@ -11,11 +11,11 @@ Envoi d'une requête POST à l'URL `http://localhost:3000/auth/register` avec le
 
 ```json
 {
-  "firstname": "Hugo",
-  "lastname": "Richard",
-  "email": "hrichard206@gmail.com",
-  "username": "HugoRCD",
-  "password": "08Janvier"
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "johndoe@gmail.com",
+  "username": "johnDoe",
+  "password": "password"
 }
 ```
 ===
@@ -26,10 +26,10 @@ Envoi d'une requête POST à l'URL `http://localhost:3000/auth/register` avec le
   "message": "L'utilisateur a été créé avec succès!",
   "user": {
     "id": 1,
-    "firstname": "Hugo",
-    "lastname": "Richard",
-    "email": "hrichard206@gmail.com",
-    "username": "HugoRCD"
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "johndoe@gmail.com",
+    "username": "johnDoe"
   }
 }
 ```
@@ -53,8 +53,8 @@ Envoi d'une requête POST à l'URL `http://localhost:3000/auth/login` avec le co
 
 ```json
 {
-  "login": "HugoRCD",
-  "password": "08Janvier"
+  "login": "johnDoe",
+  "password": "password"
 }
 ```
 ===

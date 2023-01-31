@@ -5,23 +5,15 @@ icon: key
 
 # Authentification
 
----
+Cette API utilise 3 guards pour gérer les autorisations d'accès aux différents endpoints:
 
-## Description des mécanismes de sécurité utilisés
-!!!
-### Mécanismes de sécurité pour l'API
-Pour protéger les données sensibles et les transactions de l'API, plusieurs mécanismes de sécurité sont utilisés.
-!!!
-==- Gard
-Gard est un middleware qui vérifie les requêtes HTTP pour s'assurer qu'elles sont autorisées à accéder à l'API. Il peut être utilisé pour vérifier l'authentification et l'autorisation des utilisateurs pour accéder à certaines parties de l'API.
+==- JWT Guard
+Ce guard permet de vérifier que la requête comporte un token JWT valide. Ce token est envoyé dans le header de la requête sous la forme Authorization: Bearer <token>. Si le token est valide, les informations décodées seront disponibles dans le contexte de la requête (req.user).
 ===
-==- Stratégie
-Une stratégie définit comment les utilisateurs sont authentifiés pour accéder à l'API. Il peut y avoir plusieurs stratégies d'authentification, telles que l'authentification par nom d'utilisateur et mot de passe, ou l'authentification à l'aide de jetons d'authentification.
+==- Role Guard
+Ce guard permet de vérifier que l'utilisateur connecté a les droits nécessaires pour accéder à un endpoint donné. Les rôles autorisés sont spécifiés dans la définition de la route. Si l'utilisateur n'a pas les droits nécessaires, une erreur 401 sera retournée.
 ===
-==- JWT (JSON Web Token)
-JWT est un format standard pour les jetons d'authentification. Il peut être utilisé pour transmettre des informations d'identification d'un client à un serveur, telles que le nom d'utilisateur et les informations de profil. Les jetons JWT sont signés numériquement pour garantir leur intégrité et leur confidentialité.
-===
-==- Passport
-Passport est une bibliothèque de stratégies d'authentification pour Node.js. Il peut être utilisé pour implémenter diverses stratégies d'authentification, telles que l'authentification par nom d'utilisateur et mot de passe, ou l'authentification à l'aide de jetons JWT. Passport facilite l'implémentation de mécanismes de sécurité pour l'API en fournissant des modules pré-définis pour différentes stratégies d'authentification.
-===
+==- Local Guard
+Ce guard n'est utilisé que pour le endpoint de connexion (/auth/login). Il permet de vérifier que les informations d'identification envoyées (nom d'utilisateur et mot de passe) sont correctes. Si les informations sont correctes, un token JWT sera retourné.
+=== 
 ---
