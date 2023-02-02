@@ -14,7 +14,43 @@ export class GithubService {
     private userService: UserService,
   ) {}
 
-  async createWebhook(teamId: string, accessToken: string) {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+
+  /**
+   * Create a webhook Github
+   * @param accessToken
+   */
+  async createWebhook(accessToken: string) {
+    // Create client
+    const githubClient = new Octokit({
+      auth: accessToken,
+    });
+
+    // Inits
+    const env = this.configService.get("env");
+    const webhookProdUrl =
+      this.configService.get("api_url") + "/github/webhook";
+    const webhookDevUrl =
+      "https://c572-78-126-205-77.eu.ngrok.io/github/webhook";
+    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
+
+    // Return the response
+    return await githubClient.request(
+      "POST /repos/HugoRCD/nuxtjs-boilerplate/hooks",
+      {
+        owner: "HugoRCD",
+        repo: "nuxtjs-boilerplate",
+        name: "web",
+        active: true,
+        events: ["push", "pull_request"],
+        config: {
+          url: finalUrl,
+          content_type: "json",
+          insecure_ssl: "0",
+        },
+      },
+    );
+  }
 
   async createCredentials(userId: number, accessToken: string) {
     const user = await this.userService.getUserById(userId);
