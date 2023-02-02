@@ -19,6 +19,7 @@ specifiers:
   '@nestjs/typeorm': ^8.0.3
   '@prisma/client': ^4.9.0
   '@types/cron': ^2.0.0
+  '@types/crypto-js': ^4.1.1
   '@types/express': ^4.17.13
   '@types/jest': 28.1.8
   '@types/node': ^16.0.0
@@ -76,6 +77,7 @@ dependencies:
   '@nestjs/typeorm': 8.1.4_hkapd3a3mi37wyf4vtt5y4i2ye
   '@prisma/client': 4.9.0_prisma@4.9.0
   '@types/cron': 2.0.0
+  '@types/crypto-js': 4.1.1
   '@types/passport-jwt': 3.0.8
   '@types/passport-local': 1.0.35
   bcryptjs: 2.4.3
@@ -1630,6 +1632,10 @@ packages:
     dependencies:
       '@types/luxon': 3.2.0
       '@types/node': 16.18.11
+    dev: false
+
+  /@types/crypto-js/4.1.1:
+    resolution: {integrity: sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==}
     dev: false
 
   /@types/ejs/3.1.1:

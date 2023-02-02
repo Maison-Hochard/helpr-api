@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
-import CryptoJS from "crypto-js";
+import { AES, enc } from "crypto-js";
+import * as process from "process";
 
 export const formatUser = (user: User): User => {
   delete user.password;
@@ -27,11 +28,13 @@ export const compare = async (
   return bcrypt.compare(ToDeHash, Hash);
 };
 
-export function encryptAES(plainText, secretKey) {
-  return CryptoJS.AES.encrypt(plainText, secretKey).toString();
+export function encrypt(toEncrypt) {
+  const secretKey = process.env.AUTH_TOKEN_SECRET;
+  return AES.encrypt(toEncrypt, secretKey).toString();
 }
 
-export function decryptAES(cipherText, secretKey) {
-  const bytes = CryptoJS.AES.decrypt(cipherText, secretKey);
-  return bytes.toString(CryptoJS.enc.Utf8);
+export function decrypt(toDecrypt) {
+  const secretKey = process.env.AUTH_TOKEN_SECRET;
+  const bytes = AES.decrypt(toDecrypt, secretKey);
+  return bytes.toString(enc.Utf8);
 }

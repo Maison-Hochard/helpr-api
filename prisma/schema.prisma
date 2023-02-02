@@ -32,7 +32,7 @@ model User {
 
 model ProviderCredentials {
   id          Int    @id @default(autoincrement())
-  providerId  String
+  providerId  String @unique
   provider    String
   accessToken String
   userId      Int

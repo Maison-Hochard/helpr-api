@@ -1,19 +1,19 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
 import { GithubService } from "../github/github.service";
+import { ProviderService } from "../provider/provider.service";
 
 @Injectable()
 export class LinearService {
   constructor(
     private prisma: PrismaService,
     private githubService: GithubService,
-    private mailingService: MailingService,
     private configService: ConfigService,
     private userService: UserService,
+    private providerService: ProviderService,
   ) {}
 
   async getTeams(accessToken: string) {
@@ -57,7 +57,12 @@ export class LinearService {
     }
   }
 
-  async createWebhook(teamId: string, accessToken: string) {
+  async createWebhook(userId: number, teamId: string) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "linear",
+      true,
+    );
     const linearClient = new LinearClient({
       apiKey: accessToken,
     });
@@ -85,51 +90,11 @@ export class LinearService {
     });
     const linearUser = await linearClient.viewer;
     if (!linearUser) throw new BadRequestException("Invalid access token");
-    await this.prisma.providerCredentials.create({
-      data: {
-        provider: "linear",
-        accessToken: accessToken,
-        providerId: linearUser.id,
-        userId: user.id,
-      },
-    });
-    const teams = await this.getTeams(accessToken);
-    const areaTeam = teams.find((team) => team.name === "Area");
-    if (areaTeam) {
-      await this.createWebhook(areaTeam.id, accessToken);
-    }
-    return { message: "Linear credentials created" };
-  }
-
-  async getUser(userId: number) {
-    const userLinear = await this.prisma.providerCredentials.findFirst({
-      where: {
-        userId: userId,
-      },
-    });
-    if (!userLinear) throw new BadRequestException("User not found");
-    if (userLinear) {
-      const linearClient = new LinearClient({
-        apiKey: userLinear.accessToken,
-      });
-      const graphQLClient = linearClient.client;
-      const { data } = await graphQLClient.rawRequest(
-        `query User {
-          users {
-            id
-            name
-            email
-            avatarUrl
-            teams {
-              nodes {
-                id
-                name
-              }
-            }
-          }
-        }`,
-      );
-      return data;
-    }
+    await this.providerService.addCredentials(
+      user.id,
+      linearUser.id,
+      "linear",
+      accessToken,
+    );
   }
 }

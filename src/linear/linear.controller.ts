@@ -19,23 +19,17 @@ export class LinearController {
   }
 
   @Post("create-webhook")
-  async createWebhook() {
-    const teamId = "34b08c67-0366-4cc0-8a32-07d481c045f1";
-    await this.linearService.createWebhook(
-      teamId,
-      "lin_api_OPD0XYHqsu9KSeRt64EAvdScbE8S7kK3UkAa2qGe",
-    );
+  async createWebhook(
+    @CurrentUser() user: JwtPayload,
+    @Body("teamId") teamId: string,
+  ) {
+    await this.linearService.createWebhook(user.id, teamId);
     return {
       message: "webhook_created",
     };
   }
 
-  @Get("user")
-  async getUser(@CurrentUser() user: JwtPayload) {
-    return await this.linearService.getUser(user.id);
-  }
-
-  @Post("credentials")
+  @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,
     @Body("accessToken") accessToken: string,
