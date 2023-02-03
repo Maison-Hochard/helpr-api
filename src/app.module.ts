@@ -37,12 +37,12 @@ export class ResponseInterceptor implements NestInterceptor {
     const statusCode = context.switchToHttp().getResponse().statusCode;
     return next.handle().pipe(
       map((data) => {
-        const message = data.message || "Success";
+        const message = data.message || "success";
         const payload = data.data || data;
         return { statusCode, message, data: payload };
       }),
       catchError((error) => {
-        const message = error.message || "Unknown error";
+        const message = error.message || "unknown_error";
         const statusCode = error.statusCode || 500;
         return of({ statusCode, message, error });
       }),
