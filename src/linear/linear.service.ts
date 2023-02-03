@@ -5,6 +5,7 @@ import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
 import { GithubService } from "../github/github.service";
 import { ProviderService } from "../provider/provider.service";
+import { ProviderCredentials } from "@prisma/client";
 
 @Injectable()
 export class LinearService {
@@ -82,7 +83,10 @@ export class LinearService {
     return response;
   }
 
-  async createCredentials(userId: number, accessToken: string) {
+  async createCredentials(
+    userId: number,
+    accessToken: string,
+  ): Promise<ProviderCredentials> {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("User not found");
     const linearClient = new LinearClient({
@@ -90,7 +94,7 @@ export class LinearService {
     });
     const linearUser = await linearClient.viewer;
     if (!linearUser) throw new BadRequestException("Invalid access token");
-    await this.providerService.addCredentials(
+    return await this.providerService.addCredentials(
       user.id,
       linearUser.id,
       "linear",
