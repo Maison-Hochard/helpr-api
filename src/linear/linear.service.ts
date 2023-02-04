@@ -60,8 +60,10 @@ export class LinearService {
       resourceTypes: ["Issue"],
       teamId: teamId,
     });
-    console.log(response);
-    return response;
+    return {
+      message: "webhook_created",
+      data: response,
+    };
   }
 
   async createCredentials(

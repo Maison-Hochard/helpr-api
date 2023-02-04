@@ -14,7 +14,7 @@ export class FlowController {
 
   @Get("/user/get-flows")
   async getFlows(@CurrentUser() user: JwtPayload) {
-    return await this.flowService.getFlows(user.id);
+    return await this.flowService.getUserFlows(user.id);
   }
 
   @Get("get-flows")

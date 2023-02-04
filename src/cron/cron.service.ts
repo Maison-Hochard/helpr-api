@@ -3,15 +3,17 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { ProviderService } from "../provider/provider.service";
 import { FlowService } from "../flow/flow.service";
 import { Status, Trigger } from "../flow/flow.type";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class CronService {
   constructor(
     private readonly providerService: ProviderService,
     private readonly flowService: FlowService,
+    private readonly configService: ConfigService,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  // @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
     const flows = await this.flowService.getFlowToRun(Trigger.INSTANT);
     if (flows.length === 0) {
@@ -25,7 +27,8 @@ export class CronService {
           const provider = actions.action.provider;
           const endpoint = actions.action.name;
           const payload = JSON.parse(actions.payload);
-          await fetch(`http://localhost:3000/${provider}/${endpoint}`, {
+          const apiUrl = this.configService.get("api_url");
+          await fetch(`${apiUrl}/${provider}/${endpoint}`, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {

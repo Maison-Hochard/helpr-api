@@ -1,21 +1,13 @@
-import { Action, Flow } from "@prisma/client";
+import { Flow } from "@prisma/client";
 
-type actionCreateInput = {
+type createActionInput = {
   id: number;
   name: string;
   payload: string;
 };
 
 export type createFlowInput = Flow & {
-  actions: actionCreateInput[];
-};
-
-export type FlowWithActions = Flow & {
-  actions: {
-    action: Action & {
-      payload: string;
-    };
-  }[];
+  actions: createActionInput[];
 };
 
 export enum Trigger {

@@ -49,7 +49,7 @@ export class FlowService {
     };
   }
 
-  async getFlows(userId: number) {
+  async getUserFlows(userId: number) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("user_not_found");
     const flows = await this.prisma.flow.findMany({
