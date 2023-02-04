@@ -19,7 +19,7 @@ export class FlowController {
 
   @Get("get-flows")
   async getFlowsByTrigger(trigger: Trigger) {
-    return await this.flowService.getFlowsByTrigger(trigger);
+    return await this.flowService.getFlowToRun(trigger);
   }
 
   @Post("add-flow")

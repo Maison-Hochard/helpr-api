@@ -13,11 +13,14 @@ export class CronService {
 
   // @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
-    const flows = await this.flowService.getFlowsByTrigger(Trigger.INSTANT);
+    const flows = await this.flowService.getFlowToRun(Trigger.INSTANT);
+    if (flows.length === 0) {
+      console.log("No flow to run");
+    }
     for (const flow of flows) {
-      console.log("running instant flow", flow.name + " " + flow.status);
       if (flow.status === Status.READY) {
-        // await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
+        console.log("Running flow: ", flow.name);
+        await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
         for (const actions of flow.actions) {
           const provider = actions.action.provider;
           const endpoint = actions.action.name;
@@ -36,6 +39,7 @@ export class CronService {
             },
           });
         }
+        await this.flowService.updateFlowStatus(flow.id, Status.STANDBY);
       }
     }
   }

@@ -69,10 +69,12 @@ export class FlowService {
     };
   }
 
-  async getFlowsByTrigger(trigger: Trigger): Promise<FlowWithActions[]> {
+  async getFlowToRun(trigger: Trigger): Promise<FlowWithActions[]> {
     return await this.prisma.flow.findMany({
       where: {
         trigger: trigger,
+        status: Status.READY,
+        enabled: true,
       },
       include: {
         actions: {
