@@ -1,15 +1,13 @@
 import { Module } from "@nestjs/common";
-import { MailingModule } from "../mailing/mailing.module";
 import { UserService } from "../user/user.service";
 import { PrismaService } from "../prisma.service";
 import { LinearService } from "./linear.service";
 import { LinearController } from "./linear.controller";
-import { GithubService } from "../github/github.service";
 
 @Module({
-  imports: [MailingModule],
+  imports: [],
   controllers: [LinearController],
-  providers: [LinearService, UserService, PrismaService, GithubService],
+  providers: [LinearService, UserService, PrismaService],
   exports: [LinearService],
 })
 export class LinearModule {}

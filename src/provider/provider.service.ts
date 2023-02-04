@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { decrypt, encrypt } from "../utils";
+import { Action } from "@prisma/client";
 
 @Injectable()
 export class ProviderService {
@@ -61,6 +62,16 @@ export class ProviderService {
         providerId,
         provider,
         accessToken: encrypt(accessToken),
+      },
+    });
+  }
+
+  async addAction(action: Action) {
+    return await this.prisma.action.create({
+      data: {
+        name: action.name,
+        provider: action.provider,
+        description: action.description || "",
       },
     });
   }

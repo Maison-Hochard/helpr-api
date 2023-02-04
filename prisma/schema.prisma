@@ -28,6 +28,7 @@ model User {
   resetPassword       ResetPassword[]
   Subscription        Subscription[]
   ProviderCredentials ProviderCredentials[]
+  Flow                Flow[]
 }
 
 model ProviderCredentials {
@@ -67,4 +68,36 @@ model EmailVerification {
   id        Int      @id @default(autoincrement())
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Flow {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  enabled     Boolean      @default(true)
+  status      Int          @default(1)
+  trigger     Int          @default(1)
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  actions     FlowAction[]
+}
+
+model Action {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  provider    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  flows       FlowAction[]
+}
+
+model FlowAction {
+  id       Int    @id @default(autoincrement())
+  flowId   Int
+  actionId Int
+  flow     Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 }

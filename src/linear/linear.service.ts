@@ -3,15 +3,14 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
-import { GithubService } from "../github/github.service";
 import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
+import { createIssueInput } from "./linear.type";
 
 @Injectable()
 export class LinearService {
   constructor(
     private prisma: PrismaService,
-    private githubService: GithubService,
     private configService: ConfigService,
     private userService: UserService,
     private providerService: ProviderService,
@@ -36,25 +35,7 @@ export class LinearService {
       ).toLowerCase();
       const teamName = (team && team.name ? team.name : title).toLowerCase();
       const branchName = `${prefix}/${teamName}-${number}`;
-      const linearUser = await this.prisma.providerCredentials.findFirst({
-        where: {
-          providerId: body.data.creatorId,
-        },
-      });
-      if (!linearUser) return;
-      const githubUser = await this.prisma.providerCredentials.findFirst({
-        where: {
-          provider: "github",
-          userId: linearUser.userId,
-        },
-      });
-      if (!githubUser) return;
-      return await this.githubService.createBranch(
-        linearUser.userId,
-        githubUser.accessToken,
-        "nuxtjs-boilerplate",
-        branchName,
-      );
+      console.log(branchName);
     }
   }
 
@@ -88,17 +69,39 @@ export class LinearService {
     accessToken: string,
   ): Promise<ProviderCredentials> {
     const user = await this.userService.getUserById(userId);
-    if (!user) throw new BadRequestException("User not found");
+    if (!user) throw new BadRequestException("user_not_found");
     const linearClient = new LinearClient({
       apiKey: accessToken,
     });
     const linearUser = await linearClient.viewer;
-    if (!linearUser) throw new BadRequestException("Invalid access token");
+    if (!linearUser) throw new BadRequestException("invalid_credentials");
     return await this.providerService.addCredentials(
       user.id,
       linearUser.id,
       "linear",
       accessToken,
     );
+  }
+
+  async createIssue(userId: number, createIssueInput: createIssueInput) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "linear",
+      true,
+    );
+    const linearClient = new LinearClient({
+      apiKey: accessToken,
+    });
+    const linearUser = await linearClient.viewer;
+    if (!linearUser) throw new BadRequestException("invalid_credentials");
+    const team = await linearClient.team(createIssueInput.teamId);
+    if (!team) throw new BadRequestException("team_not_found");
+    await linearClient.createIssue({
+      title: createIssueInput.title,
+      teamId: createIssueInput.teamId,
+    });
+    return {
+      message: "issue_created",
+    };
   }
 }

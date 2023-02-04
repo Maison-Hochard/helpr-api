@@ -21,9 +21,10 @@ import { GithubModule } from "./github/github.module";
 import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
+import { FlowModule } from "./flow/flow.module";
 
 export interface ServerResponse<T> {
-  statusCode: number;
+  statusCode?: number;
   message: string;
   data?: T;
 }
@@ -67,6 +68,7 @@ export class ResponseInterceptor implements NestInterceptor {
     ResetPasswordModule,
     StripeModule,
     GithubModule,
+    FlowModule,
   ],
   controllers: [AppController],
   providers: [AppService],
