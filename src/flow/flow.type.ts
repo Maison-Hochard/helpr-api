@@ -1,12 +1,20 @@
 import { Action, Flow } from "@prisma/client";
 
+type actionCreateInput = {
+  id: number;
+  name: string;
+  payload: string;
+};
+
 export type createFlowInput = Flow & {
-  actions: number[];
+  actions: actionCreateInput[];
 };
 
 export type FlowWithActions = Flow & {
   actions: {
-    action: Action;
+    action: Action & {
+      payload: string;
+    };
   }[];
 };
 

@@ -98,6 +98,7 @@ model FlowAction {
   id       Int    @id @default(autoincrement())
   flowId   Int
   actionId Int
+  payload  String
   flow     Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)
   action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 }

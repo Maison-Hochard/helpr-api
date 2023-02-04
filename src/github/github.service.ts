@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { Octokit } from "octokit";
+import { ProviderService } from "../provider/provider.service";
 
 @Injectable()
 export class GithubService {
@@ -12,6 +13,7 @@ export class GithubService {
     private mailingService: MailingService,
     private configService: ConfigService,
     private userService: UserService,
+    private providerService: ProviderService,
   ) {}
 
   async createWebhook(teamId: string, accessToken: string) {}
@@ -25,14 +27,12 @@ export class GithubService {
     const githubResponse = await octokit.request("GET /user");
     const githubUser = githubResponse.data;
     if (!githubUser) throw new BadRequestException("Invalid access token");
-    await this.prisma.providerCredentials.create({
-      data: {
-        provider: "github",
-        accessToken: accessToken,
-        providerId: githubUser.id.toString(),
-        userId: user.id,
-      },
-    });
+    return await this.providerService.addCredentials(
+      user.id,
+      githubUser.id.toString(),
+      "github",
+      accessToken,
+    );
   }
 
   async getUser(userId: number, accessToken: string) {
@@ -47,10 +47,15 @@ export class GithubService {
 
   async createBranch(
     userId: number,
-    accessToken: string,
     repo: string,
-    branchName: string,
+    branch: string,
+    newBranch: string,
   ) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
     const octokit = new Octokit({
       auth: accessToken,
     });
@@ -81,21 +86,18 @@ export class GithubService {
       return response.data;
     };
     const branches = await getBranches();
-    if (checkBranchName(branchName, branches))
+    if (checkBranchName(newBranch, branches))
       throw new BadRequestException("Branch already exists");
     const latestCommitOnMaster = await getLatestCommitOnMaster(branches);
-    const createBranch = async () => {
-      const response = await octokit.request(
-        "POST /repos/{owner}/{repo}/git/refs",
-        {
-          owner: user.login,
-          repo: repo,
-          ref: `refs/heads/${branchName}`,
-          sha: latestCommitOnMaster.sha,
-        },
-      );
-      return response.data;
-    };
-    return await createBranch();
+    const response = await octokit.request(
+      "POST /repos/{owner}/{repo}/git/refs",
+      {
+        owner: user.login,
+        repo: repo,
+        ref: `refs/heads/${newBranch}`,
+        sha: latestCommitOnMaster.sha,
+      },
+    );
+    return response.data;
   }
 }

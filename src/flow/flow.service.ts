@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
-import { createFlowInput, FlowWithActions, Status, Trigger } from "./flow.type";
+import { createFlowInput, Status, Trigger } from "./flow.type";
 
 @Injectable()
 export class FlowService {
@@ -18,7 +18,7 @@ export class FlowService {
     const actions = await this.prisma.action.findMany({
       where: {
         id: {
-          in: flowData.actions.map((action) => action),
+          in: flowData.actions.map((action) => action.id),
         },
       },
     });
@@ -37,8 +37,9 @@ export class FlowService {
     await this.prisma.flowAction.createMany({
       data: flowData.actions.map((action) => {
         return {
-          actionId: action,
+          actionId: action.id,
           flowId: flow.id,
+          payload: JSON.stringify(action.payload),
         };
       }),
     });
@@ -69,7 +70,7 @@ export class FlowService {
     };
   }
 
-  async getFlowToRun(trigger: Trigger): Promise<FlowWithActions[]> {
+  async getFlowToRun(trigger: Trigger) {
     return await this.prisma.flow.findMany({
       where: {
         trigger: trigger,
