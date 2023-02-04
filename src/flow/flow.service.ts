@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
-import { createFlowInput } from "./flow.type";
+import { createFlowInput, FlowWithActions, Status, Trigger } from "./flow.type";
 
 @Injectable()
 export class FlowService {
@@ -30,6 +30,8 @@ export class FlowService {
         name: flowData.name,
         description: flowData.description,
         userId: userId,
+        trigger: flowData.trigger ? flowData.trigger : Trigger.EVERY_10_MINUTES,
+        status: Status.STANDBY,
       },
     });
     await this.prisma.flowAction.createMany({
@@ -64,6 +66,42 @@ export class FlowService {
     return {
       message: "flows_found",
       data: flows,
+    };
+  }
+
+  async getFlowsByTrigger(trigger: Trigger): Promise<FlowWithActions[]> {
+    return await this.prisma.flow.findMany({
+      where: {
+        trigger: trigger,
+      },
+      include: {
+        actions: {
+          include: {
+            action: true,
+          },
+        },
+      },
+    });
+  }
+
+  async updateFlowStatus(flowId: number, status: Status) {
+    const flow = await this.prisma.flow.findUnique({
+      where: {
+        id: flowId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    await this.prisma.flow.update({
+      where: {
+        id: flowId,
+      },
+      data: {
+        status: status,
+      },
+    });
+    return {
+      message: "flow_status_updated",
+      data: flow,
     };
   }
 }
