@@ -85,13 +85,7 @@ export class FlowService {
   }
 
   async updateFlowStatus(flowId: number, status: Status) {
-    const flow = await this.prisma.flow.findUnique({
-      where: {
-        id: flowId,
-      },
-    });
-    if (!flow) throw new BadRequestException("flow_not_found");
-    await this.prisma.flow.update({
+    return await this.prisma.flow.update({
       where: {
         id: flowId,
       },
@@ -99,9 +93,5 @@ export class FlowService {
         status: status,
       },
     });
-    return {
-      message: "flow_status_updated",
-      data: flow,
-    };
   }
 }
