@@ -13,7 +13,7 @@ export class CronService {
     private readonly configService: ConfigService,
   ) {}
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
     const flows = await this.flowService.getFlowToRun(Trigger.INSTANT);
     if (flows.length === 0) {
@@ -23,6 +23,7 @@ export class CronService {
       if (flow.status === Status.READY) {
         console.log("Running flow: ", flow.name);
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
+        const accessToken = flow.accessToken;
         for (const actions of flow.actions) {
           const provider = actions.action.provider;
           const endpoint = actions.action.name;
@@ -33,8 +34,7 @@ export class CronService {
             body: JSON.stringify(payload),
             headers: {
               "Content-Type": "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6MSwiZW1haWwiOiJocmljaGFyZDIwNkBpY2xvdWQuY29tIiwidXNlcm5hbWUiOiJIdWdvUkNEIiwiaWF0IjoxNjc1NTIyNDEzLCJleHAiOjE2NzU2MDg4MTN9.BF-ee8fJilgSztsZiDuUcPsCTjuTqEJHO4PKTFkGCew",
+              Authorization: "Bearer " + accessToken,
             },
           });
         }

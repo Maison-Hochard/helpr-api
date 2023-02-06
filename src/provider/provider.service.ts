@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { decrypt, encrypt } from "../utils";
-import { Action } from "@prisma/client";
+import { createActionInput } from "./provider.type";
 
 @Injectable()
 export class ProviderService {
@@ -66,13 +66,22 @@ export class ProviderService {
     });
   }
 
-  async addAction(action: Action) {
-    return await this.prisma.action.create({
+  async addAction(createActionInput: createActionInput) {
+    const action = await this.prisma.action.create({
       data: {
-        name: action.name,
-        provider: action.provider,
-        description: action.description || "",
+        name: createActionInput.name,
+        provider: createActionInput.provider,
+        endpoint: createActionInput.endpoint,
+        description: createActionInput.description,
       },
     });
+    return {
+      message: "action_created",
+      data: action,
+    };
+  }
+
+  async getAvailableActions() {
+    return await this.prisma.action.findMany();
   }
 }

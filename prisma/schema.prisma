@@ -74,6 +74,7 @@ model Flow {
   id          Int          @id @default(autoincrement())
   name        String
   description String?
+  accessToken String
   enabled     Boolean      @default(true)
   status      Int          @default(1)
   trigger     Int          @default(1)
@@ -87,8 +88,9 @@ model Flow {
 model Action {
   id          Int          @id @default(autoincrement())
   name        String
-  description String?
+  description String
   provider    String
+  endpoint    String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   flows       FlowAction[]

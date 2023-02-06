@@ -16,6 +16,15 @@ export class ProviderController {
     return this.providerService.getCredentials(user.id);
   }
 
+  @Get("/get-available-actions")
+  async getAvailableActions() {
+    const actions = await this.providerService.getAvailableActions();
+    return {
+      message: "actions_found",
+      data: actions,
+    };
+  }
+
   @Post("/add-action")
   async addAction(@Body() action: Action) {
     return this.providerService.addAction(action);
