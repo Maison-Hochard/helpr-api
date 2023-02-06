@@ -37,6 +37,7 @@
     "@nestjs/schedule": "^2.1.0",
     "@nestjs/swagger": "^6.1.4",
     "@nestjs/typeorm": "^8.0.3",
+    "@notionhq/client": "^2.2.3",
     "@prisma/client": "^4.9.0",
     "@types/cron": "^2.0.0",
     "@types/crypto-js": "^4.1.1",

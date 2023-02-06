@@ -22,6 +22,7 @@ import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
+import { NotionModule } from "./notion/notion.module";
 
 export interface ServerResponse<T> {
   statusCode?: number;
@@ -67,6 +68,7 @@ export class ResponseInterceptor implements NestInterceptor {
     AuthModule,
     ResetPasswordModule,
     StripeModule,
+    NotionModule,
     GithubModule,
     FlowModule,
   ],
