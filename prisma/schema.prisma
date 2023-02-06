@@ -17,18 +17,18 @@ model User {
   password            String
   stripeCustomerId    String?
   createdAt           DateTime              @default(now())
-  profilePicture      String?
   updatedAt           DateTime?             @updatedAt
-  role                Int?                  @default(1)
+  role                Int                   @default(1)
   isVerified          Boolean               @default(false)
   refreshToken        String?               @unique
   authToken           String?               @unique
   id                  Int                   @id @default(autoincrement())
+  avatar              String                @default("https://storage.cloud.google.com/cooperantis/default-avatar.jpeg")
   emailVerification   EmailVerification[]
+  Flow                Flow[]
+  ProviderCredentials ProviderCredentials[]
   resetPassword       ResetPassword[]
   Subscription        Subscription[]
-  ProviderCredentials ProviderCredentials[]
-  Flow                Flow[]
 }
 
 model ProviderCredentials {
@@ -78,9 +78,9 @@ model Flow {
   status      Int          @default(1)
   trigger     Int          @default(1)
   userId      Int
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   actions     FlowAction[]
 }
 
@@ -99,6 +99,6 @@ model FlowAction {
   flowId   Int
   actionId Int
   payload  String
-  flow     Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)
   action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  flow     Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)
 }
