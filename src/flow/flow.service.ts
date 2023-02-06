@@ -75,7 +75,7 @@ export class FlowService {
   }
 
   async getFlowToRun(trigger: Trigger) {
-    return await this.prisma.flow.findMany({
+    const flows = await this.prisma.flow.findMany({
       where: {
         trigger: trigger,
         status: Status.READY,
@@ -89,6 +89,10 @@ export class FlowService {
         },
       },
     });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
   }
 
   async updateFlowStatus(flowId: number, status: Status) {

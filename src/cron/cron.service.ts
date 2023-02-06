@@ -13,13 +13,14 @@ export class CronService {
     private readonly configService: ConfigService,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  // @Cron(CronExpression.EVERY_10_SECONDS)
   async runInstantFlow() {
-    const flows = await this.flowService.getFlowToRun(Trigger.INSTANT);
-    if (flows.length === 0) {
+    const flowsResponse = await this.flowService.getFlowToRun(Trigger.INSTANT);
+    console.log("Running instant flow", flowsResponse);
+    if (flowsResponse.data.length === 0) {
       console.log("No flow to run");
     }
-    for (const flow of flows) {
+    for (const flow of flowsResponse.data) {
       if (flow.status === Status.READY) {
         console.log("Running flow: ", flow.name);
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
@@ -29,7 +30,7 @@ export class CronService {
           const endpoint = actions.action.name;
           const payload = JSON.parse(actions.payload);
           const apiUrl = this.configService.get("api_url");
-          await fetch(`${apiUrl}/${provider}/${endpoint}`, {
+          const response = await fetch(`${apiUrl}/${provider}/${endpoint}`, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {
@@ -37,6 +38,7 @@ export class CronService {
               Authorization: "Bearer " + accessToken,
             },
           });
+          console.log("Response: ", response);
         }
         await this.flowService.updateFlowStatus(flow.id, Status.STANDBY);
       }
