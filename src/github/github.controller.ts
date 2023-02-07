@@ -14,10 +14,15 @@ export class GithubController {
 
   @Public()
   @Post("webhook")
-  async webhook(@Body() body) {}
+  async webhook(@Body() body) {
+    console.log("webhook", body);
+    return await this.githubService.handleWebhook(body);
+  }
 
   @Post("create-webhook")
-  async createWebhook() {}
+  async createWebhook(@CurrentUser() user: JwtPayload) {
+    return await this.githubService.createWebhook(user.id);
+  }
 
   @Get("user")
   async getUser(@CurrentUser() user: JwtPayload) {}
