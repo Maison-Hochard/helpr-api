@@ -29,7 +29,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  profilePicture?: string;
+  avatar?: string;
 
   role?: number;
 }

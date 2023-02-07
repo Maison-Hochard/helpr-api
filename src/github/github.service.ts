@@ -74,7 +74,7 @@ export class GithubService {
       return branches.find((branch) => branch.name === branchName);
     };
     const getLatestCommitOnMaster = async (branches) => {
-      const branch = branches.find((branch) => branch.name === "master");
+      const branch = branches.find((branch) => branch.name === "master"); //TODO: change to name of the branch to be created
       const response = await octokit.request(
         "GET /repos/{owner}/{repo}/commits/{ref}",
         {
@@ -98,6 +98,9 @@ export class GithubService {
         sha: latestCommitOnMaster.sha,
       },
     );
-    return response.data;
+    return {
+      message: "branch_created",
+      data: response.data,
+    };
   }
 }

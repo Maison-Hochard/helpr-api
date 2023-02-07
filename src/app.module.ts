@@ -23,6 +23,7 @@ import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
 import { NotionModule } from "./notion/notion.module";
+import { OpenaiModule } from "./openai/openai.module";
 
 export interface ServerResponse<T> {
   statusCode?: number;
@@ -71,6 +72,7 @@ export class ResponseInterceptor implements NestInterceptor {
     NotionModule,
     GithubModule,
     FlowModule,
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

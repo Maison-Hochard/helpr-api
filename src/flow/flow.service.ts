@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
 import { createFlowInput, Status, Trigger } from "./flow.type";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class FlowService {
@@ -10,6 +11,7 @@ export class FlowService {
     private prisma: PrismaService,
     private configService: ConfigService,
     private userService: UserService,
+    private authService: AuthService,
   ) {}
 
   async addFlow(userId: number, flowData: createFlowInput) {
@@ -25,6 +27,7 @@ export class FlowService {
     if (actions.length !== flowData.actions.length) {
       throw new BadRequestException("actions_not_found");
     }
+    const accessToken = await this.authService.createAccessToken(user);
     const flow = await this.prisma.flow.create({
       data: {
         name: flowData.name,
@@ -32,6 +35,7 @@ export class FlowService {
         userId: userId,
         trigger: flowData.trigger ? flowData.trigger : Trigger.EVERY_10_MINUTES,
         status: Status.STANDBY,
+        accessToken: accessToken,
       },
     });
     await this.prisma.flowAction.createMany({
@@ -71,7 +75,7 @@ export class FlowService {
   }
 
   async getFlowToRun(trigger: Trigger) {
-    return await this.prisma.flow.findMany({
+    const flows = await this.prisma.flow.findMany({
       where: {
         trigger: trigger,
         status: Status.READY,
@@ -85,6 +89,10 @@ export class FlowService {
         },
       },
     });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
   }
 
   async updateFlowStatus(flowId: number, status: Status) {
