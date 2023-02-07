@@ -23,8 +23,8 @@ export class OpenaiController {
   @Post("create-completion")
   async createCompletion(
     @CurrentUser() user: JwtPayload,
-    @Body() issue: createCompletionInput,
+    @Body() completion: createCompletionInput,
   ) {
-    return await this.openaiService.createCompletion(user.id, issue);
+    return await this.openaiService.createCompletion(user.id, completion);
   }
 }

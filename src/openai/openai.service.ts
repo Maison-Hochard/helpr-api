@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
-import { ProviderCredentials } from "@prisma/client";
 import { createCompletionInput, Model } from "./openai.type";
 import { Configuration, OpenAIApi } from "openai";
 
@@ -21,11 +20,8 @@ export class OpenaiService {
       apiKey: accessToken,
     });
     const openai = new OpenAIApi(configuration);
-    try {
-      await openai.listModels();
-    } catch (error) {
-      throw new BadRequestException("Invalid access token");
-    }
+    const testing_request = await openai.listModels();
+    if (!testing_request) throw new BadRequestException("Invalid access token");
     const response = await this.providerService.addCredentials(
       userId,
       "no_provider_id",
