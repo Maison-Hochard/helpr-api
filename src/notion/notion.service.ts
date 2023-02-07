@@ -20,45 +20,6 @@ export class NotionService {
     private providerService: ProviderService,
   ) {}
 
-  async handleWebhook(body: any) {
-    if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
-  }
-
-  /*  async createWebhook(userId: number, teamId: string) {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
-      userId,
-      "notion",
-      true,
-    );
-    const notionClient = new Client({
-      auth: accessToken,
-    });
-    const env = this.configService.get("env");
-    const webhookProdUrl =
-      this.configService.get("api_url") + "/notion/webhook";
-    const webhookDevUrl =
-      "https://eb3c-2a02-8440-5340-5e69-518c-252e-d6b3-5338.eu.ngrok.io/notion/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    console.log(finalUrl);
-    const response = await notionClient.createWebhook({
-      url: finalUrl,
-      resourceTypes: ["Issue"],
-      teamId: teamId,
-    });
-    return {
-      message: "webhook_created",
-      data: response,
-    };
-  }*/
-
   async createCredentials(
     userId: number,
     accessToken: string,
@@ -133,12 +94,17 @@ export class NotionService {
           },
         },
       ],
-      properties: {
-        Name: {
-          title: {},
+      description: [
+        {
+          type: "text",
+          text: {
+            content: createDatabaseInput.description,
+          },
         },
-        Description: {
-          rich_text: {},
+      ],
+      properties: {
+        title: {
+          title: {},
         },
       },
     });
@@ -160,9 +126,7 @@ export class NotionService {
       auth: accessToken,
     });
     await notionClient.pages.create({
-      parent: {
-        database_id: createItemInDatabaseInput.databaseId,
-      },
+      parent: { database_id: createItemInDatabaseInput.databaseId },
       properties: {
         title: {
           title: [
@@ -174,6 +138,22 @@ export class NotionService {
           ],
         },
       },
+      children: [
+        {
+          object: "block",
+          type: "paragraph",
+          paragraph: {
+            rich_text: [
+              {
+                type: "text",
+                text: {
+                  content: createItemInDatabaseInput.description,
+                },
+              },
+            ],
+          },
+        },
+      ],
     });
     return {
       message: "item_created",
