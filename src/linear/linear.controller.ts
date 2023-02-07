@@ -6,6 +6,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { LinearService } from "./linear.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { createIssueInput } from "./linear.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("linear")
@@ -19,28 +20,30 @@ export class LinearController {
   }
 
   @Post("create-webhook")
-  async createWebhook() {
-    const teamId = "34b08c67-0366-4cc0-8a32-07d481c045f1";
-    await this.linearService.createWebhook(
-      teamId,
-      "lin_api_OPD0XYHqsu9KSeRt64EAvdScbE8S7kK3UkAa2qGe",
-    );
+  async createWebhook(
+    @CurrentUser() user: JwtPayload,
+    @Body("teamId") teamId: string,
+  ) {
+    await this.linearService.createWebhook(user.id, teamId);
     return {
       message: "webhook_created",
     };
   }
 
-  @Get("user")
-  async getUser(@CurrentUser() user: JwtPayload) {
-    return await this.linearService.getUser(user.id);
-  }
-
-  @Post("credentials")
+  @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,
     @Body("accessToken") accessToken: string,
   ) {
     return await this.linearService.createCredentials(user.id, accessToken);
+  }
+
+  @Post("create-issue")
+  async createIssue(
+    @CurrentUser() user: JwtPayload,
+    @Body() issue: createIssueInput,
+  ) {
+    return await this.linearService.createIssue(user.id, issue);
   }
 
   @Get("teams")

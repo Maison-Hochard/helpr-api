@@ -6,7 +6,6 @@ import {
 import { UserService } from "../user/user.service";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-/*import { OAuth2Client } from "google-auth-library";*/
 import { User } from "@prisma/client";
 import { compare } from "../utils";
 import { PrismaService } from "../prisma.service";
@@ -17,13 +16,6 @@ export interface JwtPayload {
   email: string;
   username: string;
 }
-
-/*interface GooglePayload {
-  email: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-}*/
 
 @Injectable()
 export class AuthService {

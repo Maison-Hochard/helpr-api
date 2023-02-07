@@ -1,4 +1,10 @@
-import { Module } from "@nestjs/common";
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  Module,
+  NestInterceptor,
+} from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
@@ -13,6 +19,37 @@ import { StripeModule } from "./stripe/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
 import { ProviderModule } from "./provider/provider.module";
+import { catchError, Observable, of } from "rxjs";
+import { map } from "rxjs/operators";
+import { FlowModule } from "./flow/flow.module";
+
+export interface ServerResponse<T> {
+  statusCode?: number;
+  message: string;
+  data?: T;
+}
+
+@Injectable()
+export class ResponseInterceptor implements NestInterceptor {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<ServerResponse<any>> {
+    const statusCode = context.switchToHttp().getResponse().statusCode;
+    return next.handle().pipe(
+      map((data) => {
+        const message = data.message || "success";
+        const payload = data.data || data;
+        return { statusCode, message, data: payload };
+      }),
+      catchError((error) => {
+        const message = error.message || "unknown_error";
+        const statusCode = error.statusCode || 500;
+        return of({ statusCode, message, error });
+      }),
+    );
+  }
+}
 
 @Module({
   imports: [
@@ -31,6 +68,7 @@ import { ProviderModule } from "./provider/provider.module";
     ResetPasswordModule,
     StripeModule,
     GithubModule,
+    FlowModule,
   ],
   controllers: [AppController],
   providers: [AppService],

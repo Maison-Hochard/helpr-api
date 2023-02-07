@@ -3,6 +3,8 @@ import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
+import { decrypt, encrypt } from "../utils";
+import { createActionInput } from "./provider.type";
 
 @Injectable()
 export class ProviderService {
@@ -13,22 +15,73 @@ export class ProviderService {
     private userService: UserService,
   ) {}
 
-  async getCredentials(userId: number, provider: string | null) {
+  async getCredentials(userId: number) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("User not found");
-    if (!provider) {
-      return await this.prisma.providerCredentials.findMany({
-        where: {
-          userId: user.id,
-        },
-      });
-    } else {
-      return await this.prisma.providerCredentials.findMany({
-        where: {
-          userId: user.id,
-          provider: provider,
-        },
-      });
+    return await this.prisma.providerCredentials.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+  }
+
+  async getCredentialsByProvider(
+    userId: number,
+    provider: string,
+    decrypted = false,
+  ) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new BadRequestException("User not found");
+    const credentials = await this.prisma.providerCredentials.findFirst({
+      where: {
+        userId: user.id,
+        provider,
+      },
+    });
+    if (decrypted) {
+      credentials.accessToken = decrypt(credentials.accessToken);
     }
+    return credentials;
+  }
+
+  async addCredentials(
+    userId: number,
+    providerId: string,
+    provider: string,
+    accessToken: string,
+  ) {
+    return await this.prisma.providerCredentials.upsert({
+      where: {
+        providerId: providerId,
+      },
+      update: {
+        accessToken: encrypt(accessToken),
+      },
+      create: {
+        userId: userId,
+        providerId,
+        provider,
+        accessToken: encrypt(accessToken),
+      },
+    });
+  }
+
+  async addAction(createActionInput: createActionInput) {
+    const action = await this.prisma.action.create({
+      data: {
+        name: createActionInput.name,
+        provider: createActionInput.provider,
+        endpoint: createActionInput.endpoint,
+        description: createActionInput.description,
+      },
+    });
+    return {
+      message: "action_created",
+      data: action,
+    };
+  }
+
+  async getAvailableActions() {
+    return await this.prisma.action.findMany();
   }
 }
