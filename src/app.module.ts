@@ -18,6 +18,7 @@ import { config } from "../config";
 import { StripeModule } from "./stripe/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
+import { SlackModule } from "./slack/slack.module";
 import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
@@ -68,6 +69,7 @@ export class ResponseInterceptor implements NestInterceptor {
     ResetPasswordModule,
     StripeModule,
     GithubModule,
+    SlackModule,
     FlowModule,
   ],
   controllers: [AppController],
