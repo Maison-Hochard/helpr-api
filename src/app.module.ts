@@ -22,6 +22,7 @@ import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
+import { OpenaiModule } from "./openai/openai.module";
 
 export interface ServerResponse<T> {
   statusCode?: number;
@@ -69,6 +70,7 @@ export class ResponseInterceptor implements NestInterceptor {
     StripeModule,
     GithubModule,
     FlowModule,
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
