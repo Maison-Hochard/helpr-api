@@ -69,7 +69,7 @@ export class OpenaiService {
     });
     return {
       message: "completion_created",
-      completion: response.data.choices[0].text,
+      data: response.data.choices[0].text,
     };
   }
 }
