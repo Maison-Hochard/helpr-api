@@ -17,6 +17,7 @@ specifiers:
   '@nestjs/swagger': ^6.1.4
   '@nestjs/testing': ^9.0.0
   '@nestjs/typeorm': ^8.0.3
+  '@notionhq/client': ^2.2.3
   '@prisma/client': ^4.9.0
   '@types/cron': ^2.0.0
   '@types/crypto-js': ^4.1.1
@@ -76,6 +77,7 @@ dependencies:
   '@nestjs/schedule': 2.1.0_dntc3uqqknzoduyjojusds5kla
   '@nestjs/swagger': 6.1.4_4fhhxyztwhblafku3krlstrun4
   '@nestjs/typeorm': 8.1.4_hkapd3a3mi37wyf4vtt5y4i2ye
+  '@notionhq/client': 2.2.3
   '@prisma/client': 4.9.0_prisma@4.9.0
   '@types/cron': 2.0.0
   '@types/crypto-js': 4.1.1
@@ -1246,6 +1248,16 @@ packages:
       fastq: 1.15.0
     dev: true
 
+  /@notionhq/client/2.2.3:
+    resolution: {integrity: sha512-ZqUzY0iRg/LIrwS+wzz/6osSB2nxIpmqdAtdUwzpcimc9Jlu1j85FeYdaU26Shr193CFrl2TLFeKqpk/APRQ4g==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@types/node-fetch': 2.6.2
+      node-fetch: 2.6.8
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /@nuxtjs/opencollective/0.3.2:
     resolution: {integrity: sha512-um0xL3fO7Mf4fDxcqx9KryrB7zgRM5JSlvGN5AGkP6JLM5XEKyjeAiPbNxdXVXQ16isuAhYpvP88NgL2BGd6aA==}
     engines: {node: '>=8.0.0', npm: '>=5.0.0'}
@@ -1734,6 +1746,13 @@ packages:
 
   /@types/mime/3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
+
+  /@types/node-fetch/2.6.2:
+    resolution: {integrity: sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A==}
+    dependencies:
+      '@types/node': 16.18.11
+      form-data: 3.0.1
+    dev: false
 
   /@types/node/16.18.11:
     resolution: {integrity: sha512-3oJbGBUWuS6ahSnEq1eN2XrCyf4YsWI8OyCvo7c64zQJNplk3mO84t53o8lfTk+2ji59g5ycfc6qQ3fdHliHuA==}
@@ -3682,6 +3701,15 @@ packages:
       typescript: 4.9.4
       webpack: 5.75.0
     dev: true
+
+  /form-data/3.0.1:
+    resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
 
   /form-data/4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
