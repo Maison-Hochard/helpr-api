@@ -1,6 +1,14 @@
-export type createActionInput = {
+export type createProviderInput = {
   name: string;
-  provider: string;
-  endpoint: string;
   description: string;
+  logo: string;
+};
+
+export type createActionInput = {
+  title: string;
+
+  description: string;
+  endpoint: string;
+  name: string;
+  providerId: number;
 };

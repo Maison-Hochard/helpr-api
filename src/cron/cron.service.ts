@@ -27,11 +27,11 @@ export class CronService {
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
         const accessToken = flow.accessToken;
         for (const actions of flow.actions) {
-          const provider = actions.action.provider;
-          const endpoint = actions.action.name;
+          const endpoint = actions.action.endpoint;
+          const name = actions.action.name;
           const payload = JSON.parse(actions.payload);
           const apiUrl = this.configService.get("api_url");
-          const response = await fetch(`${apiUrl}/${provider}/${endpoint}`, {
+          const response = await fetch(`${apiUrl}/${endpoint}/${name}`, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {

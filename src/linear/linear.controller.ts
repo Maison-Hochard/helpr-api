@@ -24,10 +24,7 @@ export class LinearController {
     @CurrentUser() user: JwtPayload,
     @Body("teamId") teamId: string,
   ) {
-    await this.linearService.createWebhook(user.id, teamId);
-    return {
-      message: "webhook_created",
-    };
+    return await this.linearService.createWebhook(user.id, teamId);
   }
 
   @Post("add-credentials")

@@ -28,6 +28,7 @@ export class LinearService {
   }
 
   async handleWebhook(body: any) {
+    console.log(body);
     if (body.data) {
       const { title, number, labels, team } = body.data;
       const prefix = (
@@ -52,17 +53,15 @@ export class LinearService {
     const webhookProdUrl =
       this.configService.get("api_url") + "/linear/webhook";
     const webhookDevUrl =
-      "https://eb3c-2a02-8440-5340-5e69-518c-252e-d6b3-5338.eu.ngrok.io/linear/webhook";
+      "https://765d-78-126-205-77.eu.ngrok.io/linear/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    console.log(finalUrl);
-    const response = await linearClient.createWebhook({
+    await linearClient.createWebhook({
       url: finalUrl,
-      resourceTypes: ["Issue"],
+      resourceTypes: ["Issue", "Project"],
       teamId: teamId,
     });
     return {
       message: "webhook_created",
-      data: response,
     };
   }
 

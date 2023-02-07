@@ -38,7 +38,7 @@ export class FlowService {
         accessToken: accessToken,
       },
     });
-    await this.prisma.flowAction.createMany({
+    await this.prisma.flowActions.createMany({
       data: flowData.actions.map((action) => {
         return {
           actionId: action.id,

@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { decrypt, encrypt } from "../utils";
-import { createActionInput } from "./provider.type";
+import { createActionInput, createProviderInput } from "./provider.type";
 
 @Injectable()
 export class ProviderService {
@@ -14,6 +14,14 @@ export class ProviderService {
     private configService: ConfigService,
     private userService: UserService,
   ) {}
+
+  async getProviders() {
+    return await this.prisma.provider.findMany({
+      include: {
+        actions: true,
+      },
+    });
+  }
 
   async getCredentials(userId: number) {
     const user = await this.userService.getUserById(userId);
@@ -69,10 +77,11 @@ export class ProviderService {
   async addAction(createActionInput: createActionInput) {
     const action = await this.prisma.action.create({
       data: {
-        name: createActionInput.name,
-        provider: createActionInput.provider,
-        endpoint: createActionInput.endpoint,
+        title: createActionInput.title,
         description: createActionInput.description,
+        endpoint: createActionInput.endpoint,
+        name: createActionInput.name,
+        providerId: createActionInput.providerId,
       },
     });
     return {
@@ -81,7 +90,33 @@ export class ProviderService {
     };
   }
 
+  async addProvider(createProviderInput: createProviderInput) {
+    const provider = await this.prisma.provider.create({
+      data: {
+        name: createProviderInput.name,
+        description: createProviderInput.description,
+        logo: createProviderInput.logo,
+      },
+    });
+    return {
+      message: "provider_created",
+      data: provider,
+    };
+  }
+
   async getAvailableActions() {
     return await this.prisma.action.findMany();
+  }
+
+  async getUsersServices(userId: number) {
+    const services = await this.prisma.providerCredentials.findMany({
+      where: {
+        userId,
+      },
+    });
+    return {
+      message: "services_found",
+      data: services,
+    };
   }
 }
