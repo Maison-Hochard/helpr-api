@@ -50,7 +50,7 @@ export class NotionService {
     const notionClient = new Client({
       auth: accessToken,
     });
-    await notionClient.comments.create({
+    const response = await notionClient.comments.create({
       parent: {
         type: "page_id",
         page_id: createComment.pageId,
@@ -66,6 +66,7 @@ export class NotionService {
     });
     return {
       message: "comment_created",
+      data: response,
     };
   }
 
@@ -81,7 +82,7 @@ export class NotionService {
     const notionClient = new Client({
       auth: accessToken,
     });
-    await notionClient.databases.create({
+    const response = await notionClient.databases.create({
       parent: {
         type: "page_id",
         page_id: createDatabaseInput.pageId,
@@ -110,6 +111,7 @@ export class NotionService {
     });
     return {
       message: "database_created",
+      data: response,
     };
   }
 
@@ -125,7 +127,7 @@ export class NotionService {
     const notionClient = new Client({
       auth: accessToken,
     });
-    await notionClient.pages.create({
+    const response = await notionClient.pages.create({
       parent: { database_id: createItemInDatabaseInput.databaseId },
       properties: {
         title: {
@@ -157,6 +159,7 @@ export class NotionService {
     });
     return {
       message: "item_created",
+      data: response,
     };
   }
 }
