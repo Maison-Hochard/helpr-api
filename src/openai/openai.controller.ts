@@ -12,7 +12,6 @@ import { createCompletionInput } from "./openai.type";
 export class OpenaiController {
   constructor(private readonly openaiService: OpenaiService) {}
 
-  @Public()
   @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,

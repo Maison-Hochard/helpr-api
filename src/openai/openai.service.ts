@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
-import { createCompletionInput } from "./openai.type";
+import { createCompletionInput, Model } from "./openai.type";
 import { Configuration, OpenAIApi } from "openai";
 
 @Injectable()
@@ -16,19 +16,26 @@ export class OpenaiService {
     private providerService: ProviderService,
   ) {}
 
-  async createCredentials(
-    userId: number,
-    accessToken: string,
-  ): Promise<ProviderCredentials> {
+  async createCredentials(userId: number, accessToken: string) {
     const configuration = new Configuration({
       apiKey: accessToken,
     });
-    return await this.providerService.addCredentials(
+    const openai = new OpenAIApi(configuration);
+    try {
+      await openai.listModels();
+    } catch (error) {
+      throw new BadRequestException("Invalid access token");
+    }
+    const response = await this.providerService.addCredentials(
       userId,
-      configuration.baseOptions.id,
+      "no_provider_id",
       "openai",
       accessToken,
     );
+    return {
+      message: "credentials_created",
+      data: response,
+    };
   }
 
   async createCompletion(
@@ -48,9 +55,9 @@ export class OpenaiService {
     const openai = new OpenAIApi(configuration);
     const response = await openai.createCompletion({
       model:
-        createCompletionInput.model === 1
+        createCompletionInput.model === Model.Davinci
           ? davinci_model
-          : createCompletionInput.model === 2
+          : createCompletionInput.model === Model.Curie
           ? curie_model
           : davinci_model,
       prompt: createCompletionInput.prompt,
