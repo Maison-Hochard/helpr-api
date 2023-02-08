@@ -63,8 +63,8 @@ export class StripeController {
   @Post("create-link")
   async createLink(
     @CurrentUser() user: JwtPayload,
-    @Body() product: createLinkInput,
+    @Body() link: createLinkInput,
   ) {
-    return await this.stripeService.createLink(user.id, product);
+    return await this.stripeService.createLink(user.id, link);
   }
 }
