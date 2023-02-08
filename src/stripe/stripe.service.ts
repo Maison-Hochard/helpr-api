@@ -19,44 +19,57 @@ export class StripeService {
     private userService: UserService,
     private providerService: ProviderService,
   ) {}
-  /*
+
   async handleWebhook(body: any) {
     console.log(body);
     if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
+      const { object } = body.data;
+      switch (body.type) {
+        case "customer.created":
+          console.log("customer created");
+          break;
+        case "charge.succeeded":
+          console.log("charge succeeded");
+          break;
+        case "product.created":
+          console.log("product created");
+          break;
+        case "payment_link.created":
+          console.log("payment link created");
+          break;
+        default:
+          break;
+      }
     }
   }
 
-  async createWebhook(userId: number, teamId: string) {
+  async createWebhook(userId: number) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
-      "linear",
+      "stripe",
       true,
     );
-    const linearClient = new LinearClient({
-      apiKey: accessToken,
+    const stripeClient = new Stripe(accessToken, {
+      apiVersion: "2022-11-15",
     });
     const env = this.configService.get("env");
     const webhookProdUrl =
-      this.configService.get("api_url") + "/linear/webhook";
-    const webhookDevUrl =
-      "https://765d-78-126-205-77.eu.ngrok.io/linear/webhook";
+      this.configService.get("api_url") + "/stripe/webhook";
+    const webhookDevUrl = "https://a09d-163-5-23-73.eu.ngrok.io/stripe/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    await linearClient.createWebhook({
+    await stripeClient.webhookEndpoints.create({
       url: finalUrl,
-      resourceTypes: ["Issue", "Project"],
-      teamId: teamId,
+      enabled_events: [
+        "customer.created",
+        "charge.succeeded",
+        "product.created",
+        "payment_link.created",
+      ],
     });
     return {
       message: "webhook_created",
     };
-  }*/
+  }
 
   async createCredentials(userId: number, accessToken: string) {
     const stripe = new Stripe(accessToken, {

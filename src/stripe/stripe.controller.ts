@@ -10,25 +10,23 @@ import {
   createProductInput,
   createLinkInput,
 } from "./stripe.type";
+import { Public } from "../auth/decorators/public.decorator";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("stripe")
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
 
-  /*  @Public()
+  @Public()
   @Post("webhook")
   async webhook(@Body() body) {
     return await this.stripeService.handleWebhook(body);
   }
 
   @Post("create-webhook")
-  async createWebhook(
-    @CurrentUser() user: JwtPayload,
-    @Body("teamId") teamId: string,
-  ) {
-    return await this.stripeService.createWebhook(user.id, teamId);
-  }*/
+  async createWebhook(@CurrentUser() user: JwtPayload) {
+    return await this.stripeService.createWebhook(user.id);
+  }
 
   @Post("add-credentials")
   async createCredential(
