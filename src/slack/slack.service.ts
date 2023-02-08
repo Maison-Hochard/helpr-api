@@ -34,16 +34,10 @@ export class SlackService {
     const webhookDevUrl =
       "https://eb3c-2a02-8440-5340-5e69-518c-252e-d6b3-5338.eu.ngrok.io/slack/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    console.log(finalUrl);
-    const response = await slackClient({
-      url: finalUrl,
-      resourceTypes: ["Issue"],
-      teamId: teamId,
+    return await slackClient.conversations.create({
+      name: "webhook",
+      is_private: true,
     });
-    return {
-      message: "webhook_created",
-      data: response,
-    };
   }
   async postMessage(userId: number, webhookId: string, message: string) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
