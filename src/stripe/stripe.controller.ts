@@ -1,12 +1,15 @@
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-
-import { Public } from "../auth/decorators/public.decorator";
 import { StripeService } from "./stripe.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { createIssueInput } from "./stripe.type";
+import {
+  createCustomerInput,
+  createPaymentInput,
+  createProductInput,
+  createLinkInput,
+} from "./stripe.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("stripe")
@@ -35,11 +38,35 @@ export class StripeController {
     return await this.stripeService.createCredentials(user.id, accessToken);
   }
 
-  @Post("create-issue")
-  async createIssue(
+  @Post("create-customer")
+  async createCustomer(
     @CurrentUser() user: JwtPayload,
-    @Body() issue: createIssueInput,
+    @Body() customer: createCustomerInput,
   ) {
-    return await this.stripeService.createIssue(user.id, issue);
+    return await this.stripeService.createCustomer(user.id, customer);
+  }
+
+  @Post("create-payment")
+  async createPayment(
+    @CurrentUser() user: JwtPayload,
+    @Body() payment: createPaymentInput,
+  ) {
+    return await this.stripeService.createPayment(user.id, payment);
+  }
+
+  @Post("create-product")
+  async createProduct(
+    @CurrentUser() user: JwtPayload,
+    @Body() product: createProductInput,
+  ) {
+    return await this.stripeService.createProduct(user.id, product);
+  }
+
+  @Post("create-link")
+  async createLink(
+    @CurrentUser() user: JwtPayload,
+    @Body() product: createLinkInput,
+  ) {
+    return await this.stripeService.createLink(user.id, product);
   }
 }
