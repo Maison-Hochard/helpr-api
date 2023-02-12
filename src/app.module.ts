@@ -24,7 +24,9 @@ import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
 import { NotionModule } from "./notion/notion.module";
 import { OpenaiModule } from "./openai/openai.module";
-
+import { GmailModule } from "./google/gmail/gmail.module";
+import { CalendarModule } from "./google/calendar/calendar.module";
+import { GoogleModule } from "./google/google.module";
 export interface ServerResponse<T> {
   statusCode?: number;
   message: string;
@@ -73,6 +75,9 @@ export class ResponseInterceptor implements NestInterceptor {
     GithubModule,
     FlowModule,
     OpenaiModule,
+    GmailModule,
+    CalendarModule,
+    GoogleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
