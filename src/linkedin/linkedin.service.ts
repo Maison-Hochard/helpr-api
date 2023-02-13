@@ -1,12 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
-import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
-import { LinkedIn } from "linkedin-js";
-import * as linkedinJs from "linkedin-js";
 
 @Injectable()
 export class LinkedinService {
