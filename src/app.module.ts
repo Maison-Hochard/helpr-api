@@ -15,7 +15,7 @@ import { CronModule } from "./cron/cron.module";
 import { AuthModule } from "./auth/auth.module";
 import { ResetPasswordModule } from "./reset-password/reset-password.module";
 import { config } from "../config";
-import { StripeModule } from "./stripe/stripe.module";
+import { StripeModule } from "./stripe_service/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
 import { ProviderModule } from "./provider/provider.module";
