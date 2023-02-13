@@ -53,7 +53,10 @@ export class SheetService {
     };
   }*/
 
-  async createSheet(userId: number, createSheetInput: createSheetInput) {
+  async createSheet(
+    userId: number,
+    createSheetInput: createSheetInput,
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
@@ -83,7 +86,7 @@ export class SheetService {
   async updateSheet(
     userId: number,
     updateSheetTitleInput: updateSheetTitleInput,
-  ) {
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",

@@ -125,7 +125,7 @@ export class GmailService {
       },
     });
     return {
-      message: "sended_mail",
+      message: "send_mail",
       data: res,
     };
   }

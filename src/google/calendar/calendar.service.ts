@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma.service";
 import { UserService } from "../../user/user.service";
@@ -56,7 +56,7 @@ export class CalendarService {
   async createCalendar(
     userId: number,
     createCalendarInput: createCalendarInput,
-  ) {
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
@@ -83,7 +83,10 @@ export class CalendarService {
     };
   }
 
-  async createEvent(userId: number, createEventInput: createEventInput) {
+  async createEvent(
+    userId: number,
+    createEventInput: createEventInput,
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
