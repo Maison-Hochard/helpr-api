@@ -29,6 +29,8 @@ import { CalendarModule } from "./google/calendar/calendar.module";
 import { GoogleModule } from "./google/google.module";
 import { SheetModule } from "./google/sheet/sheet.module";
 import { DeeplModule } from "./deepl/deepl.module";
+import { LinkedinModule } from "./linkedin/linkedin.module";
+
 export interface ServerResponse<T> {
   statusCode?: number;
   message: string;
@@ -82,6 +84,7 @@ export class ResponseInterceptor implements NestInterceptor {
     GoogleModule,
     SheetModule,
     DeeplModule,
+    LinkedinModule,
   ],
   controllers: [AppController],
   providers: [AppService],
