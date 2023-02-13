@@ -63,9 +63,9 @@ export class CalendarService {
       true,
     );
     const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_CALLBACK_URL,
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
     );
     oauth2Client.setCredentials({ access_token: accessToken });
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
@@ -90,9 +90,9 @@ export class CalendarService {
       true,
     );
     const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_CALLBACK_URL,
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
     );
     oauth2Client.setCredentials({ access_token: accessToken });
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });

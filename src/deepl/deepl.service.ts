@@ -24,7 +24,7 @@ export class DeeplService {
       userId,
       "DEEPL_PROVIDER_ID",
       "deepl",
-      process.env.DEEPL_API_KEY,
+      this.configService.get("deepl.api_key"),
     );
   }
 
