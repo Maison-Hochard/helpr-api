@@ -27,6 +27,8 @@ import { OpenaiModule } from "./openai/openai.module";
 import { GmailModule } from "./google/gmail/gmail.module";
 import { CalendarModule } from "./google/calendar/calendar.module";
 import { GoogleModule } from "./google/google.module";
+import { SheetModule } from "./google/sheet/sheet.module";
+import { DeeplModule } from "./deepl/deepl.module";
 export interface ServerResponse<T> {
   statusCode?: number;
   message: string;
@@ -78,6 +80,8 @@ export class ResponseInterceptor implements NestInterceptor {
     GmailModule,
     CalendarModule,
     GoogleModule,
+    SheetModule,
+    DeeplModule,
   ],
   controllers: [AppController],
   providers: [AppService],
