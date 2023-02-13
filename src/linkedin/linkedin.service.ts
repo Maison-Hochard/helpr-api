@@ -16,43 +16,6 @@ export class LinkedinService {
     private userService: UserService,
     private providerService: ProviderService,
   ) {}
-
-  /*  async handleWebhook(body: any) {
-    console.log(body);
-    if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
-  }*/
-
-  /* async createWebhook(userId: number) {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
-      userId,
-      "linkedin",
-      true,
-    );
-    const linkedin = new LinkedIn({
-      apiKey: accessToken,
-    });
-    const env = this.configService.get("env");
-    const webhookProdUrl =
-      this.configService.get("api_url") + "/linkedin/webhook";
-    const webhookDevUrl =
-      "https://eb3c-2a02-8440-5340-5e69-518c-252e-d6b3-5338.eu.ngrok.io/linkedin/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    await linkedin.createWebhook({
-      url: finalUrl,
-    });
-    return {
-      message: "webhook_created",
-    };
-  }
-*/
   async postOnLinkedIn(userId: number, content: string) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,

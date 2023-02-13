@@ -12,18 +12,6 @@ import { createPostInput } from "./linkedin.type";
 @Controller("linkedin")
 export class LinkedinController {
   constructor(private readonly linkedinService: LinkedinService) {}
-  @Public()
-  /*  @Post("webhook")
-  async webhook(@Body() body) {
-    return await this.linkedinService.handleWebhook(body);
-  }
-  @Post("create-webhook")
-  async createWebhook(
-    @CurrentUser() user: JwtPayload,
-    @Body("teamId") teamId: string,
-  ) {
-    return await this.linkedinService.createWebhook(user.id);
-  }*/
   @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,
