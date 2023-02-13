@@ -17,7 +17,7 @@ export class LinkedinService {
     private providerService: ProviderService,
   ) {}
 
-  async handleWebhook(body: any) {
+  /*  async handleWebhook(body: any) {
     console.log(body);
     if (body.data) {
       const { title, number, labels, team } = body.data;
@@ -28,9 +28,9 @@ export class LinkedinService {
       const branchName = `${prefix}/${teamName}-${number}`;
       console.log(branchName);
     }
-  }
+  }*/
 
-  async createWebhook(userId: number, teamId: string) {
+  /* async createWebhook(userId: number) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linkedin",
@@ -52,7 +52,7 @@ export class LinkedinService {
       message: "webhook_created",
     };
   }
-
+*/
   async postOnLinkedIn(userId: number, content: string) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,

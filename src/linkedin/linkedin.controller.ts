@@ -13,7 +13,7 @@ import { createPostInput } from "./linkedin.type";
 export class LinkedinController {
   constructor(private readonly linkedinService: LinkedinService) {}
   @Public()
-  @Post("webhook")
+  /*  @Post("webhook")
   async webhook(@Body() body) {
     return await this.linkedinService.handleWebhook(body);
   }
@@ -22,9 +22,8 @@ export class LinkedinController {
     @CurrentUser() user: JwtPayload,
     @Body("teamId") teamId: string,
   ) {
-    return await this.linkedinService.createWebhook(user.id, teamId);
-  }
-
+    return await this.linkedinService.createWebhook(user.id);
+  }*/
   @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,
