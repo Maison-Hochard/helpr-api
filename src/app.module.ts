@@ -24,6 +24,11 @@ import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
 import { NotionModule } from "./notion/notion.module";
 import { OpenaiModule } from "./openai/openai.module";
+import { GmailModule } from "./google/gmail/gmail.module";
+import { CalendarModule } from "./google/calendar/calendar.module";
+import { GoogleModule } from "./google/google.module";
+import { SheetModule } from "./google/sheet/sheet.module";
+import { DeeplModule } from "./deepl/deepl.module";
 import { LinkedinModule } from "./linkedin/linkedin.module";
 
 export interface ServerResponse<T> {
@@ -74,6 +79,11 @@ export class ResponseInterceptor implements NestInterceptor {
     GithubModule,
     FlowModule,
     OpenaiModule,
+    GmailModule,
+    CalendarModule,
+    GoogleModule,
+    SheetModule,
+    DeeplModule,
     LinkedinModule,
   ],
   controllers: [AppController],
