@@ -17,6 +17,9 @@ export const config = () => ({
   stripe: {
     secret_key: process.env.STRIPE_SECRET_KEY,
   },
+  slack: {
+    bot_access_token: process.env.SLACK_BOT_ACCESS_TOKEN,
+  },
   frontend_url: process.env.FRONTEND_URL,
   api_url: process.env.API_URL,
   cookie_domain: process.env.COOKIE_DOMAIN,

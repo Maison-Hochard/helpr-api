@@ -1,46 +1,24 @@
-export type Team = {
-  id: string;
-  name: string;
-  projects: Project[];
+import { Body } from "@nestjs/common";
+
+export type createChannelInput = {
+  channelName: string;
+  is_private: boolean;
 };
 
-export type Project = {
-  id: string;
-  name: string;
+export type postMessage = {
+  channelId: string;
+  message: string;
 };
 
-export type Issue = {
-  id: string;
-  title: string;
-  number: number;
-  labels: Label[];
-  team: Team;
-};
-
-export type Label = {
-  id: string;
-  name: string;
-};
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string;
-  teams: {
-    nodes: Team[];
-  };
-};
-
-export type TeamResponse = {
-  teams: {
-    nodes: Team[];
-  };
-};
-
-export type createIssueInput = {
-  title: string;
-  description: string;
-  teamId: string;
-  userId: string;
+export type SlackCommand = {
+  token: string;
+  team_id: string;
+  team_domain: string;
+  channel_id: string;
+  channel_name: string;
+  user_id: string;
+  user_name: string;
+  command: string;
+  text: string;
+  response_url: string;
 };
