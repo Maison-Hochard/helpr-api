@@ -16,7 +16,7 @@ export class DeeplController {
     return await this.deeplService.createCredentials(user.id);
   }
 
-  @Post("translate-text")
+  @Post("translate")
   async translateText(
     @CurrentUser() user: JwtPayload,
     @Body() text: translateTextInput,

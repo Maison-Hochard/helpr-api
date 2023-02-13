@@ -17,6 +17,9 @@ export const config = () => ({
   stripe: {
     secret_key: process.env.STRIPE_SECRET_KEY,
   },
+  openai: {
+    api_key: process.env.OPENAI_API_KEY,
+  },
   frontend_url: process.env.FRONTEND_URL,
   api_url: process.env.API_URL,
   cookie_domain: process.env.COOKIE_DOMAIN,
