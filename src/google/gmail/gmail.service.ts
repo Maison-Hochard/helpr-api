@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma.service";
 import { UserService } from "../../user/user.service";
@@ -53,7 +53,10 @@ export class GmailService {
     };
   }*/
 
-  async createDrafts(userId: number, createDraftInput: createDraftInput) {
+  async createDrafts(
+    userId: number,
+    createDraftInput: createDraftInput,
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
@@ -90,7 +93,10 @@ export class GmailService {
     };
   }
 
-  async sendMail(userId: number, createMailInput: createMailInput) {
+  async sendMail(
+    userId: number,
+    createMailInput: createMailInput,
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
