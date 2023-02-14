@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { FlowService } from "./flow.service";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
@@ -8,6 +8,7 @@ import { AuthModule } from "../auth/auth.module";
 import { AuthService } from "../auth/auth.service";
 import { JwtService } from "@nestjs/jwt";
 
+@Global()
 @Module({
   imports: [AuthModule],
   controllers: [FlowController],

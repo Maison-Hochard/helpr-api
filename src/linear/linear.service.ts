@@ -6,6 +6,7 @@ import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
 import { createIssueInput } from "./linear.type";
+import { FlowService } from "../flow/flow.service";
 
 @Injectable()
 export class LinearService {
@@ -14,6 +15,7 @@ export class LinearService {
     private configService: ConfigService,
     private userService: UserService,
     private providerService: ProviderService,
+    private flowService: FlowService,
   ) {}
 
   async getTeams(accessToken: string) {
@@ -28,8 +30,25 @@ export class LinearService {
   }
 
   async handleWebhook(body: any) {
-    console.log(body);
-    if (body.data) {
+    if (body.action === "create" && body.type === "Issue") {
+      const user = await this.userService.getUserByProviderId(
+        body.data.subscriberIds[0],
+      );
+      const linear_ticket_title = body.data.title;
+      const linear_ticket_description = body.data.description;
+      const linear_team_id = body.data.teamId;
+      await this.flowService.addOrUpdateWebhookData({
+        userId: user.id,
+        provider: "linear",
+        type: "linear_issue_created",
+        data: JSON.stringify({
+          linear_ticket_title,
+          linear_ticket_description,
+          linear_team_id,
+        }),
+      });
+    }
+    /*if (body.data) {
       const { title, number, labels, team } = body.data;
       const prefix = (
         labels && labels[0].name ? labels[0].name : "feature"
@@ -37,7 +56,7 @@ export class LinearService {
       const teamName = (team && team.name ? team.name : title).toLowerCase();
       const branchName = `${prefix}/${teamName}-${number}`;
       console.log(branchName);
-    }
+    }*/
   }
 
   async createWebhook(userId: number, teamId: string) {
@@ -53,7 +72,7 @@ export class LinearService {
     const webhookProdUrl =
       this.configService.get("api_url") + "/linear/webhook";
     const webhookDevUrl =
-      "https://765d-78-126-205-77.eu.ngrok.io/linear/webhook";
+      "https://81a2-78-126-205-77.eu.ngrok.io/linear/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
     await linearClient.createWebhook({
       url: finalUrl,

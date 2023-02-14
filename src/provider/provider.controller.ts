@@ -4,7 +4,11 @@ import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { ProviderService } from "./provider.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { createActionInput, createProviderInput } from "./provider.type";
+import {
+  createActionInput,
+  createProviderInput,
+  createTriggerInput,
+} from "./provider.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("provider")
@@ -40,8 +44,13 @@ export class ProviderController {
     return this.providerService.addProvider(provider);
   }
 
-  @Post("/add-action")
-  async addAction(@Body() action: createActionInput) {
-    return this.providerService.addAction(action);
+  @Post("/action")
+  async createOrUpdateAction(@Body() action: createActionInput) {
+    return this.providerService.createOrUpdateAction(action);
+  }
+
+  @Post("/add-trigger")
+  async addTrigger(@Body() trigger: createTriggerInput) {
+    return this.providerService.addTrigger(trigger);
   }
 }
