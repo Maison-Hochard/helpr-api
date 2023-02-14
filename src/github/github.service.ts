@@ -93,55 +93,34 @@ export class GithubService {
 
   async createBranch(
     userId: number,
-    accessToken: string,
     repo: string,
     branchName: string,
+    fromBranchName: string,
   ) {
-    const octokit = new Octokit({
-      auth: accessToken,
-    });
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
+    const octokit = new Octokit({ auth: accessToken });
     const user = await this.getUser(userId, accessToken);
-    const getBranches = async () => {
-      const response = await octokit.request(
-        "GET /repos/{owner}/{repo}/branches",
-        {
-          owner: user.login,
-          repo: repo,
-        },
-      );
-      return response.data;
+    const { data: latestCommit } = await octokit.rest.repos.getBranch({
+      owner: user.login,
+      repo,
+      branch: fromBranchName,
+    });
+
+    branchName = branchName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
+
+    const { data: newBranch } = await octokit.rest.git.createRef({
+      owner: user.login,
+      repo,
+      ref: `refs/heads/${branchName}`,
+      sha: latestCommit.commit.sha,
+    });
+
+    return {
+      message: "branch_created",
     };
-    const checkBranchName = (branchName, branches) => {
-      return branches.find((branch) => branch.name === branchName);
-    };
-    const getLatestCommitOnMaster = async (branches) => {
-      const branch = branches.find((branch) => branch.name === "master");
-      const response = await octokit.request(
-        "GET /repos/{owner}/{repo}/commits/{ref}",
-        {
-          owner: user.login,
-          repo: repo,
-          ref: branch.commit.sha,
-        },
-      );
-      return response.data;
-    };
-    const branches = await getBranches();
-    if (checkBranchName(branchName, branches))
-      throw new BadRequestException("Branch already exists");
-    const latestCommitOnMaster = await getLatestCommitOnMaster(branches);
-    const createBranch = async () => {
-      const response = await octokit.request(
-        "POST /repos/{owner}/{repo}/git/refs",
-        {
-          owner: user.login,
-          repo: repo,
-          ref: `refs/heads/${branchName}`,
-          sha: latestCommitOnMaster.sha,
-        },
-      );
-      return response.data;
-    };
-    return await createBranch();
   }
 }

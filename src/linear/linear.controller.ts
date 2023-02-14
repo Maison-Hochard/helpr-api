@@ -35,7 +35,7 @@ export class LinearController {
     return await this.linearService.createCredentials(user.id, accessToken);
   }
 
-  @Post("create-issue")
+  @Post("create-ticket")
   async createIssue(
     @CurrentUser() user: JwtPayload,
     @Body() issue: createIssueInput,

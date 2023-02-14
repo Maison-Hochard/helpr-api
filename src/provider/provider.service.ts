@@ -4,7 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { decrypt, encrypt } from "../utils";
-import { createActionInput, createProviderInput } from "./provider.type";
+import {
+  createActionInput,
+  createProviderInput,
+  createTriggerInput,
+} from "./provider.type";
 
 @Injectable()
 export class ProviderService {
@@ -18,7 +22,12 @@ export class ProviderService {
   async getProviders() {
     return await this.prisma.provider.findMany({
       include: {
-        actions: true,
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: true,
       },
     });
   }
@@ -74,9 +83,19 @@ export class ProviderService {
     });
   }
 
-  async addAction(createActionInput: createActionInput) {
-    const action = await this.prisma.action.create({
-      data: {
+  async createOrUpdateAction(createActionInput: createActionInput) {
+    const action = await this.prisma.action.upsert({
+      where: {
+        name: createActionInput.name,
+      },
+      update: {
+        title: createActionInput.title,
+        description: createActionInput.description,
+        endpoint: createActionInput.endpoint,
+        name: createActionInput.name,
+        providerId: createActionInput.providerId,
+      },
+      create: {
         title: createActionInput.title,
         description: createActionInput.description,
         endpoint: createActionInput.endpoint,
@@ -84,9 +103,34 @@ export class ProviderService {
         providerId: createActionInput.providerId,
       },
     });
+    const variables = await this.prisma.actionVariables.createMany({
+      data: createActionInput.variables.map((variable) => {
+        return {
+          name: variable.name,
+          value: variable.value,
+          actionId: action.id,
+        };
+      }),
+    });
     return {
       message: "action_created",
       data: action,
+    };
+  }
+
+  async addTrigger(createTriggerInput: createTriggerInput) {
+    const trigger = await this.prisma.trigger.create({
+      data: {
+        name: createTriggerInput.name,
+        description: createTriggerInput.description,
+        value: createTriggerInput.value,
+        provider: createTriggerInput.provider,
+        providerId: createTriggerInput.providerId,
+      },
+    });
+    return {
+      message: "trigger_created",
+      data: trigger,
     };
   }
 
@@ -105,7 +149,11 @@ export class ProviderService {
   }
 
   async getAvailableActions() {
-    return await this.prisma.action.findMany();
+    return await this.prisma.action.findMany({
+      include: {
+        variables: true,
+      },
+    });
   }
 
   async getUsersServices(userId: number) {
