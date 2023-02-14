@@ -78,6 +78,7 @@ export class LinearService {
       url: finalUrl,
       resourceTypes: ["Issue", "Project"],
       teamId: teamId,
+      label: "Helpr " + env + " webhook - " + new Date().toISOString(),
     });
     return {
       message: "webhook_created",
