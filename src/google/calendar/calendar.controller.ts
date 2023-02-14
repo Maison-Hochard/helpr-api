@@ -12,19 +12,16 @@ import { createCalendarInput, createEventInput } from "./calendar.type";
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
-  /*  @Public()
+  @Public()
   @Post("webhook")
   async webhook(@Body() body) {
     return await this.calendarService.handleWebhook(body);
   }
 
   @Post("create-webhook")
-  async createWebhook(
-    @CurrentUser() user: JwtPayload,
-    @Body("teamId") teamId: string,
-  ) {
-    return await this.calendarService.createWebhook(user.id, teamId);
-  }*/
+  async createWebhook(@CurrentUser() user: JwtPayload) {
+    return await this.calendarService.createWebhook(user.id);
+  }
 
   @Post("create-calendar")
   async createCalendar(

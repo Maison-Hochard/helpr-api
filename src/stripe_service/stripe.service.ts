@@ -55,7 +55,8 @@ export class StripeService {
     const env = this.configService.get("env");
     const webhookProdUrl =
       this.configService.get("api_url") + "/stripe/webhook";
-    const webhookDevUrl = "https://a09d-163-5-23-73.eu.ngrok.io/stripe/webhook";
+    const webhookDevUrl =
+      "https://c915-78-126-205-77.eu.ngrok.io/stripe/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
     await stripeClient.webhookEndpoints.create({
       url: finalUrl,

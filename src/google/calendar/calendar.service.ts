@@ -15,43 +15,43 @@ export class CalendarService {
     private providerService: ProviderService,
   ) {}
 
-  /*  async handleWebhook(body: any) {
+  async handleWebhook(body: any): Promise<any> {
     console.log(body);
-    if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
+    /* Body is empty */
   }
 
-  async createWebhook(userId: number, teamId: string) {
+  async createWebhook(userId: number): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
-      "sheet",
+      "google",
       true,
     );
-    const sheetClient = new LinearClient({
-      apiKey: accessToken,
-    });
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
+    );
+    oauth2Client.setCredentials({ access_token: accessToken });
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
     const env = this.configService.get("env");
     const webhookProdUrl =
-      this.configService.get("api_url") + "/sheet/webhook";
+      this.configService.get("api_url") + "/calendar/webhook";
     const webhookDevUrl =
-      "https://765d-78-126-205-77.eu.ngrok.io/sheet/webhook";
+      "https://c915-78-126-205-77.eu.ngrok.io/calendar/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    await sheetClient.createWebhook({
-      url: finalUrl,
-      resourceTypes: ["Issue", "Project"],
-      teamId: teamId,
+    const res = await calendar.events.watch({
+      calendarId: "primary",
+      requestBody: {
+        id: userId.toString(),
+        type: "web_hook",
+        address: finalUrl,
+      },
     });
     return {
       message: "webhook_created",
+      data: res,
     };
-  }*/
+  }
 
   async createCalendar(
     userId: number,

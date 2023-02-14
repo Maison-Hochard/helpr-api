@@ -10,28 +10,25 @@ import { createDraftInput, createMailInput } from "./gmail.type";
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("gmail")
 export class GmailController {
-  constructor(private readonly sheetService: GmailService) {}
+  constructor(private readonly gmailService: GmailService) {}
 
-  /*  @Public()
+  @Public()
   @Post("webhook")
   async webhook(@Body() body) {
-    return await this.sheetService.handleWebhook(body);
+    return await this.gmailService.handleWebhook(body);
   }
 
   @Post("create-webhook")
-  async createWebhook(
-    @CurrentUser() user: JwtPayload,
-    @Body("teamId") teamId: string,
-  ) {
-    return await this.sheetService.createWebhook(user.id, teamId);
-  }*/
+  async createWebhook(@CurrentUser() user: JwtPayload) {
+    return await this.gmailService.createWebhook(user.id);
+  }
 
   @Post("create-draft")
   async createDrafts(
     @CurrentUser() user: JwtPayload,
     @Body() draft: createDraftInput,
   ) {
-    return await this.sheetService.createDrafts(user.id, draft);
+    return await this.gmailService.createDrafts(user.id, draft);
   }
 
   @Post("send-mail")
@@ -39,6 +36,6 @@ export class GmailController {
     @CurrentUser() user: JwtPayload,
     @Body() mail: createMailInput,
   ) {
-    return await this.sheetService.sendMail(user.id, mail);
+    return await this.gmailService.sendMail(user.id, mail);
   }
 }
