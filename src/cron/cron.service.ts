@@ -35,7 +35,7 @@ export class CronService {
     return payload;
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  // @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
     const { data: flows } = await this.flowService.getFlowToRun(
       Trigger.INSTANT,
