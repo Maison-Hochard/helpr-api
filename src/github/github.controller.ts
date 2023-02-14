@@ -39,12 +39,14 @@ export class GithubController {
   async createBranch(
     @CurrentUser() user: JwtPayload,
     @Body("repo") repo: string,
-    @Body("branch") branch: string,
-    @Body("name") name: string,
+    @Body("newBranch") newBranch: string,
+    @Body("fromBranch") fromBranch: string,
   ) {
-    return await this.githubService.createBranch(user.id, repo, branch, name);
+    return await this.githubService.createBranch(
+      user.id,
+      repo,
+      newBranch,
+      fromBranch,
+    );
   }
-
-  @Get("teams")
-  async getTeams(@Body("accessToken") accessToken: string) {}
 }
