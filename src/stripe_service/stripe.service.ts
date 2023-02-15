@@ -10,6 +10,7 @@ import {
   createLinkInput,
 } from "./stripe.type";
 import { Stripe } from "stripe";
+import { FlowService } from "../flow/flow.service";
 
 @Injectable()
 export class StripeService {
@@ -18,23 +19,78 @@ export class StripeService {
     private configService: ConfigService,
     private userService: UserService,
     private providerService: ProviderService,
+    private flowService: FlowService,
   ) {}
 
   async handleWebhook(body: any) {
     console.log(body);
     if (body.data) {
-      const { object } = body.data;
       switch (body.type) {
         case "customer.created":
+          const user = await this.userService.getUserByProviderId(body.data.id);
+          const customer_name = body.data.object.name;
+          const customer_email = body.data.object.email;
+          const customer_phone = body.data.object.phone;
+          await this.flowService.addOrUpdateWebhookData({
+            userId: user.id,
+            provider: "stripe",
+            type: "customer_created",
+            data: JSON.stringify({
+              customer_name,
+              customer_email,
+              customer_phone,
+            }),
+          });
           console.log("customer created");
           break;
         case "charge.succeeded":
-          console.log("charge succeeded");
+          const charge_amount = body.data.object.amount;
+          const charge_currency = body.data.object.currency;
+          const charge_customer = body.data.object.customer;
+          const charge_description = body.data.object.description;
+          await this.flowService.addOrUpdateWebhookData({
+            userId: user.id,
+            provider: "stripe",
+            type: "payment_created",
+            data: JSON.stringify({
+              charge_amount,
+              charge_currency,
+              charge_customer,
+              charge_description,
+            }),
+          });
+          console.log("payment created");
           break;
         case "product.created":
+          const product_name = body.data.object.name;
+          const product_description = body.data.object.description;
+          const product_price = body.data.object.price; // NO PRICE
+          const product_currency = body.data.object.currency; // NO CURRENCY
+          await this.flowService.addOrUpdateWebhookData({
+            userId: user.id,
+            provider: "stripe",
+            type: "product_created",
+            data: JSON.stringify({
+              product_name,
+              product_description,
+              product_price,
+              product_currency,
+            }),
+          });
           console.log("product created");
           break;
         case "payment_link.created":
+          const link_price = body.data.object.price; // NO PRICE
+          const link_quantity = body.data.object.quantity; // NO QUANTITY
+          await this.flowService.addOrUpdateWebhookData({
+            userId: user.id,
+            provider: "stripe",
+            type: "payment_link_created",
+            data: JSON.stringify({
+              link_price,
+              link_quantity,
+            }),
+          });
           console.log("payment link created");
           break;
         default:
@@ -55,8 +111,7 @@ export class StripeService {
     const env = this.configService.get("env");
     const webhookProdUrl =
       this.configService.get("api_url") + "/stripe/webhook";
-    const webhookDevUrl =
-      "https://c915-78-126-205-77.eu.ngrok.io/stripe/webhook";
+    const webhookDevUrl = "https://9a0d-163-5-23-73.eu.ngrok.io/stripe/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
     await stripeClient.webhookEndpoints.create({
       url: finalUrl,
