@@ -92,7 +92,7 @@ model Flow {
 
 model Provider {
   id          Int       @id @default(autoincrement())
-  name        String
+  name        String    @unique
   description String
   logo        String
   createdAt   DateTime  @default(now())
@@ -131,7 +131,7 @@ model FlowActions {
 model Trigger {
   id          Int       @id @default(autoincrement())
   provider    String
-  name        String
+  name        String    @unique
   description String
   value       String
   createdAt   DateTime  @default(now())

@@ -103,7 +103,7 @@ export class ProviderService {
         providerId: createActionInput.providerId,
       },
     });
-    const variables = await this.prisma.actionVariables.createMany({
+    await this.prisma.actionVariables.createMany({
       data: createActionInput.variables.map((variable) => {
         return {
           name: variable.name,
@@ -112,15 +112,22 @@ export class ProviderService {
         };
       }),
     });
-    return {
-      message: "action_created",
-      data: action,
-    };
+    return action;
   }
 
-  async addTrigger(createTriggerInput: createTriggerInput) {
-    const trigger = await this.prisma.trigger.create({
-      data: {
+  async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
+    return await this.prisma.trigger.upsert({
+      where: {
+        name: createTriggerInput.name,
+      },
+      update: {
+        name: createTriggerInput.name,
+        description: createTriggerInput.description,
+        value: createTriggerInput.value,
+        provider: createTriggerInput.provider,
+        providerId: createTriggerInput.providerId,
+      },
+      create: {
         name: createTriggerInput.name,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
@@ -128,24 +135,24 @@ export class ProviderService {
         providerId: createTriggerInput.providerId,
       },
     });
-    return {
-      message: "trigger_created",
-      data: trigger,
-    };
   }
 
-  async addProvider(createProviderInput: createProviderInput) {
-    const provider = await this.prisma.provider.create({
-      data: {
+  async createOrUpdateProvider(createProviderInput: createProviderInput) {
+    return await this.prisma.provider.upsert({
+      where: {
+        name: createProviderInput.name,
+      },
+      update: {
+        name: createProviderInput.name,
+        description: createProviderInput.description,
+        logo: createProviderInput.logo,
+      },
+      create: {
         name: createProviderInput.name,
         description: createProviderInput.description,
         logo: createProviderInput.logo,
       },
     });
-    return {
-      message: "provider_created",
-      data: provider,
-    };
   }
 
   async getAvailableActions() {
@@ -156,15 +163,36 @@ export class ProviderService {
     });
   }
 
-  async getUsersServices(userId: number) {
-    const services = await this.prisma.providerCredentials.findMany({
+  async getAvailableTriggers() {
+    return await this.prisma.trigger.findMany();
+  }
+
+  async getUserProviders(userId: number) {
+    const providersCredentials = await this.prisma.providerCredentials.findMany(
+      {
+        where: {
+          userId,
+        },
+      },
+    );
+    return await this.prisma.provider.findMany({
       where: {
-        userId,
+        name: {
+          in: providersCredentials.map(
+            (provider) =>
+              provider.provider.charAt(0).toUpperCase() +
+              provider.provider.slice(1),
+          ),
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: true,
       },
     });
-    return {
-      message: "services_found",
-      data: services,
-    };
   }
 }

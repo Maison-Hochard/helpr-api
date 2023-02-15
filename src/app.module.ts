@@ -46,9 +46,7 @@ export class ResponseInterceptor implements NestInterceptor {
     const statusCode = context.switchToHttp().getResponse().statusCode;
     return next.handle().pipe(
       map((data) => {
-        const message = data.message || "success";
-        const payload = data.data || data;
-        return { statusCode, message, data: payload };
+        return { statusCode, message: "success", data };
       }),
       catchError((error) => {
         const message = error.message || "unknown_error";

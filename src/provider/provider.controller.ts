@@ -9,7 +9,9 @@ import {
   createProviderInput,
   createTriggerInput,
 } from "./provider.type";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Provider")
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("provider")
 export class ProviderController {
@@ -27,30 +29,31 @@ export class ProviderController {
 
   @Get("/get-available-actions")
   async getAvailableActions() {
-    const actions = await this.providerService.getAvailableActions();
-    return {
-      message: "actions_found",
-      data: actions,
-    };
+    return await this.providerService.getAvailableActions();
   }
 
-  @Get("/user-services")
-  async getUsersServices(@CurrentUser() user: JwtPayload) {
-    return this.providerService.getUsersServices(user.id);
+  @Get("/get-available-triggers")
+  async getAvailableTriggers() {
+    return await this.providerService.getAvailableTriggers();
   }
 
-  @Post("/add-provider")
-  async addProvider(@Body() provider: createProviderInput) {
-    return this.providerService.addProvider(provider);
+  @Get("/user")
+  async getUserProviders(@CurrentUser() user: JwtPayload) {
+    return this.providerService.getUserProviders(user.id);
+  }
+
+  @Post("/provider")
+  async manageProvider(@Body() provider: createProviderInput) {
+    return this.providerService.createOrUpdateProvider(provider);
   }
 
   @Post("/action")
-  async createOrUpdateAction(@Body() action: createActionInput) {
+  async manageAction(@Body() action: createActionInput) {
     return this.providerService.createOrUpdateAction(action);
   }
 
-  @Post("/add-trigger")
-  async addTrigger(@Body() trigger: createTriggerInput) {
-    return this.providerService.addTrigger(trigger);
+  @Post("/trigger")
+  async manageTrigger(@Body() trigger: createTriggerInput) {
+    return this.providerService.createOrUpdateTrigger(trigger);
   }
 }
