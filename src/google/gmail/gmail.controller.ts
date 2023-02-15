@@ -14,8 +14,8 @@ export class GmailController {
 
   @Public()
   @Post("webhook")
-  async webhook(@Body() body) {
-    return await this.gmailService.handleWebhook(body);
+  async webhook() {
+    return await this.gmailService.handleWebhook();
   }
 
   @Post("create-webhook")

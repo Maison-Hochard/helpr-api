@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.5",
+    "@google-cloud/pubsub": "^3.3.0",
     "@linear/sdk": "^2.1.0",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
