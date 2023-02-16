@@ -23,6 +23,9 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@apollo/client": "^3.7.5",
     "@linear/sdk": "^2.1.0",

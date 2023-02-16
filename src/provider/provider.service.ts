@@ -27,7 +27,11 @@ export class ProviderService {
             variables: true,
           },
         },
-        triggers: true,
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
       },
     });
   }
@@ -102,15 +106,6 @@ export class ProviderService {
         name: createActionInput.name,
         providerId: createActionInput.providerId,
       },
-    });
-    await this.prisma.actionVariables.createMany({
-      data: createActionInput.variables.map((variable) => {
-        return {
-          name: variable.name,
-          value: variable.value,
-          actionId: action.id,
-        };
-      }),
     });
     return action;
   }

@@ -25,23 +25,23 @@ model User {
   id                  Int                   @id @default(autoincrement())
   avatar              String                @default("https://storage.cloud.google.com/helpr/default-avatar.jpeg")
   emailVerification   EmailVerification[]
-  Flow                Flow[]
-  ProviderCredentials ProviderCredentials[]
+  flow                Flow[]
+  providerCredentials ProviderCredentials[]
   resetPassword       ResetPassword[]
-  Subscription        Subscription[]
-  Providers           Provider[]
+  subscription        Subscription[]
+  providers           Provider[]
   providerId          Int?
-  webhookData         WebhookData[]
 }
 
 model ProviderCredentials {
-  id          Int    @id @default(autoincrement())
-  providerId  String @unique
-  provider    String
-  accessToken String
-  userId      Int
-  expiresAt   Int?
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           Int     @id @default(autoincrement())
+  providerId   String  @unique
+  provider     String
+  accessToken  String
+  refreshToken String?
+  userId       Int
+  expiresAt    Int?
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -75,19 +75,20 @@ model EmailVerification {
 }
 
 model Flow {
-  id          Int           @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   name        String
   description String?
   accessToken String
-  enabled     Boolean       @default(true)
-  status      Int           @default(1)
+  enabled     Boolean         @default(true)
+  status      Int             @default(1)
   userId      Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?     @updatedAt
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  actions     FlowActions[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime?       @updatedAt
   triggerId   Int
-  trigger     Trigger       @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+  trigger     Trigger         @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+  actions     FlowActions[]
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variables   FlowVariables[]
 }
 
 model Provider {
@@ -103,17 +104,17 @@ model Provider {
 }
 
 model Action {
-  id          Int               @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
   description String
   endpoint    String
-  name        String            @unique
+  name        String        @unique
   providerId  Int
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime?         @updatedAt
-  provider    Provider          @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  provider    Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
   flows       FlowActions[]
-  variables   ActionVariables[]
+  variables   Variables[]
 }
 
 model FlowActions {
@@ -129,35 +130,37 @@ model FlowActions {
 }
 
 model Trigger {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   provider    String
-  name        String    @unique
+  name        String      @unique
   description String
   value       String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  flows       Flow[]
-  Provider    Provider  @relation(fields: [providerId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime?   @updatedAt
+  Provider    Provider    @relation(fields: [providerId], references: [id])
   providerId  Int
+  flows       Flow[]
+  variables   Variables[]
 }
 
-model ActionVariables {
+model Variables {
+  id        Int       @id @default(autoincrement())
+  title     String
+  name      String
+  value     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  actions   Action[]
+  trigger   Trigger?  @relation(fields: [triggerId], references: [id])
+  triggerId Int?
+}
+
+model FlowVariables {
   id        Int       @id @default(autoincrement())
   name      String
   value     String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  actionId  Int
-  action    Action    @relation(fields: [actionId], references: [id], onDelete: Cascade)
-}
-
-model WebhookData {
-  id        Int       @id @default(autoincrement())
-  provider  String
-  type      String    @unique
-  data      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flowId    Int?
+  flow      Flow?     @relation(fields: [flowId], references: [id])
 }

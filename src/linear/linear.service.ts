@@ -37,7 +37,7 @@ export class LinearService {
       const linear_ticket_title = body.data.title;
       const linear_ticket_description = body.data.description;
       const linear_team_id = body.data.teamId;
-      await this.flowService.addOrUpdateWebhookData({
+      /*await this.flowService.addOrUpdateWebhookData({
         userId: user.id,
         provider: "linear",
         type: "linear_issue_created",
@@ -46,7 +46,7 @@ export class LinearService {
           linear_ticket_description,
           linear_team_id,
         }),
-      });
+      });*/
     }
     /*if (body.data) {
       const { title, number, labels, team } = body.data;

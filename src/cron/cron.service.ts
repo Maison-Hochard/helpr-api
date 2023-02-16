@@ -48,14 +48,14 @@ export class CronService {
         console.log("Running flow: ", flow.name);
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
         const accessToken = flow.accessToken;
-        const { data: webhookData } = await this.flowService.getWebhookData(
+        /*const { data: webhookData } = await this.flowService.getWebhookData(
           flow.userId,
           flow.trigger.value,
-        );
+        );*/
         const variables = [];
-        if (webhookData) {
+        /*if (webhookData) {
           variables.push(JSON.parse(webhookData.data));
-        }
+        }*/
         for (const actions of flow.actions) {
           const endpoint = actions.action.endpoint;
           const name = actions.action.name;
