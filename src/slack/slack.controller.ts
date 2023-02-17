@@ -6,7 +6,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { SlackService } from "./slack.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { SlackCommand, postMessage, createChannelInput } from "./slack.type";
+import { SlackCommandInput, postMessageInput, createChannelInput } from "./slack.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("slack")
@@ -14,7 +14,7 @@ export class SlackController {
   constructor(private readonly slackService: SlackService) {}
 
   @Post("post-message")
-  async postMessage(@Body() postMessage: postMessage) {
+  async postMessage(@Body() postMessage: postMessageInput) {
     return await this.slackService.postMessage(postMessage);
   }
 
@@ -22,8 +22,8 @@ export class SlackController {
   async createChannel(@Body() createChannelInput: createChannelInput) {
     return await this.slackService.createChannel(createChannelInput);
   }
-  @Post("command")
-  async handleSlackCommand(@Body() slackCommand: SlackCommand) {
-    return await this.slackService.handleSlackCommand(slackCommand);
-  }
+  // @Post("command")
+  // async handleSlackCommand(@Body() slackCommand: SlackCommand) {
+  //   return await this.slackService.handleSlackCommand(slackCommand);
+  // }
 }

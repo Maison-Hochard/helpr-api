@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service";
 import { WebClient } from "@slack/web-api";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
-import { SlackCommand, postMessage, createChannelInput } from "./slack.type";
+import { SlackCommandInput, postMessageInput, createChannelInput } from "./slack.type";
 
 @Injectable()
 export class SlackService {
@@ -19,15 +19,13 @@ export class SlackService {
     this.slackClient = new WebClient(bot_token);
   }
 
-  // Post message fonctionne mais error code 500 s'affiche quand on test
-  async postMessage(postMessage: postMessage) {
+  async postMessage(postMessage: postMessageInput) {
     await this.slackClient.chat.postMessage({
       channel: postMessage.channelId,
       text: postMessage.message,
     });
   }
 
-  // Create channel fonctionne mais on ne peut pas le tester avec l'app actuelle
   async createChannel(createChannelInput: createChannelInput) {
     const result = await this.slackClient.conversations.create({
       name: createChannelInput.channelName,
@@ -35,18 +33,18 @@ export class SlackService {
     });
     return result.channel.id;
   }
-  async handleSlackCommand(slackCommand: SlackCommand) {
-    switch (slackCommand.text) {
-      case "create-channel-slack":
-        // Code to create a channel in Slack
-        break;
-      case "post-message-slack":
-        // Code to post a message inn Slack
-        break;
-      // Add more cases for additional commands
-      default:
-        // Code to handle unknown commands
-        break;
-    }
-  }
+  // async handleSlackCommand(slackCommand: SlackCommandInput) {
+  //   switch (slackCommand.text) {
+  //     case "create-channel-slack":
+  //       // Code to create a channel in Slack
+  //       break;
+  //     case "post-message-slack":
+  //       // Code to post a message inn Slack
+  //       break;
+  //     // Add more cases for additional commands
+  //     default:
+  //       // Code to handle unknown commands
+  //       break;
+  //   }
+  // }
 }

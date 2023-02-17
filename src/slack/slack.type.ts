@@ -5,12 +5,12 @@ export type createChannelInput = {
   is_private: boolean;
 };
 
-export type postMessage = {
+export type postMessageInput = {
   channelId: string;
   message: string;
 };
 
-export type SlackCommand = {
+export type SlackCommandInput = {
   token: string;
   team_id: string;
   team_domain: string;
