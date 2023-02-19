@@ -3,6 +3,7 @@ import { prisma } from "../../../seed";
 export async function issueCreatedTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
+      title: "Issue Created",
       name: "issue-created",
       description: "Triggered when an issue is created",
       value: "issue-created",
@@ -29,6 +30,7 @@ export async function issueCreatedTrigger(providerId: number) {
 export async function pullRequestCreatedTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
+      title: "Pull Request Created",
       name: "pull-request-created",
       description: "Triggered when a pull request is created",
       value: "pull-request-created",

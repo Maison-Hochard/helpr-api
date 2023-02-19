@@ -3,6 +3,7 @@ import { prisma } from "../../../seed";
 export async function ticketCreatedTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
+      title: "Create Ticket",
       name: "ticket-created",
       description: "Triggered when a ticket is created",
       value: "ticket-created",
@@ -29,6 +30,7 @@ export async function ticketCreatedTrigger(providerId: number) {
 export async function projectCreatedTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
+      title: "Create Project",
       name: "project-created",
       description: "Triggered when a project is created",
       value: "project-created",

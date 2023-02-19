@@ -123,6 +123,7 @@ export class ProviderService {
         providerId: createTriggerInput.providerId,
       },
       create: {
+        title: createTriggerInput.title,
         name: createTriggerInput.name,
         description: createTriggerInput.description,
         value: createTriggerInput.value,

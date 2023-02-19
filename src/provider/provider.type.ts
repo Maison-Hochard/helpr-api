@@ -14,6 +14,7 @@ export type createActionInput = {
 };
 
 export type createTriggerInput = {
+  title: string;
   name: string;
   description: string;
   value: string;
