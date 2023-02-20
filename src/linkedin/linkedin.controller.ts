@@ -20,8 +20,11 @@ export class LinkedinController {
   @Post("create-post")
   async createPost(
     @CurrentUser() user: JwtPayload,
-    @Body("content") content: string,
+    @Body("linkedin_post_content") linkedin_post_content: string,
   ) {
-    return await this.linkedinService.postOnLinkedIn(user.id, content);
+    return await this.linkedinService.postOnLinkedIn(
+      user.id,
+      linkedin_post_content,
+    );
   }
 }

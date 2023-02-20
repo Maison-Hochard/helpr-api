@@ -13,7 +13,7 @@ export class LinkedinService {
     private userService: UserService,
     private providerService: ProviderService,
   ) {}
-  async postOnLinkedIn(userId: number, content: string) {
+  async postOnLinkedIn(userId: number, linkedin_post_content: string) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linkedin",
@@ -34,7 +34,7 @@ export class LinkedinService {
 
       const params = {
         author: `urn:li:person:${profile.id}`,
-        commentary: content,
+        commentary: linkedin_post_content,
         visibility: "PUBLIC",
         lifecycleState: "PUBLISHED",
         distribution: {

@@ -53,13 +53,13 @@ export class NotionService {
     const response = await notionClient.comments.create({
       parent: {
         type: "page_id",
-        page_id: createComment.pageId,
+        page_id: createComment.notion_comment_pageId,
       },
       rich_text: [
         {
           type: "text",
           text: {
-            content: createComment.text,
+            content: createComment.notion_comment_text,
           },
         },
       ],
@@ -85,13 +85,13 @@ export class NotionService {
     const response = await notionClient.databases.create({
       parent: {
         type: "page_id",
-        page_id: createDatabaseInput.pageId,
+        page_id: createDatabaseInput.notion_database_pageId,
       },
       title: [
         {
           type: "text",
           text: {
-            content: createDatabaseInput.title,
+            content: createDatabaseInput.notion_database_title,
           },
         },
       ],
@@ -99,7 +99,7 @@ export class NotionService {
         {
           type: "text",
           text: {
-            content: createDatabaseInput.description,
+            content: createDatabaseInput.notion_database_description,
           },
         },
       ],
@@ -128,13 +128,15 @@ export class NotionService {
       auth: accessToken,
     });
     const response = await notionClient.pages.create({
-      parent: { database_id: createItemInDatabaseInput.databaseId },
+      parent: {
+        database_id: createItemInDatabaseInput.notion_item_databaseId,
+      },
       properties: {
         title: {
           title: [
             {
               text: {
-                content: createItemInDatabaseInput.title,
+                content: createItemInDatabaseInput.notion_item_title,
               },
             },
           ],
@@ -149,7 +151,7 @@ export class NotionService {
               {
                 type: "text",
                 text: {
-                  content: createItemInDatabaseInput.description,
+                  content: createItemInDatabaseInput.notion_item_description,
                 },
               },
             ],

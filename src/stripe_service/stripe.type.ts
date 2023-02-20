@@ -1,24 +1,24 @@
 export type createCustomerInput = {
-  name: string;
-  email: string;
-  phone: string;
+  stripe_customer_name: string;
+  stripe_customer_email: string;
+  stripe_customer_phone: string;
 };
 
 export type createPaymentInput = {
-  amount: number;
-  currency: string;
-  customer: string;
-  description: string;
+  stripe_payment_amount: number;
+  stripe_payment_currency: string;
+  stripe_payment_customer: string;
+  stripe_payment_description: string;
 };
 
 export type createProductInput = {
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
+  stripe_product_name: string;
+  stripe_product_description: string;
+  stripe_product_price: number;
+  stripe_product_currency: string;
 };
 
 export type createLinkInput = {
-  price: string;
-  quantity: number;
+  stripe_link_price: string;
+  stripe_link_quantity: number;
 };

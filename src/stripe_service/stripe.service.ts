@@ -99,10 +99,10 @@ export class StripeService {
       apiVersion: "2022-11-15",
     });
     const response = await stripeClient.charges.create({
-      amount: createPaymentInput.amount,
-      currency: createPaymentInput.currency,
-      customer: createPaymentInput.customer,
-      description: createPaymentInput.description,
+      amount: createPaymentInput.stripe_payment_amount,
+      currency: createPaymentInput.stripe_payment_currency,
+      customer: createPaymentInput.stripe_payment_customer,
+      description: createPaymentInput.stripe_payment_description,
     });
     return {
       message: "payment_created",
@@ -123,9 +123,9 @@ export class StripeService {
       apiVersion: "2022-11-15",
     });
     const response = await stripeClient.customers.create({
-      name: createCustomerInput.name,
-      email: createCustomerInput.email,
-      phone: createCustomerInput.phone,
+      name: createCustomerInput.stripe_customer_name,
+      email: createCustomerInput.stripe_customer_email,
+      phone: createCustomerInput.stripe_customer_phone,
     });
     return {
       message: "customer_created",
@@ -142,18 +142,20 @@ export class StripeService {
     const stripeClient = new Stripe(accessToken, {
       apiVersion: "2022-11-15",
     });
-    const product_id = createProductInput.name.toLowerCase().replace(/\s/g, "");
+    const product_id = createProductInput.stripe_product_name
+      .toLowerCase()
+      .replace(/\s/g, "");
     const response = await stripeClient.products.create({
-      name: createProductInput.name,
-      description: createProductInput.description,
+      name: createProductInput.stripe_product_name,
+      description: createProductInput.stripe_product_description,
       id: "product-" + product_id,
     });
     console.log(product_id);
     if (!response) throw new BadRequestException("product_not_created");
     const price = await stripeClient.prices.create({
       product: response.id,
-      unit_amount: createProductInput.price,
-      currency: createProductInput.currency,
+      unit_amount: createProductInput.stripe_product_price,
+      currency: createProductInput.stripe_product_currency,
     });
     if (!price) throw new BadRequestException("price_not_created");
     return {
@@ -174,8 +176,8 @@ export class StripeService {
     const response = await stripeClient.paymentLinks.create({
       line_items: [
         {
-          price: createLinkInput.price,
-          quantity: createLinkInput.quantity,
+          price: createLinkInput.stripe_link_price,
+          quantity: createLinkInput.stripe_link_quantity,
         },
       ],
     });

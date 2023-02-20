@@ -1,6 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { createLinearProvider } from "./seed/providers/linear/linearProvider";
 import { createGithubProvider } from "./seed/providers/github/githubProvider";
+import { createDeeplProvider } from "./seed/providers/deepl/deeplProvider";
+import { createOpenaiProvider } from "./seed/providers/openai/openaiProvider";
+import { createLinkedinProvider } from "./seed/providers/linkedin/linkedinProvider";
+import { createNotionProvider } from "./seed/providers/notion/notionProvider";
+import { createStripeProvider } from "./seed/providers/stripe/stripeProvider";
 
 export const prisma = new PrismaClient();
 
@@ -8,6 +13,11 @@ async function main() {
   try {
     await createLinearProvider();
     await createGithubProvider();
+    await createDeeplProvider();
+    await createOpenaiProvider();
+    await createLinkedinProvider();
+    await createNotionProvider();
+    await createStripeProvider();
   } catch (e) {
     console.error(e);
   }

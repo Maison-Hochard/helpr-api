@@ -15,44 +15,6 @@ export class SheetService {
     private providerService: ProviderService,
   ) {}
 
-  /*  async handleWebhook(body: any) {
-    console.log(body);
-    if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
-  }
-
-  async createWebhook(userId: number, teamId: string) {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
-      userId,
-      "sheet",
-      true,
-    );
-    const sheetClient = new LinearClient({
-      apiKey: accessToken,
-    });
-    const env = this.configService.get("env");
-    const webhookProdUrl =
-      this.configService.get("api_url") + "/sheet/webhook";
-    const webhookDevUrl =
-      "https://765d-78-126-205-77.eu.ngrok.io/sheet/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    await sheetClient.createWebhook({
-      url: finalUrl,
-      resourceTypes: ["Issue", "Project"],
-      teamId: teamId,
-    });
-    return {
-      message: "webhook_created",
-    };
-  }*/
-
   async createSheet(
     userId: number,
     createSheetInput: createSheetInput,
