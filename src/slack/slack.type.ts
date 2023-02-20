@@ -1,5 +1,3 @@
-import { Body } from "@nestjs/common";
-
 export type createChannelInput = {
   channelName: string;
   is_private: boolean;
