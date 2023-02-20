@@ -1,22 +1,9 @@
 export type createChannelInput = {
-  channelName: string;
-  is_private: boolean;
+  slack_channel_name: string;
+  slack_channel_privacy: boolean;
 };
 
 export type postMessageInput = {
-  channelId: string;
-  message: string;
-};
-
-export type SlackCommandInput = {
-  token: string;
-  team_id: string;
-  team_domain: string;
-  channel_id: string;
-  channel_name: string;
-  user_id: string;
-  user_name: string;
-  command: string;
-  text: string;
-  response_url: string;
+  slack_message_channel: string;
+  slack_message_text: string;
 };

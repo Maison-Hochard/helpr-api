@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service";
 import { WebClient } from "@slack/web-api";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
-import { SlackCommandInput, postMessageInput, createChannelInput } from "./slack.type";
+import { postMessageInput, createChannelInput } from "./slack.type";
 
 @Injectable()
 export class SlackService {
@@ -21,30 +21,16 @@ export class SlackService {
 
   async postMessage(postMessage: postMessageInput) {
     await this.slackClient.chat.postMessage({
-      channel: postMessage.channelId,
-      text: postMessage.message,
+      channel: postMessage.slack_message_channel,
+      text: postMessage.slack_message_text,
     });
   }
 
   async createChannel(createChannelInput: createChannelInput) {
     const result = await this.slackClient.conversations.create({
-      name: createChannelInput.channelName,
-      is_private: createChannelInput.is_private,
+      name: createChannelInput.slack_channel_name,
+      is_private: createChannelInput.slack_channel_privacy,
     });
     return result.channel.id;
   }
-  // async handleSlackCommand(slackCommand: SlackCommandInput) {
-  //   switch (slackCommand.text) {
-  //     case "create-channel-slack":
-  //       // Code to create a channel in Slack
-  //       break;
-  //     case "post-message-slack":
-  //       // Code to post a message inn Slack
-  //       break;
-  //     // Add more cases for additional commands
-  //     default:
-  //       // Code to handle unknown commands
-  //       break;
-  //   }
-  // }
 }

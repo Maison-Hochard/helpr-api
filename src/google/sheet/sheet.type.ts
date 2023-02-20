@@ -1,8 +1,8 @@
 export type createSheetInput = {
-  title: string;
+  sheet_create_title: string;
 };
 
 export type updateSheetTitleInput = {
-  sheetId: string;
-  title: string;
+  sheet_update_id: string;
+  sheet_update_title: string;
 };

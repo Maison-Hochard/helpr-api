@@ -16,29 +16,12 @@ export class DeeplService {
     private providerService: ProviderService,
   ) {}
 
-  async createCredentials(userId: number) {
-    const deeplUser = new deepl.Translator(process.env.DEEPL_API_KEY);
-    const request = await deeplUser.getUsage();
-    if (!request) throw new BadRequestException("Invalid access token");
-    return await this.providerService.addCredentials(
-      userId,
-      "DEEPL_PROVIDER_ID",
-      "deepl",
-      this.configService.get("deepl.api_key"),
-    );
-  }
-
   async translateText(userId: number, translateTextInput: translateTextInput) {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
-      userId,
-      "deepl",
-      true,
-    );
-    const translator = new deepl.Translator(accessToken);
+    const translator = new deepl.Translator(process.env.DEEPL_API_KEY);
     const response = await translator.translateText(
-      translateTextInput.text,
-      <SourceLanguageCode>translateTextInput.source_lang,
-      <TargetLanguageCode>translateTextInput.target_lang,
+      translateTextInput.deepl_text,
+      <SourceLanguageCode>translateTextInput.deepl_source_lang,
+      <TargetLanguageCode>translateTextInput.deepl_target_lang,
     );
     return {
       message: "text_translated",

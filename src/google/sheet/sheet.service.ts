@@ -15,44 +15,6 @@ export class SheetService {
     private providerService: ProviderService,
   ) {}
 
-  /*  async handleWebhook(body: any) {
-    console.log(body);
-    if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }
-  }
-
-  async createWebhook(userId: number, teamId: string) {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
-      userId,
-      "sheet",
-      true,
-    );
-    const sheetClient = new LinearClient({
-      apiKey: accessToken,
-    });
-    const env = this.configService.get("env");
-    const webhookProdUrl =
-      this.configService.get("api_url") + "/sheet/webhook";
-    const webhookDevUrl =
-      "https://765d-78-126-205-77.eu.ngrok.io/sheet/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-    await sheetClient.createWebhook({
-      url: finalUrl,
-      resourceTypes: ["Issue", "Project"],
-      teamId: teamId,
-    });
-    return {
-      message: "webhook_created",
-    };
-  }*/
-
   async createSheet(
     userId: number,
     createSheetInput: createSheetInput,
@@ -70,7 +32,7 @@ export class SheetService {
     oauth2Client.setCredentials({ access_token: accessToken });
     const spreadsheetBody = {
       properties: {
-        title: createSheetInput.title,
+        title: createSheetInput.sheet_create_title,
       },
     };
     const sheets = google.sheets({ version: "v4", auth: oauth2Client });
@@ -100,19 +62,19 @@ export class SheetService {
     oauth2Client.setCredentials({ access_token: accessToken });
     const sheets = google.sheets({ version: "v4", auth: oauth2Client });
     const idSheet = await sheets.spreadsheets.get({
-      spreadsheetId: updateSheetTitleInput.sheetId,
+      spreadsheetId: updateSheetTitleInput.sheet_update_id,
     });
     if (!idSheet) {
       throw new BadRequestException("sheet_not_found");
     }
     const res = await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: updateSheetTitleInput.sheetId,
+      spreadsheetId: updateSheetTitleInput.sheet_update_id,
       requestBody: {
         requests: [
           {
             updateSpreadsheetProperties: {
               properties: {
-                title: updateSheetTitleInput.title,
+                title: updateSheetTitleInput.sheet_update_title,
               },
               fields: "title",
             },
