@@ -7,6 +7,7 @@ import { createLinkedinProvider } from "./seed/providers/linkedin/linkedinProvid
 import { createNotionProvider } from "./seed/providers/notion/notionProvider";
 import { createStripeProvider } from "./seed/providers/stripe/stripeProvider";
 import { createHelprProvider } from "./seed/providers/helpr/helprProvider";
+import { createSlackProvider } from "./seed/providers/slack/slackProvider";
 
 export const prisma = new PrismaClient();
 
@@ -20,6 +21,7 @@ async function main() {
     await createNotionProvider();
     await createStripeProvider();
     await createHelprProvider();
+    await createSlackProvider();
   } catch (e) {
     console.error(e);
   }
