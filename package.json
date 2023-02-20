@@ -42,6 +42,7 @@
     "@nestjs/typeorm": "^8.0.3",
     "@notionhq/client": "^2.2.3",
     "@prisma/client": "^4.9.0",
+    "@slack/web-api": "^6.8.1",
     "@types/cron": "^2.0.0",
     "@types/crypto-js": "^4.1.1",
     "@types/passport-jwt": "^3.0.8",
@@ -66,7 +67,6 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "stripe": "^11.8.0",
-    "typeorm": "^0.3.11"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
