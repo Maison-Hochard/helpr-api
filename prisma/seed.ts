@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { createLinearProvider } from "./seed/providers/linear/linearProvider";
 import { createGithubProvider } from "./seed/providers/github/githubProvider";
+import { createHelprProvider } from "./seed/providers/helpr/helprProvider";
 
 export const prisma = new PrismaClient();
 
@@ -8,6 +9,7 @@ async function main() {
   try {
     await createLinearProvider();
     await createGithubProvider();
+    await createHelprProvider();
   } catch (e) {
     console.error(e);
   }
