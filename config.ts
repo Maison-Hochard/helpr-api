@@ -19,6 +19,7 @@ export const config = () => ({
   },
   slack: {
     bot_access_token: process.env.SLACK_BOT_ACCESS_TOKEN,
+  },
   openai: {
     api_key: process.env.OPENAI_API_KEY,
   },
