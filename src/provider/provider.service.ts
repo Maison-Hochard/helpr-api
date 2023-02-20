@@ -4,7 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { decrypt, encrypt } from "../utils";
-import { Action } from "@prisma/client";
+import {
+  createActionInput,
+  createProviderInput,
+  createTriggerInput,
+} from "./provider.type";
 
 @Injectable()
 export class ProviderService {
@@ -14,6 +18,23 @@ export class ProviderService {
     private configService: ConfigService,
     private userService: UserService,
   ) {}
+
+  async getProviders() {
+    return await this.prisma.provider.findMany({
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+      },
+    });
+  }
 
   async getCredentials(userId: number) {
     const user = await this.userService.getUserById(userId);
@@ -66,12 +87,107 @@ export class ProviderService {
     });
   }
 
-  async addAction(action: Action) {
-    return await this.prisma.action.create({
-      data: {
-        name: action.name,
-        provider: action.provider,
-        description: action.description || "",
+  async createOrUpdateAction(createActionInput: createActionInput) {
+    const action = await this.prisma.action.upsert({
+      where: {
+        name: createActionInput.name,
+      },
+      update: {
+        title: createActionInput.title,
+        description: createActionInput.description,
+        endpoint: createActionInput.endpoint,
+        name: createActionInput.name,
+        providerId: createActionInput.providerId,
+      },
+      create: {
+        title: createActionInput.title,
+        description: createActionInput.description,
+        endpoint: createActionInput.endpoint,
+        name: createActionInput.name,
+        providerId: createActionInput.providerId,
+      },
+    });
+    return action;
+  }
+
+  async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
+    return await this.prisma.trigger.upsert({
+      where: {
+        name: createTriggerInput.name,
+      },
+      update: {
+        name: createTriggerInput.name,
+        description: createTriggerInput.description,
+        value: createTriggerInput.value,
+        provider: createTriggerInput.provider,
+        providerId: createTriggerInput.providerId,
+      },
+      create: {
+        title: createTriggerInput.title,
+        name: createTriggerInput.name,
+        description: createTriggerInput.description,
+        value: createTriggerInput.value,
+        provider: createTriggerInput.provider,
+        providerId: createTriggerInput.providerId,
+      },
+    });
+  }
+
+  async createOrUpdateProvider(createProviderInput: createProviderInput) {
+    return await this.prisma.provider.upsert({
+      where: {
+        name: createProviderInput.name,
+      },
+      update: {
+        name: createProviderInput.name,
+        description: createProviderInput.description,
+        logo: createProviderInput.logo,
+      },
+      create: {
+        name: createProviderInput.name,
+        description: createProviderInput.description,
+        logo: createProviderInput.logo,
+      },
+    });
+  }
+
+  async getAvailableActions() {
+    return await this.prisma.action.findMany({
+      include: {
+        variables: true,
+      },
+    });
+  }
+
+  async getAvailableTriggers() {
+    return await this.prisma.trigger.findMany();
+  }
+
+  async getUserProviders(userId: number) {
+    const providersCredentials = await this.prisma.providerCredentials.findMany(
+      {
+        where: {
+          userId,
+        },
+      },
+    );
+    return await this.prisma.provider.findMany({
+      where: {
+        name: {
+          in: providersCredentials.map(
+            (provider) =>
+              provider.provider.charAt(0).toUpperCase() +
+              provider.provider.slice(1),
+          ),
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: true,
       },
     });
   }

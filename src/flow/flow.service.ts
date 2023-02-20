@@ -2,7 +2,13 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
-import { createFlowInput, Status, Trigger } from "./flow.type";
+import {
+  webhookDataInput,
+  createFlowInput,
+  Status,
+  Trigger,
+} from "./flow.type";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class FlowService {
@@ -10,6 +16,7 @@ export class FlowService {
     private prisma: PrismaService,
     private configService: ConfigService,
     private userService: UserService,
+    private authService: AuthService,
   ) {}
 
   async addFlow(userId: number, flowData: createFlowInput) {
@@ -25,21 +32,30 @@ export class FlowService {
     if (actions.length !== flowData.actions.length) {
       throw new BadRequestException("actions_not_found");
     }
+    const trigger = await this.prisma.trigger.findUnique({
+      where: {
+        id: flowData.triggerId,
+      },
+    });
+    if (!trigger) throw new BadRequestException("trigger_not_found");
+    const accessToken = await this.authService.createAccessToken(user);
     const flow = await this.prisma.flow.create({
       data: {
         name: flowData.name,
         description: flowData.description,
         userId: userId,
-        trigger: flowData.trigger ? flowData.trigger : Trigger.EVERY_10_MINUTES,
+        triggerId: trigger.id,
         status: Status.STANDBY,
+        accessToken: accessToken,
       },
     });
-    await this.prisma.flowAction.createMany({
+    await this.prisma.flowActions.createMany({
       data: flowData.actions.map((action) => {
         return {
           actionId: action.id,
           flowId: flow.id,
           payload: JSON.stringify(action.payload),
+          order: action.order,
         };
       }),
     });
@@ -57,9 +73,14 @@ export class FlowService {
         userId: userId,
       },
       include: {
+        trigger: true,
         actions: {
           include: {
-            action: true,
+            action: {
+              include: {
+                variables: true,
+              },
+            },
           },
         },
       },
@@ -71,20 +92,38 @@ export class FlowService {
   }
 
   async getFlowToRun(trigger: Trigger) {
-    return await this.prisma.flow.findMany({
+    const flows = await this.prisma.flow.findMany({
       where: {
-        trigger: trigger,
+        triggerId: trigger,
         status: Status.READY,
         enabled: true,
       },
       include: {
+        trigger: {
+          select: {
+            value: true,
+          },
+        },
         actions: {
           include: {
-            action: true,
+            action: {
+              include: {
+                variables: {
+                  select: {
+                    name: true,
+                    value: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
   }
 
   async updateFlowStatus(flowId: number, status: Status) {
@@ -97,4 +136,34 @@ export class FlowService {
       },
     });
   }
+
+  /*async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {
+    return await this.prisma.webhookData.upsert({
+      where: {
+        type: addWebhookDataInput.type,
+      },
+      create: {
+        userId: addWebhookDataInput.userId,
+        provider: addWebhookDataInput.provider,
+        data: addWebhookDataInput.data,
+        type: addWebhookDataInput.type,
+      },
+      update: {
+        data: addWebhookDataInput.data,
+      },
+    });
+  }*/
+
+  /*async getWebhookData(userId: number, type: string) {
+    const webhookData = await this.prisma.webhookData.findFirst({
+      where: {
+        userId: userId,
+        type: type,
+      },
+    });
+    return {
+      message: "webhook_data_found",
+      data: webhookData,
+    };
+  }*/
 }

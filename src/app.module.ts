@@ -15,7 +15,7 @@ import { CronModule } from "./cron/cron.module";
 import { AuthModule } from "./auth/auth.module";
 import { ResetPasswordModule } from "./reset-password/reset-password.module";
 import { config } from "../config";
-import { StripeModule } from "./stripe/stripe.module";
+import { StripeModule } from "./stripe_service/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
 import { SlackModule } from "./slack/slack.module";
@@ -23,6 +23,14 @@ import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FlowModule } from "./flow/flow.module";
+import { NotionModule } from "./notion/notion.module";
+import { OpenaiModule } from "./openai/openai.module";
+import { GmailModule } from "./google/gmail/gmail.module";
+import { CalendarModule } from "./google/calendar/calendar.module";
+import { GoogleModule } from "./google/google.module";
+import { SheetModule } from "./google/sheet/sheet.module";
+import { DeeplModule } from "./deepl/deepl.module";
+import { LinkedinModule } from "./linkedin/linkedin.module";
 
 export interface ServerResponse<T> {
   statusCode?: number;
@@ -39,9 +47,7 @@ export class ResponseInterceptor implements NestInterceptor {
     const statusCode = context.switchToHttp().getResponse().statusCode;
     return next.handle().pipe(
       map((data) => {
-        const message = data.message || "success";
-        const payload = data.data || data;
-        return { statusCode, message, data: payload };
+        return { statusCode, message: "success", data };
       }),
       catchError((error) => {
         const message = error.message || "unknown_error";
@@ -68,9 +74,17 @@ export class ResponseInterceptor implements NestInterceptor {
     AuthModule,
     ResetPasswordModule,
     StripeModule,
+    NotionModule,
     GithubModule,
     SlackModule,
     FlowModule,
+    OpenaiModule,
+    GmailModule,
+    CalendarModule,
+    GoogleModule,
+    SheetModule,
+    DeeplModule,
+    LinkedinModule,
   ],
   controllers: [AppController],
   providers: [AppService],

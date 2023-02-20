@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
-import { User, ResetPassword, ProviderCredentials } from "@prisma/client";
+import { User, ResetPassword } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtPayload } from "../auth/auth.service";
@@ -173,5 +173,15 @@ export class UserService {
     if (!user) throw new BadRequestException("user_not_found");
     await this.prisma.user.delete({ where: { id: userId } });
     return { message: "user deleted" };
+  }
+
+  async getUserByProviderId(providerId: string): Promise<User> {
+    const userCredentials = await this.prisma.providerCredentials.findUnique({
+      where: { providerId },
+    });
+    if (!userCredentials) throw new BadRequestException("user_not_found");
+    return await this.prisma.user.findUnique({
+      where: { id: userCredentials.userId },
+    });
   }
 }

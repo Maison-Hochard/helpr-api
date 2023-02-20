@@ -24,10 +24,7 @@ export class LinearController {
     @CurrentUser() user: JwtPayload,
     @Body("teamId") teamId: string,
   ) {
-    await this.linearService.createWebhook(user.id, teamId);
-    return {
-      message: "webhook_created",
-    };
+    return await this.linearService.createWebhook(user.id, teamId);
   }
 
   @Post("add-credentials")
@@ -38,7 +35,7 @@ export class LinearController {
     return await this.linearService.createCredentials(user.id, accessToken);
   }
 
-  @Post("create-issue")
+  @Post("create-ticket")
   async createIssue(
     @CurrentUser() user: JwtPayload,
     @Body() issue: createIssueInput,
