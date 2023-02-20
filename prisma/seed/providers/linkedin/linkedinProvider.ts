@@ -6,7 +6,7 @@ export async function createLinkedinProvider() {
     data: {
       name: "Linkedin",
       description:
-        "The world's largest professional network with 760 million members available in Helpr",
+        "Linkeding is the world's largest professional network. You can post from Helpr",
       logo: "https://storage.cloud.google.com/helpr/linkedin-logo-white.svg",
     },
   });

@@ -8,6 +8,9 @@ import { createNotionProvider } from "./seed/providers/notion/notionProvider";
 import { createStripeProvider } from "./seed/providers/stripe/stripeProvider";
 import { createHelprProvider } from "./seed/providers/helpr/helprProvider";
 import { createSlackProvider } from "./seed/providers/slack/slackProvider";
+import { createCalendarProvider } from "./seed/providers/calendar/calendarProvider";
+import { createGmailProvider } from "./seed/providers/gmail/gmailProvider";
+import { createSheetProvider } from "./seed/providers/sheet/sheetProvider";
 
 export const prisma = new PrismaClient();
 
@@ -22,6 +25,9 @@ async function main() {
     await createStripeProvider();
     await createHelprProvider();
     await createSlackProvider();
+    await createCalendarProvider();
+    await createGmailProvider();
+    await createSheetProvider();
   } catch (e) {
     console.error(e);
   }

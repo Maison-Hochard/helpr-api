@@ -32,7 +32,7 @@ export class SheetService {
     oauth2Client.setCredentials({ access_token: accessToken });
     const spreadsheetBody = {
       properties: {
-        title: createSheetInput.title,
+        title: createSheetInput.sheet_create_title,
       },
     };
     const sheets = google.sheets({ version: "v4", auth: oauth2Client });
@@ -62,19 +62,19 @@ export class SheetService {
     oauth2Client.setCredentials({ access_token: accessToken });
     const sheets = google.sheets({ version: "v4", auth: oauth2Client });
     const idSheet = await sheets.spreadsheets.get({
-      spreadsheetId: updateSheetTitleInput.sheetId,
+      spreadsheetId: updateSheetTitleInput.sheet_update_id,
     });
     if (!idSheet) {
       throw new BadRequestException("sheet_not_found");
     }
     const res = await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: updateSheetTitleInput.sheetId,
+      spreadsheetId: updateSheetTitleInput.sheet_update_id,
       requestBody: {
         requests: [
           {
             updateSpreadsheetProperties: {
               properties: {
-                title: updateSheetTitleInput.title,
+                title: updateSheetTitleInput.sheet_update_title,
               },
               fields: "title",
             },
