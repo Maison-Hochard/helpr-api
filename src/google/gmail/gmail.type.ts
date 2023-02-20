@@ -1,11 +1,11 @@
 export type createDraftInput = {
-  to: string;
-  subject: string;
-  body: string;
+  gmail_draft_to: string;
+  gmail_draft_subject: string;
+  gmail_draft_body: string;
 };
 
 export type createMailInput = {
-  to: string;
-  subject: string;
-  body: string;
+  gmail_mail_to: string;
+  gmail_mail_subject: string;
+  gmail_mail_body: string;
 };

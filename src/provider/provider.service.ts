@@ -27,7 +27,11 @@ export class ProviderService {
             variables: true,
           },
         },
-        triggers: true,
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
       },
     });
   }
@@ -75,7 +79,7 @@ export class ProviderService {
         accessToken: encrypt(accessToken),
       },
       create: {
-        userId: userId,
+        userId,
         providerId,
         provider,
         accessToken: encrypt(accessToken),
@@ -84,7 +88,7 @@ export class ProviderService {
   }
 
   async createOrUpdateAction(createActionInput: createActionInput) {
-    const action = await this.prisma.action.upsert({
+    return await this.prisma.action.upsert({
       where: {
         name: createActionInput.name,
       },
@@ -103,24 +107,22 @@ export class ProviderService {
         providerId: createActionInput.providerId,
       },
     });
-    const variables = await this.prisma.actionVariables.createMany({
-      data: createActionInput.variables.map((variable) => {
-        return {
-          name: variable.name,
-          value: variable.value,
-          actionId: action.id,
-        };
-      }),
-    });
-    return {
-      message: "action_created",
-      data: action,
-    };
   }
 
-  async addTrigger(createTriggerInput: createTriggerInput) {
-    const trigger = await this.prisma.trigger.create({
-      data: {
+  async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
+    return await this.prisma.trigger.upsert({
+      where: {
+        name: createTriggerInput.name,
+      },
+      update: {
+        name: createTriggerInput.name,
+        description: createTriggerInput.description,
+        value: createTriggerInput.value,
+        provider: createTriggerInput.provider,
+        providerId: createTriggerInput.providerId,
+      },
+      create: {
+        title: createTriggerInput.title,
         name: createTriggerInput.name,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
@@ -128,24 +130,24 @@ export class ProviderService {
         providerId: createTriggerInput.providerId,
       },
     });
-    return {
-      message: "trigger_created",
-      data: trigger,
-    };
   }
 
-  async addProvider(createProviderInput: createProviderInput) {
-    const provider = await this.prisma.provider.create({
-      data: {
+  async createOrUpdateProvider(createProviderInput: createProviderInput) {
+    return await this.prisma.provider.upsert({
+      where: {
+        name: createProviderInput.name,
+      },
+      update: {
+        name: createProviderInput.name,
+        description: createProviderInput.description,
+        logo: createProviderInput.logo,
+      },
+      create: {
         name: createProviderInput.name,
         description: createProviderInput.description,
         logo: createProviderInput.logo,
       },
     });
-    return {
-      message: "provider_created",
-      data: provider,
-    };
   }
 
   async getAvailableActions() {
@@ -156,15 +158,60 @@ export class ProviderService {
     });
   }
 
-  async getUsersServices(userId: number) {
-    const services = await this.prisma.providerCredentials.findMany({
+  async getAvailableTriggers() {
+    return await this.prisma.trigger.findMany();
+  }
+
+  async getUserProviders(userId: number) {
+    const providersCredentials = await this.prisma.providerCredentials.findMany(
+      {
+        where: {
+          userId,
+        },
+      },
+    );
+    const defaultProviders = await this.prisma.provider.findMany({
       where: {
-        userId,
+        name: {
+          in: ["Helpr"],
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
       },
     });
-    return {
-      message: "services_found",
-      data: services,
-    };
+    const providers = await this.prisma.provider.findMany({
+      where: {
+        name: {
+          in: providersCredentials.map(
+            (provider) =>
+              provider.provider.charAt(0).toUpperCase() +
+              provider.provider.slice(1),
+          ),
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+      },
+    });
+    return [...providers, ...defaultProviders];
   }
 }

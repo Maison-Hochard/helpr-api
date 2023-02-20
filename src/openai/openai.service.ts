@@ -23,14 +23,14 @@ export class OpenaiService {
     const openai = new OpenAIApi(configuration);
     const response = await openai.createCompletion({
       model:
-        createCompletionInput.model === Model.Davinci
+        createCompletionInput.openai_completion_model === Model.Davinci
           ? davinci_model
-          : createCompletionInput.model === Model.Curie
+          : createCompletionInput.openai_completion_model === Model.Curie
           ? curie_model
           : davinci_model,
-      prompt: createCompletionInput.prompt,
+      prompt: createCompletionInput.openai_completion_prompt,
       temperature: 0.9,
-      max_tokens: createCompletionInput.size ?? 256,
+      max_tokens: createCompletionInput.openai_completion_size ?? 256,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,

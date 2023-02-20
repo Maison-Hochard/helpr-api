@@ -18,6 +18,7 @@ import { config } from "../config";
 import { StripeModule } from "./stripe_service/stripe.module";
 import { LinearModule } from "./linear/linear.module";
 import { GithubModule } from "./github/github.module";
+import { SlackModule } from "./slack/slack.module";
 import { ProviderModule } from "./provider/provider.module";
 import { catchError, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
@@ -46,9 +47,7 @@ export class ResponseInterceptor implements NestInterceptor {
     const statusCode = context.switchToHttp().getResponse().statusCode;
     return next.handle().pipe(
       map((data) => {
-        const message = data.message || "success";
-        const payload = data.data || data;
-        return { statusCode, message, data: payload };
+        return { statusCode, message: "success", data };
       }),
       catchError((error) => {
         const message = error.message || "unknown_error";
@@ -77,6 +76,7 @@ export class ResponseInterceptor implements NestInterceptor {
     StripeModule,
     NotionModule,
     GithubModule,
+    SlackModule,
     FlowModule,
     OpenaiModule,
     GmailModule,

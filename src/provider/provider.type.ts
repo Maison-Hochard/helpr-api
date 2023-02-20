@@ -1,5 +1,3 @@
-import { ActionVariables } from "@prisma/client";
-
 export type createProviderInput = {
   name: string;
   description: string;
@@ -13,10 +11,10 @@ export type createActionInput = {
   endpoint: string;
   name: string;
   providerId: number;
-  variables: ActionVariables[];
 };
 
 export type createTriggerInput = {
+  title: string;
   name: string;
   description: string;
   value: string;

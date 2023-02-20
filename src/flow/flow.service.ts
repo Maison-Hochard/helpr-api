@@ -112,7 +112,6 @@ export class FlowService {
                   select: {
                     name: true,
                     value: true,
-                    actionId: true,
                   },
                 },
               },
@@ -138,7 +137,7 @@ export class FlowService {
     });
   }
 
-  async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {
+  /*async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {
     return await this.prisma.webhookData.upsert({
       where: {
         type: addWebhookDataInput.type,
@@ -153,9 +152,9 @@ export class FlowService {
         data: addWebhookDataInput.data,
       },
     });
-  }
+  }*/
 
-  async getWebhookData(userId: number, type: string) {
+  /*async getWebhookData(userId: number, type: string) {
     const webhookData = await this.prisma.webhookData.findFirst({
       where: {
         userId: userId,
@@ -166,5 +165,5 @@ export class FlowService {
       message: "webhook_data_found",
       data: webhookData,
     };
-  }
+  }*/
 }
