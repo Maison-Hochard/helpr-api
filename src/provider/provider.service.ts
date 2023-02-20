@@ -173,7 +173,7 @@ export class ProviderService {
     const defaultProviders = await this.prisma.provider.findMany({
       where: {
         name: {
-          in: ["Helpr"],
+          in: ["Helpr", "DeepL", "OpenAI"],
         },
       },
       include: {
