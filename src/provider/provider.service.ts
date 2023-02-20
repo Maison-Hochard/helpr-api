@@ -79,7 +79,7 @@ export class ProviderService {
         accessToken: encrypt(accessToken),
       },
       create: {
-        userId: userId,
+        userId,
         providerId,
         provider,
         accessToken: encrypt(accessToken),
@@ -88,7 +88,7 @@ export class ProviderService {
   }
 
   async createOrUpdateAction(createActionInput: createActionInput) {
-    const action = await this.prisma.action.upsert({
+    return await this.prisma.action.upsert({
       where: {
         name: createActionInput.name,
       },
@@ -107,7 +107,6 @@ export class ProviderService {
         providerId: createActionInput.providerId,
       },
     });
-    return action;
   }
 
   async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
@@ -171,7 +170,26 @@ export class ProviderService {
         },
       },
     );
-    return await this.prisma.provider.findMany({
+    const defaultProviders = await this.prisma.provider.findMany({
+      where: {
+        name: {
+          in: ["Helpr"],
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+      },
+    });
+    const providers = await this.prisma.provider.findMany({
       where: {
         name: {
           in: providersCredentials.map(
@@ -187,8 +205,13 @@ export class ProviderService {
             variables: true,
           },
         },
-        triggers: true,
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
       },
     });
+    return [...providers, ...defaultProviders];
   }
 }

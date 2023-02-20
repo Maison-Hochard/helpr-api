@@ -6,6 +6,7 @@ import { createOpenaiProvider } from "./seed/providers/openai/openaiProvider";
 import { createLinkedinProvider } from "./seed/providers/linkedin/linkedinProvider";
 import { createNotionProvider } from "./seed/providers/notion/notionProvider";
 import { createStripeProvider } from "./seed/providers/stripe/stripeProvider";
+import { createHelprProvider } from "./seed/providers/helpr/helprProvider";
 
 export const prisma = new PrismaClient();
 
@@ -18,6 +19,7 @@ async function main() {
     await createLinkedinProvider();
     await createNotionProvider();
     await createStripeProvider();
+    await createHelprProvider();
   } catch (e) {
     console.error(e);
   }
