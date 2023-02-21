@@ -34,7 +34,45 @@ export class GithubController {
   ) {
     return await this.githubService.createCredentials(user.id, accessToken);
   }
+  @Post("create-issue")
+  async createIssue(
+    @CurrentUser() user: JwtPayload,
+    @Body("repo") repo: string,
+    @Body("title") title: string,
+    @Body("body") body: string,
+    @Body("labels") labels: string[],
+  ) {
+    return await this.githubService.createIssue(
+      user.id,
+      repo,
+      title,
+      body,
+      labels,
+    );
+  }
 
+  @Post("create-release")
+  async createRelease(
+    @CurrentUser() user: JwtPayload,
+    @Body("repo") repo: string,
+    @Body("tagName") tagName: string,
+    @Body("targetCommitish") targetCommitish: string,
+    @Body("name") name: string,
+    @Body("body") body: string,
+    @Body("draft") draft: boolean,
+    @Body("prerelease") prerelease: boolean,
+  ) {
+    return await this.githubService.createRelease(
+      user.id,
+      repo,
+      tagName,
+      targetCommitish,
+      name,
+      body,
+      draft,
+      prerelease,
+    );
+  }
   @Post("create-branch")
   async createBranch(
     @CurrentUser() user: JwtPayload,
@@ -47,6 +85,25 @@ export class GithubController {
       repo,
       newBranch,
       fromBranch,
+    );
+  }
+
+  @Post("create-pull-request")
+  async createPullRequest(
+    @CurrentUser() user: JwtPayload,
+    @Body("repo") repo: string,
+    @Body("title") title: string,
+    @Body("body") body: string,
+    @Body("head") head: string,
+    @Body("base") base: string,
+  ) {
+    return await this.githubService.createPullRequest(
+      user.id,
+      repo,
+      title,
+      body,
+      head,
+      base,
     );
   }
 }

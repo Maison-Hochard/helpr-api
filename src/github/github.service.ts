@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Body, Injectable, Post } from "@nestjs/common";
 import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { Octokit } from "octokit";
 import { ProviderService } from "../provider/provider.service";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { JwtPayload } from "../auth/auth.service";
 
 @Injectable()
 export class GithubService {
@@ -15,6 +17,7 @@ export class GithubService {
     private userService: UserService,
     private providerService: ProviderService,
   ) {}
+
   /**
    * Create a webhook Github
    * @param accessToken
@@ -63,6 +66,7 @@ export class GithubService {
     console.log(`The repository owner's id is: ${id}`);
     console.log(`EventName: ${eventName}`);
   }
+
   // provider id, status : push - pull - issue,
   async createCredentials(userId: number, accessToken: string) {
     const user = await this.userService.getUserById(userId);
@@ -94,8 +98,8 @@ export class GithubService {
   async createBranch(
     userId: number,
     repo: string,
-    branchName: string,
-    fromBranchName: string,
+    newBranch: string,
+    fromBranch: string,
   ) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
@@ -106,21 +110,116 @@ export class GithubService {
     const user = await this.getUser(userId, accessToken);
     const { data: latestCommit } = await octokit.rest.repos.getBranch({
       owner: user.login,
-      repo,
-      branch: fromBranchName,
+      repo: repo,
+      branch: fromBranch,
     });
 
-    branchName = branchName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
+    newBranch = newBranch.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
 
-    const { data: newBranch } = await octokit.rest.git.createRef({
+    const { data } = await octokit.rest.git.createRef({
       owner: user.login,
-      repo,
-      ref: `refs/heads/${branchName}`,
+      repo: repo,
+      ref: `refs/heads/${newBranch}`,
       sha: latestCommit.commit.sha,
     });
 
     return {
       message: "branch_created",
     };
+  }
+
+  async createRelease(
+    userId: number,
+    repo: string,
+    tagName: string,
+    targetCommitish: string,
+    name: string,
+    body: string,
+    draft: boolean,
+    prerelease: boolean,
+  ) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
+
+    const octokit = new Octokit({ auth: accessToken });
+    const user = await this.getUser(userId, accessToken);
+
+    const releaseData = {
+      owner: user.login,
+      repo,
+      tag_name: tagName,
+      target_commitish: targetCommitish,
+      name: name,
+      body: body,
+      draft: draft,
+      prerelease: prerelease,
+    };
+
+    try {
+      const response = await octokit.rest.repos.createRelease(releaseData);
+      return {
+        message: "release_created",
+        data: response.data,
+      };
+    } catch (error) {
+      console.error("Error creating release:", error);
+      throw new BadRequestException("Error creating release");
+    }
+  }
+
+  async createPullRequest(
+    userId: number,
+    repo: string,
+    title: string,
+    description: string,
+    base: string,
+    head: string,
+  ) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
+    const octokit = new Octokit({ auth: accessToken });
+    const user = await this.getUser(userId, accessToken);
+
+    const { data } = await octokit.rest.pulls.create({
+      owner: user.login,
+      repo,
+      title,
+      body: description,
+      head,
+      base,
+    });
+    return { message: "pull_request_created", data };
+  }
+
+  async createIssue(
+    userId: number,
+    repo: string,
+    title: string,
+    description: string,
+    label: string[],
+  ) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
+    const octokit = new Octokit({ auth: accessToken });
+    const user = await this.getUser(userId, accessToken);
+
+    const { data } = await octokit.rest.issues.create({
+      owner: user.login,
+      repo,
+      title,
+      body: description,
+      labels: label,
+    });
+
+    return { message: "issue_created", data };
   }
 }
