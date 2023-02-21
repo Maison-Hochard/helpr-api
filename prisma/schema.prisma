@@ -124,7 +124,6 @@ model FlowActions {
   payload   String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  order     Int
   action    Action    @relation(fields: [actionId], references: [id], onDelete: Cascade)
   flow      Flow      @relation(fields: [flowId], references: [id], onDelete: Cascade)
 }

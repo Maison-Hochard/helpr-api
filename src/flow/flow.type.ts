@@ -4,7 +4,6 @@ type createActionInput = {
   id: number;
   name: string;
   payload: string;
-  order: number;
 };
 
 export type createFlowInput = Flow & {

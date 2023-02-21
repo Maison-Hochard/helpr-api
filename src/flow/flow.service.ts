@@ -39,6 +39,13 @@ export class FlowService {
     });
     if (!trigger) throw new BadRequestException("trigger_not_found");
     const accessToken = await this.authService.createAccessToken(user);
+    const isFlowExist = await this.prisma.flow.findFirst({
+      where: {
+        name: flowData.name,
+        userId: userId,
+      },
+    });
+    if (isFlowExist) throw new BadRequestException("Flow already exist");
     const flow = await this.prisma.flow.create({
       data: {
         name: flowData.name,
@@ -47,6 +54,7 @@ export class FlowService {
         triggerId: trigger.id,
         status: Status.STANDBY,
         accessToken: accessToken,
+        enabled: flowData.enabled,
       },
     });
     await this.prisma.flowActions.createMany({
@@ -55,7 +63,6 @@ export class FlowService {
           actionId: action.id,
           flowId: flow.id,
           payload: JSON.stringify(action.payload),
-          order: action.order,
         };
       }),
     });
@@ -73,11 +80,16 @@ export class FlowService {
         userId: userId,
       },
       include: {
-        trigger: true,
+        trigger: {
+          include: {
+            Provider: true,
+          },
+        },
         actions: {
           include: {
             action: {
               include: {
+                provider: true,
                 variables: true,
               },
             },
@@ -85,9 +97,32 @@ export class FlowService {
         },
       },
     });
+    const providers = flows.map((flow) => {
+      const trigger = flow.trigger.Provider;
+      const actions = flow.actions.map((action) => action.action.provider);
+      return [trigger, ...actions];
+    });
+    const flowsData = flows.map((flow) => {
+      return {
+        id: flow.id,
+        name: flow.name,
+        description: flow.description,
+        status: flow.status,
+        enabled: flow.enabled,
+        trigger: flow.trigger,
+        providers: providers[flows.indexOf(flow)],
+        actions: flow.actions.map((action) => {
+          return {
+            id: action.id,
+            action: action.action,
+            payload: JSON.parse(action.payload),
+          };
+        }),
+      };
+    });
     return {
       message: "flows_found",
-      data: flows,
+      data: flowsData,
     };
   }
 
@@ -135,6 +170,47 @@ export class FlowService {
         status: status,
       },
     });
+  }
+
+  async updateFlowEnabled(userId: number, flowId: number, enabled: boolean) {
+    const flow = await this.prisma.flow.findFirst({
+      where: {
+        id: flowId,
+        userId: userId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    return await this.prisma.flow.update({
+      where: {
+        id: flowId,
+      },
+      data: {
+        enabled: enabled,
+      },
+    });
+  }
+
+  async deleteFlow(userId: number, flowId: number) {
+    const flow = await this.prisma.flow.findFirst({
+      where: {
+        id: flowId,
+        userId: userId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    await this.prisma.flowActions.deleteMany({
+      where: {
+        flowId: flowId,
+      },
+    });
+    await this.prisma.flow.delete({
+      where: {
+        id: flowId,
+      },
+    });
+    return {
+      message: "flow_deleted",
+    };
   }
 
   /*async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {
