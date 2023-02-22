@@ -116,7 +116,7 @@ describe('MailingService', () => {
     describe('sendResetPasswordSuccess', () => {
         it('should send an email to the specified user', async () => {
             const user: User = {
-                id: 1, username: 'testuser', email: 'test@example.com',
+                id: 1,username: 'testuser', email: 'test@example.com',
                 loginType: "",
                 firstname: "",
                 lastname: "",
