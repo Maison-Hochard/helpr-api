@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../../prisma.service";
-import { UserService } from "../../user/user.service";
-import { ProviderService } from "../../provider/provider.service";
-import { createDraftInput, createMailInput } from "./gmail.type";
+import { PrismaService } from "../../../src/prisma.service";
+import { UserService } from "../../../src/user/user.service";
+import { ProviderService } from "../../../src/provider/provider.service";
+import { createCalendarInput, createEventInput } from "../../../src/google/calendar/calendar.type";
 import { google } from "googleapis";
-import { GmailService } from "./gmail.service";
-import { GmailController } from "./gmail.controller";
+import { CalendarService } from "../../../src/google/calendar/calendar.service";
+import { CalendarController } from "../../../src/google/calendar/calendar.controller";
 
-describe('GmailService', () => {
-    let gmailController: GmailController;
-    let gmailService: GmailService;
+describe('CalendarService', () => {
+    let calendarController: CalendarController;
+    let calendarService: CalendarService;
     let configService: ConfigService;
     let prismaService: PrismaService;
     let userService: UserService;
@@ -19,8 +19,8 @@ describe('GmailService', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GmailController,
-                GmailService,
+                CalendarController,
+                CalendarService,
                 ConfigService,
                 PrismaService,
                 UserService,
@@ -32,8 +32,8 @@ describe('GmailService', () => {
         prismaService = module.get<PrismaService>(PrismaService);
         userService = module.get<UserService>(UserService);
         providerService = module.get<ProviderService>(ProviderService);
-        gmailService = module.get<GmailService>(GmailService);
-        gmailController = module.get<GmailController>(GmailController);
+        calendarService = module.get<CalendarService>(CalendarService);
+        calendarController = module.get<CalendarController>(CalendarController);
     });
 
     afterEach(() => {
@@ -45,23 +45,13 @@ describe('GmailService', () => {
         });
     });
 
-    describe('handleWeb@hook', () => {
-        it('should handle a webhook', async () => {
+    describe('createEvent', () => {
+        it('should create an event', async () => {
         });
     });
 
-    describe('createWebhook', () => {
-        it('should create a webhook for the specified repository', async () => {
-        });
-    });
-
-    describe('createDraft', () => {
-        it('should create a draft', async () => {
-        });
-    });
-
-    describe('createMail', () => {
-        it('should create a mail', async () => {
+    describe('createCalendar', () => {
+        it('should create a calendar', async () => {
         });
     });
 });

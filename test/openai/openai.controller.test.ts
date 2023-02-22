@@ -1,12 +1,12 @@
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma.service";
-import { createCompletionInput, Model } from "./openai.type";
+import { PrismaService } from "../../src/prisma.service";
+import { createCompletionInput, Model } from "../../src/openai/openai.type";
 import { Configuration, OpenAIApi } from "openai";
 import { Test, TestingModule } from '@nestjs/testing';
-import { OpenaiService } from './openai.service';
-import { OpenaiController } from './openai.controller';
+import { OpenaiService } from '../../src/openai/openai.service';
+import { OpenaiController } from '../../src/openai/openai.controller';
 
-describe('OpenaiService', () => {
+describe('OpenaiController', () => {
     let openaiController: OpenaiController;
     let openaiService: OpenaiService;
     let configService: ConfigService;

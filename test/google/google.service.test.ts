@@ -1,11 +1,11 @@
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma.service";
-import { UserService } from "../user/user.service";
-import { ProviderService } from "../provider/provider.service";
+import { PrismaService } from "../../src/prisma.service";
+import { UserService } from "../../src/user/user.service";
+import { ProviderService } from "../../src/provider/provider.service";
 import { google } from "googleapis";
 import { Test, TestingModule } from '@nestjs/testing';
-import { GoogleService } from "./google.service";
-import { GoogleController } from "./google.controller";
+import { GoogleService } from "../../src/google/google.service";
+import { GoogleController } from "../../src/google/google.controller";
 
 describe('GoogleService', () => {
     let googleController: GoogleController;

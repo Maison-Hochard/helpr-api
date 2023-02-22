@@ -1,16 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../../prisma.service";
-import { UserService } from "../../user/user.service";
-import { ProviderService } from "../../provider/provider.service";
-import { createCalendarInput, createEventInput } from "./calendar.type";
+import { PrismaService } from "../../src/prisma.service";
+import { UserService } from "../../src/user/user.service";
+import { ProviderService } from "../../src/provider/provider.service";
 import { google } from "googleapis";
-import { CalendarService } from "./calendar.service";
-import { CalendarController } from "./calendar.controller";
+import { Test, TestingModule } from '@nestjs/testing';
+import { GoogleService } from "../../src/google/google.service";
+import { GoogleController } from "../../src/google/google.controller";
 
-describe('CalendarService', () => {
-    let calendarController: CalendarController;
-    let calendarService: CalendarService;
+describe('GoogleController', () => {
+    let googleController: GoogleController;
+    let googleService: GoogleService;
     let configService: ConfigService;
     let prismaService: PrismaService;
     let userService: UserService;
@@ -19,8 +18,8 @@ describe('CalendarService', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                CalendarController,
-                CalendarService,
+                GoogleController,
+                GoogleService,
                 ConfigService,
                 PrismaService,
                 UserService,
@@ -32,8 +31,8 @@ describe('CalendarService', () => {
         prismaService = module.get<PrismaService>(PrismaService);
         userService = module.get<UserService>(UserService);
         providerService = module.get<ProviderService>(ProviderService);
-        calendarService = module.get<CalendarService>(CalendarService);
-        calendarController = module.get<CalendarController>(CalendarController);
+        googleService = module.get<GoogleService>(GoogleService);
+        googleController = module.get<GoogleController>(GoogleController);
     });
 
     afterEach(() => {
@@ -42,16 +41,6 @@ describe('CalendarService', () => {
 
     describe('createCredentials', () => {
         it('should create credentials for the specified user', async () => {
-        });
-    });
-
-    describe('createEvent', () => {
-        it('should create an event', async () => {
-        });
-    });
-
-    describe('createCalendar', () => {
-        it('should create a calendar', async () => {
         });
     });
 });

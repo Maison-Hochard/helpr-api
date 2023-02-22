@@ -1,11 +1,11 @@
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma.service";
-import { UserService } from "../user/user.service";
-import { ProviderService } from "../provider/provider.service";
+import { PrismaService } from "../../src/prisma.service";
+import { UserService } from "../../src/user/user.service";
+import { ProviderService } from "../../src/provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
 import { Test, TestingModule } from '@nestjs/testing';
-import { LinkedinService } from './linkedin.service';
-import { LinkedinController } from "./linkedin.controller";
+import { LinkedinService } from '../../src/linkedin/linkedin.service';
+import { LinkedinController } from "../../src/linkedin/linkedin.controller";
 
 describe('LinkedinService', () => {
     let linkedinController: LinkedinController;

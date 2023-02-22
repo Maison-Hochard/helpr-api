@@ -1,16 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GithubService } from './github.service';
-import { MailingService } from '../mailing/mailing.service';
+import { GithubService } from '../../src/github/github.service';
+import { MailingService } from '../../src/mailing/mailing.service';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../prisma.service';
-import { UserService } from '../user/user.service';
-import { ProviderService } from '../provider/provider.service';
-import { GithubController } from './github.controller';
-
+import { PrismaService } from '../../src/prisma.service';
+import { UserService } from '../../src/user/user.service';
+import { ProviderService } from '../../src/provider/provider.service';
+import { GithubController } from '../../src/github/github.controller';
 
 describe('GithubService', () => {
     let githubController: GithubController;
-    let githubService: GithubService;
+    const githubService = new GithubService(null, null, null, null, null);
     let mailingService: MailingService;
     let configService: ConfigService;
     let prismaService: PrismaService;
@@ -38,7 +37,6 @@ describe('GithubService', () => {
       prismaService = module.get<PrismaService>(PrismaService);
       userService = module.get<UserService>(UserService);
       providerService = module.get<ProviderService>(ProviderService);
-      githubService = module.get<GithubService>(GithubService);
       githubController = module.get<GithubController>(GithubController);
     });
   

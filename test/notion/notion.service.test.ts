@@ -1,16 +1,16 @@
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../../src/prisma.service";
 import { Client } from "@notionhq/client";
-import { UserService } from "../user/user.service";
-import { ProviderService } from "../provider/provider.service";
+import { UserService } from "../../src/user/user.service";
+import { ProviderService } from "../../src/provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
 import {
   createItemInDatabaseInput,
   createDatabaseInput,
   createComment,
-} from "./notion.type";
-import { NotionService } from "./notion.service";
-import { NotionController } from "./notion.controller";
+} from "../../src/notion/notion.type";
+import { NotionService } from "../../src/notion/notion.service";
+import { NotionController } from "../../src/notion/notion.controller";
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('NotionService', () => {

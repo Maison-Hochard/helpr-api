@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../../prisma.service";
-import { UserService } from "../../user/user.service";
-import { ProviderService } from "../../provider/provider.service";
-import { createSheetInput, updateSheetTitleInput } from "./sheet.type";
+import { PrismaService } from "../../../src/prisma.service";
+import { UserService } from "../../../src/user/user.service";
+import { ProviderService } from "../../../src/provider/provider.service";
+import { createDraftInput, createMailInput } from "../../../src/google/gmail/gmail.type";
 import { google } from "googleapis";
-import { SheetService } from "./sheet.service";
-import { SheetController } from "./sheet.controller";
+import { GmailService } from "../../../src/google/gmail/gmail.service";
+import { GmailController } from "../../../src/google/gmail/gmail.controller";
 
-describe('SheetService', () => {
-    let sheetController: SheetController;
-    let sheetService: SheetService;
+describe('GmailService', () => {
+    let gmailController: GmailController;
+    let gmailService: GmailService;
     let configService: ConfigService;
     let prismaService: PrismaService;
     let userService: UserService;
@@ -19,8 +19,8 @@ describe('SheetService', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                SheetController,
-                SheetService,
+                GmailController,
+                GmailService,
                 ConfigService,
                 PrismaService,
                 UserService,
@@ -32,8 +32,8 @@ describe('SheetService', () => {
         prismaService = module.get<PrismaService>(PrismaService);
         userService = module.get<UserService>(UserService);
         providerService = module.get<ProviderService>(ProviderService);
-        sheetService = module.get<SheetService>(SheetService);
-        sheetController = module.get<SheetController>(SheetController);
+        gmailService = module.get<GmailService>(GmailService);
+        gmailController = module.get<GmailController>(GmailController);
     });
 
     afterEach(() => {
@@ -45,7 +45,7 @@ describe('SheetService', () => {
         });
     });
 
-    describe('handleWebhook', () => {
+    describe('handleWeb@hook', () => {
         it('should handle a webhook', async () => {
         });
     });
@@ -55,13 +55,13 @@ describe('SheetService', () => {
         });
     });
 
-    describe('createSheet', () => {
-        it('should create a sheet', async () => {
+    describe('createDraft', () => {
+        it('should create a draft', async () => {
         });
     });
 
-    describe('updateSheetTitle', () => {
-        it('should update the title of a sheet', async () => {
+    describe('createMail', () => {
+        it('should create a mail', async () => {
         });
     });
 });

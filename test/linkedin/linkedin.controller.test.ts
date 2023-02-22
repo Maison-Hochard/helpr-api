@@ -1,37 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma.service";
-import { LinearClient } from "@linear/sdk";
-import { UserService } from "../user/user.service";
-import { ProviderService } from "../provider/provider.service";
+import { PrismaService } from "../../src/prisma.service";
+import { UserService } from "../../src/user/user.service";
+import { ProviderService } from "../../src/provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
-import { createIssueInput } from "./linear.type";
-import { FlowService } from "../flow/flow.service";
-import { LinearService } from './linear.service';
-import { LinearController } from './linear.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LinkedinService } from '../../src/linkedin/linkedin.service';
+import { LinkedinController } from "../../src/linkedin/linkedin.controller";
 
-describe('LinearService', () => {
-    let linearController: LinearController;
-    let linearService: LinearService;
+describe('LinkedinController', () => {
+    let linkedinController: LinkedinController;
+    let linkedinService: LinkedinService;
     let configService: ConfigService;
     let prismaService: PrismaService;
     let userService: UserService;
     let providerService: ProviderService;
-    let flowService: FlowService;
-    let linearClient: LinearClient;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [
-                LinearController,
-            ],
             providers: [
-                LinearService,
+                LinkedinController,
+                LinkedinService,
                 ConfigService,
                 PrismaService,
                 UserService,
                 ProviderService,
-                FlowService,
             ],
         }).compile();
 
@@ -39,9 +31,8 @@ describe('LinearService', () => {
         prismaService = module.get<PrismaService>(PrismaService);
         userService = module.get<UserService>(UserService);
         providerService = module.get<ProviderService>(ProviderService);
-        flowService = module.get<FlowService>(FlowService);
-        linearService = module.get<LinearService>(LinearService);
-        linearController = module.get<LinearController>(LinearController);
+        linkedinService = module.get<LinkedinService>(LinkedinService);
+        linkedinController = module.get<LinkedinController>(LinkedinController);
     });
 
     afterEach(() => {
@@ -49,7 +40,7 @@ describe('LinearService', () => {
     });
 
     describe('createWebhook', () => {
-        it('should create a webhook for the specified team', async () => {
+        it('should create a webhook for the specified organization', async () => {
         });
     });
 
@@ -63,8 +54,8 @@ describe('LinearService', () => {
         });
     });
 
-    describe('createIssue', () => {
-        it('should create an issue in the specified team', async () => {
+    describe('postOnLinkedIn', () => {
+        it('should post on LinkedIn', async () => {
         });
     });
 });
