@@ -19,6 +19,18 @@ export class GmailService {
   ) {}
 
   async handleWebhook() {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      1,
+      "google",
+      true,
+    );
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
+    );
+    oauth2Client.setCredentials({ access_token: accessToken });
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
     const pubSubClient = new PubSub({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -29,11 +41,14 @@ export class GmailService {
     });
 
     const subscription = pubSubClient.subscription(process.env.GOOGLE_SUB);
-    const messageHandler = (message: any) => {
+    const messageHandler = async (message: any) => {
       console.log(`Received message ${message.id}:`);
-      console.log(`\tData: ${message.data}`);
-      console.log(`\tAttributes: ${message.attributes}`);
-      message.ack();
+      const res = await gmail.users.messages.get({
+        userId: "me",
+        id: message.id,
+        format: "full",
+      });
+      console.log(res);
     };
     subscription.on("message", messageHandler);
     setTimeout(() => {
@@ -57,7 +72,7 @@ export class GmailService {
     const res = await gmail.users.watch({
       userId: "me",
       requestBody: {
-        labelIds: ["INBOX", "DRAFT", "SENT"],
+        labelIds: ["INBOX"],
         topicName: "projects/helpr-375013/topics/helprtopic",
       },
     });

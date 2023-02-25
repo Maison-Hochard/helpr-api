@@ -1,10 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma.service";
 import { UserService } from "../../user/user.service";
 import { ProviderService } from "../../provider/provider.service";
 import { createCalendarInput, createEventInput } from "./calendar.type";
 import { google } from "googleapis";
+import { CurrentUser } from "../../auth/decorators/current-user.decorator";
+import { JwtPayload } from "../../auth/auth.service";
 
 @Injectable()
 export class CalendarService {
@@ -15,13 +17,39 @@ export class CalendarService {
     private providerService: ProviderService,
   ) {}
 
-  async handleWebhook(body: any): Promise<any> {
-    console.log(body);
-    /* Body is empty */
+  async handleWebhook() {
+    /*    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      3,
+      "google",
+      true,
+    );
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
+    );
+    oauth2Client.setCredentials({ access_token: accessToken });
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    // list the last event created
+    const res = await calendar.events.list({
+      calendarId: "primary",
+      timeMin: new Date().toISOString(),
+      maxResults: 1,
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+    const lastEvent = res.data.items[0];
+    console.log("Summary = " + lastEvent.summary);
+    console.log("Description = " + lastEvent.description);
+    console.log("Location = " + lastEvent.location);
+    return {
+      message: "webhook_handled",
+      data: res.data,
+    };*/
   }
 
   async createWebhook(userId: number): Promise<any> {
-    const { accessToken } = await this.providerService.getCredentialsByProvider(
+    /*    const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "google",
       true,
@@ -37,7 +65,7 @@ export class CalendarService {
     const webhookProdUrl =
       this.configService.get("api_url") + "/calendar/webhook";
     const webhookDevUrl =
-      "https://c915-78-126-205-77.eu.ngrok.io/calendar/webhook";
+      "https://d258-78-126-205-77.eu.ngrok.io/calendar/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
     const res = await calendar.events.watch({
       calendarId: "primary",
@@ -50,7 +78,7 @@ export class CalendarService {
     return {
       message: "webhook_created",
       data: res,
-    };
+    };*/
   }
 
   async createCalendar(

@@ -31,7 +31,7 @@ export class StripeService {
           const customer_name = body.data.object.name;
           const customer_email = body.data.object.email;
           const customer_phone = body.data.object.phone;
-          await this.flowService.addOrUpdateWebhookData({
+          /*          await this.flowService.addOrUpdateWebhookData({
             userId: user.id,
             provider: "stripe",
             type: "customer_created",
@@ -40,7 +40,7 @@ export class StripeService {
               customer_email,
               customer_phone,
             }),
-          });
+          });*/
           console.log("customer created");
           break;
         case "charge.succeeded":
@@ -48,7 +48,7 @@ export class StripeService {
           const charge_currency = body.data.object.currency;
           const charge_customer = body.data.object.customer;
           const charge_description = body.data.object.description;
-          await this.flowService.addOrUpdateWebhookData({
+          /*          await this.flowService.addOrUpdateWebhookData({
             userId: user.id,
             provider: "stripe",
             type: "payment_created",
@@ -58,39 +58,24 @@ export class StripeService {
               charge_customer,
               charge_description,
             }),
-          });
+          });*/
           console.log("payment created");
           break;
         case "product.created":
           const product_name = body.data.object.name;
           const product_description = body.data.object.description;
-          const product_price = body.data.object.price; // NO PRICE
-          const product_currency = body.data.object.currency; // NO CURRENCY
-          await this.flowService.addOrUpdateWebhookData({
+          /*          await this.flowService.addOrUpdateWebhookData({
             userId: user.id,
             provider: "stripe",
             type: "product_created",
             data: JSON.stringify({
               product_name,
               product_description,
-              product_price,
-              product_currency,
             }),
-          });
+          });*/
           console.log("product created");
           break;
         case "payment_link.created":
-          const link_price = body.data.object.price; // NO PRICE
-          const link_quantity = body.data.object.quantity; // NO QUANTITY
-          await this.flowService.addOrUpdateWebhookData({
-            userId: user.id,
-            provider: "stripe",
-            type: "payment_link_created",
-            data: JSON.stringify({
-              link_price,
-              link_quantity,
-            }),
-          });
           console.log("payment link created");
           break;
         default:

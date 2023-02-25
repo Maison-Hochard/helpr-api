@@ -14,8 +14,8 @@ export class CalendarController {
 
   @Public()
   @Post("webhook")
-  async webhook(@Body() body) {
-    return await this.calendarService.handleWebhook(body);
+  async webhook() {
+    return await this.calendarService.handleWebhook();
   }
 
   @Post("create-webhook")
