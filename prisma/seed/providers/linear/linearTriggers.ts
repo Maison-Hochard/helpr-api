@@ -49,6 +49,7 @@ export async function projectCreatedTrigger(providerId: number) {
       value: "project-created",
       providerId: providerId,
       provider: "linear",
+      webhook: true,
       variables: {
         create: [
           {

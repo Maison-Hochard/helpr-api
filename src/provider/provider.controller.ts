@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, UseGuards } from "@nestjs/common";
 import { ProviderService } from "./provider.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -55,5 +55,13 @@ export class ProviderController {
   @Post("/trigger")
   async manageTrigger(@Body() trigger: createTriggerInput) {
     return this.providerService.createOrUpdateTrigger(trigger);
+  }
+
+  @Delete("/deconnect")
+  async deconnectProvider(
+    @CurrentUser() user: JwtPayload,
+    @Body() provider: string,
+  ) {
+    return this.providerService.deconnectProvider(user.id, provider);
   }
 }

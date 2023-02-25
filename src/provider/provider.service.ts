@@ -214,4 +214,13 @@ export class ProviderService {
     });
     return [...providers, ...defaultProviders];
   }
+
+  async deconnectProvider(userId: number, provider: string) {
+    return await this.prisma.providerCredentials.deleteMany({
+      where: {
+        userId,
+        provider,
+      },
+    });
+  }
 }
