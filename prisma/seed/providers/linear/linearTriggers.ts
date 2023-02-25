@@ -21,7 +21,6 @@ export async function ticketCreatedTrigger(providerId: number) {
             title: "Last ticket description",
             key: "linear_ticket_description",
             value: "{last_linear_ticket_description}",
-            type: "textarea",
           },
           {
             title: "Last ticket number",
@@ -61,7 +60,6 @@ export async function projectCreatedTrigger(providerId: number) {
             title: "Last project description",
             key: "linear_project_description",
             value: "{last_linear_project_description}",
-            type: "textarea",
           },
           {
             title: "Team",
