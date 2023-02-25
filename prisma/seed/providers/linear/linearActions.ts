@@ -20,12 +20,14 @@ export async function createTicketAction(providerId: number) {
             key: "linear_ticket_description",
             value: "{linear_ticket_description}",
             type: "textarea",
+            required: false,
           },
           {
             title: "Ticket assignee",
             key: "linear_ticket_assignee",
             value: "{linear_ticket_assignee}",
             type: "select",
+            required: false,
           },
           {
             title: "Team",
@@ -38,6 +40,7 @@ export async function createTicketAction(providerId: number) {
             key: "linear_project_id",
             value: "{linear_project_id}",
             type: "select",
+            required: false,
           },
         ],
       },
@@ -65,12 +68,14 @@ export async function createProjectAction(providerId: number) {
             key: "linear_project_description",
             value: "{linear_project_description}",
             type: "textarea",
+            required: false,
           },
           {
             title: "Project assignee",
             key: "linear_project_assignee",
             value: "{linear_project_assignee}",
             type: "select",
+            required: false,
           },
           {
             title: "Team",

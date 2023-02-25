@@ -5,9 +5,9 @@ export async function createDeeplProvider() {
   const provider = await prisma.provider.create({
     data: {
       name: "DeepL",
-      description:
-        "DeepL is the most accurate translation service available in Helpr.",
-      logo: "https://storage.cloud.google.com/helpr/deepl-logo-white.svg",
+      description: "DeepL provide translations for your content",
+      logo: "deepl-logo",
+      premium: true,
     },
   });
   // Action

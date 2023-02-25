@@ -3,7 +3,7 @@ import { prisma } from "../../../seed";
 export async function createItemInDatabaseAction(providerId: number) {
   return await prisma.action.create({
     data: {
-      title: "Create Item in Database",
+      title: "Create item in database",
       description: "Create an item in a Notion database",
       endpoint: "notion",
       name: "create-item",
@@ -11,19 +11,21 @@ export async function createItemInDatabaseAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Item Database ID",
-            name: "notion_item_databaseId",
-            value: "{notion_item_databaseId}",
+            title: "Database",
+            key: "notion_item_database_id",
+            value: "{notion_item_database_id}",
+            type: "select",
           },
           {
-            title: "Create Item Title",
-            name: "notion_item_title",
+            title: "Item title",
+            key: "notion_item_title",
             value: "{notion_item_title}",
           },
           {
-            title: "Create Item Description",
-            name: "notion_item_description",
+            title: "Item description",
+            key: "notion_item_description",
             value: "{notion_item_description}",
+            type: "textarea",
           },
         ],
       },
@@ -34,27 +36,30 @@ export async function createItemInDatabaseAction(providerId: number) {
 export async function createDatabaseAction(providerId: number) {
   return await prisma.action.create({
     data: {
-      title: "Create Database",
-      description: "Create a Notion database",
+      title: "Create database",
+      description: "Create a database",
       endpoint: "notion",
       name: "create-database",
       providerId: providerId,
       variables: {
         create: [
           {
-            title: "Create Database Page ID",
-            name: "notion_database_pageId",
-            value: "{notion_database_pageId}",
+            title: "Database Page",
+            key: "notion_database_page_id",
+            value: "{notion_database_page_id}",
+            type: "select",
           },
           {
-            title: "Create Database Title",
-            name: "notion_database_title",
+            title: "Database title",
+            key: "notion_database_title",
             value: "{notion_database_title}",
           },
           {
-            title: "Create Database Description",
-            name: "notion_database_description",
+            title: "Database description",
+            key: "notion_database_description",
             value: "{notion_database_description}",
+            type: "textarea",
+            required: false,
           },
         ],
       },
@@ -65,7 +70,7 @@ export async function createDatabaseAction(providerId: number) {
 export async function createCommentAction(providerId: number) {
   return await prisma.action.create({
     data: {
-      title: "Create Comment",
+      title: "Create comment",
       description: "Create a comment on a Notion page",
       endpoint: "notion",
       name: "create-comment",
@@ -73,14 +78,16 @@ export async function createCommentAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Comment Page ID",
-            name: "notion_comment_pageId",
-            value: "{notion_comment_pageId}",
+            title: "Comment Page",
+            key: "notion_comment_page_id",
+            value: "{notion_comment_page_id}",
+            type: "select",
           },
           {
-            title: "Create Comment Text",
-            name: "notion_comment_text",
+            title: "Comment text",
+            key: "notion_comment_text",
             value: "{notion_comment_text}",
+            type: "textarea",
           },
         ],
       },
