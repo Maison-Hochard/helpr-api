@@ -227,7 +227,7 @@ export class ProviderService {
     return await this.prisma.providerCredentials.deleteMany({
       where: {
         userId,
-        provider,
+        provider: findProvider.name.toLowerCase(),
       },
     });
   }
