@@ -222,6 +222,12 @@ export class ProviderService {
             variables: true,
           },
         },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
       },
     });
     return [...providers, ...defaultProviders];
