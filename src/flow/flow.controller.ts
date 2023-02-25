@@ -32,7 +32,7 @@ export class FlowController {
 
   @Get("/user/:id")
   async getFlowByUser(@Param("id", ParseIntPipe) id: number) {
-    return await this.flowService.getUserFlows(id);
+    return await this.flowService.getUserFlows(id, true);
   }
 
   @Get("get-flows")

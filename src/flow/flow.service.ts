@@ -74,12 +74,13 @@ export class FlowService {
     };
   }
 
-  async getUserFlows(userId: number) {
+  async getUserFlows(userId: number, publicOnly = false) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("user_not_found");
     const flows = await this.prisma.flow.findMany({
       where: {
         userId: userId,
+        public: publicOnly ? true : undefined,
       },
       include: {
         trigger: {
@@ -131,10 +132,9 @@ export class FlowService {
   }
 
   async getFlowById(flowId: number) {
-    const flow = await this.prisma.flow.findFirst({
+    const flow = await this.prisma.flow.findUnique({
       where: {
         id: flowId,
-        public: true,
       },
       include: {
         trigger: {
