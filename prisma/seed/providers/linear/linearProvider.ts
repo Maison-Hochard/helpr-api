@@ -6,8 +6,7 @@ export async function createLinearProvider() {
   const provider = await prisma.provider.create({
     data: {
       name: "Linear",
-      description:
-        "Create tasks, issues, projects, and more in Linear from Helpr",
+      description: "Create tasks, issues, projects, and more in Linear",
       logo: "linear-logo",
     },
   });

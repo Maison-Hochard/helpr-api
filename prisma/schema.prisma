@@ -159,7 +159,7 @@ model Variables {
   triggerId Int?
   title     String
   type      String    @default("text")
-  required  Boolean   @default(false)
+  required  Boolean   @default(true)
   webhook   Boolean   @default(false)
   trigger   Trigger?  @relation(fields: [triggerId], references: [id])
   actions   Action[]  @relation("ActionToVariables")
