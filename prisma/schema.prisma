@@ -102,6 +102,7 @@ model Provider {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
   premium     Boolean   @default(false)
+  tokenLink   String?
   actions     Action[]
   triggers    Trigger[]
   users       User[]    @relation("ProviderToUser")
