@@ -147,7 +147,7 @@ export class FlowService {
               include: {
                 variables: {
                   select: {
-                    name: true,
+                    key: true,
                     value: true,
                   },
                 },
