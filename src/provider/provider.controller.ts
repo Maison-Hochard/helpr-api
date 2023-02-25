@@ -60,7 +60,7 @@ export class ProviderController {
   @Delete("/deconnect")
   async deconnectProvider(
     @CurrentUser() user: JwtPayload,
-    @Body() provider: string,
+    @Body("provider") provider: string,
   ) {
     return this.providerService.deconnectProvider(user.id, provider);
   }

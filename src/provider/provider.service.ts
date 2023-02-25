@@ -216,6 +216,14 @@ export class ProviderService {
   }
 
   async deconnectProvider(userId: number, provider: string) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new BadRequestException("User not found");
+    const findProvider = await this.prisma.provider.findFirst({
+      where: {
+        name: provider,
+      },
+    });
+    if (!findProvider) throw new BadRequestException("Provider not found");
     return await this.prisma.providerCredentials.deleteMany({
       where: {
         userId,
