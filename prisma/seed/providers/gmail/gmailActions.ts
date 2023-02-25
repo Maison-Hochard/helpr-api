@@ -11,19 +11,23 @@ export async function sendMailAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Send Mail To",
-            name: "gmail_mail_to",
+            title: "Send mail to",
+            key: "gmail_mail_to",
             value: "{gmail_mail_to}",
+            required: true,
           },
           {
-            title: "Send Mail Subject",
-            name: "gmail_mail_subject",
+            title: "Send mail subject",
+            key: "gmail_mail_subject",
             value: "{gmail_mail_subject}",
+            required: true,
           },
           {
-            title: "Send Mail Body",
-            name: "gmail_mail_body",
+            title: "Send mail body",
+            key: "gmail_mail_body",
             value: "{gmail_mail_body}",
+            type: "textarea",
+            required: true,
           },
         ],
       },
@@ -42,19 +46,23 @@ export async function createDraftAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Send Draft To",
-            name: "gmail_draft_to",
+            title: "Send draft to",
+            key: "gmail_draft_to",
             value: "{gmail_draft_to}",
+            required: true,
           },
           {
-            title: "Send Draft Subject",
-            name: "gmail_draft_subject",
+            title: "Send draft subject",
+            key: "gmail_draft_subject",
             value: "{gmail_draft_subject}",
+            required: true,
           },
           {
-            title: "Send Draft Body",
-            name: "gmail_draft_body",
+            title: "Send draft body",
+            key: "gmail_draft_body",
             value: "{gmail_draft_body}",
+            type: "textarea",
+            required: true,
           },
         ],
       },

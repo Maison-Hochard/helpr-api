@@ -4,24 +4,12 @@ export async function every10MinutesTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
       title: "Every 10 minutes",
-      name: "every10Minutes",
+      key: "every_10_minutes",
       description: "Trigger every 10 minutes",
       value: "every_10_minutes",
       providerId: providerId,
       provider: "helpr",
-    },
-  });
-}
-
-export async function every30MinutesTrigger(providerId: number) {
-  return await prisma.trigger.create({
-    data: {
-      title: "Every 30 minutes",
-      name: "every30Minutes",
-      description: "Trigger every 30 minutes",
-      value: "every_30_minutes",
-      providerId: providerId,
-      provider: "helpr",
+      premium: true,
     },
   });
 }
@@ -30,11 +18,25 @@ export async function everyHourTrigger(providerId: number) {
   return await prisma.trigger.create({
     data: {
       title: "Every hour",
-      name: "everyHour",
+      key: "every_hour",
       description: "Trigger every hour",
       value: "every_hour",
       providerId: providerId,
       provider: "helpr",
+    },
+  });
+}
+
+export async function everyDayTrigger(providerId: number) {
+  return await prisma.trigger.create({
+    data: {
+      title: "Every day",
+      key: "every_day",
+      description: "Trigger every day",
+      value: "every_day",
+      providerId: providerId,
+      provider: "helpr",
+      premium: true,
     },
   });
 }

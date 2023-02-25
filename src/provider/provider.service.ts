@@ -112,10 +112,10 @@ export class ProviderService {
   async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
     return await this.prisma.trigger.upsert({
       where: {
-        name: createTriggerInput.name,
+        key: createTriggerInput.key,
       },
       update: {
-        name: createTriggerInput.name,
+        key: createTriggerInput.key,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
         provider: createTriggerInput.provider,
@@ -123,7 +123,7 @@ export class ProviderService {
       },
       create: {
         title: createTriggerInput.title,
-        name: createTriggerInput.name,
+        key: createTriggerInput.key,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
         provider: createTriggerInput.provider,

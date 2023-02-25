@@ -6,8 +6,9 @@ export async function createOpenaiProvider() {
     data: {
       name: "OpenAI",
       description:
-        "OpenAI is an artificial intelligence which can be used to generate text. This service is available in Helpr.",
-      logo: "https://storage.cloud.google.com/helpr/openai-logo-white.svg",
+        "OpenAI provider powerfull completion engine to help you create better content.",
+      logo: "openai-logo",
+      premium: true,
     },
   });
   // Action

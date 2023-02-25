@@ -10,8 +10,9 @@ export async function createNotionProvider() {
     data: {
       name: "Notion",
       description:
-        "Notion is a productivity tool that combines note-taking, wikis, and databases in one place. You can create database, comment and items in a database from Helpr",
-      logo: "https://storage.cloud.google.com/helpr/notion-logo-white.svg",
+        "Create databases, add items to databases, comments, and more with Notion.",
+      logo: "notion-logo",
+      tokenLink: "https://www.notion.so/my-integrations",
     },
   });
   // Actions

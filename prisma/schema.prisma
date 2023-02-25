@@ -16,6 +16,7 @@ model User {
   lastname            String
   password            String
   stripeCustomerId    String?
+  bio                 String?               @default("No bio yet")
   createdAt           DateTime              @default(now())
   updatedAt           DateTime?             @updatedAt
   role                Int                   @default(1)
@@ -24,9 +25,8 @@ model User {
   authToken           String?               @unique
   id                  Int                   @id @default(autoincrement())
   avatar              String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/default-avatar.jpeg")
-  providerId          Int?
-  bio                 String?               @default("No bio yet")
   cover               String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/banner.avif")
+  providerId          Int?
   emailVerification   EmailVerification[]
   flow                Flow[]
   providerCredentials ProviderCredentials[]
@@ -80,6 +80,7 @@ model Flow {
   id          Int             @id @default(autoincrement())
   name        String
   description String?
+  public      Boolean         @default(false)
   accessToken String
   enabled     Boolean         @default(true)
   status      Int             @default(1)
@@ -87,7 +88,6 @@ model Flow {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime?       @updatedAt
   triggerId   Int
-  public      Boolean         @default(false)
   trigger     Trigger         @relation(fields: [triggerId], references: [id], onDelete: Cascade)
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   actions     FlowActions[]
@@ -101,6 +101,8 @@ model Provider {
   logo        String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
+  premium     Boolean   @default(false)
+  tokenLink   String?
   actions     Action[]
   triggers    Trigger[]
   users       User[]    @relation("ProviderToUser")
@@ -115,6 +117,7 @@ model Action {
   providerId  Int
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?     @updatedAt
+  premium     Boolean       @default(false)
   provider    Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
   flows       FlowActions[]
   variables   Variables[]   @relation("ActionToVariables")
@@ -134,14 +137,15 @@ model FlowActions {
 model Trigger {
   id          Int         @id @default(autoincrement())
   provider    String
-  name        String      @unique
   title       String      @unique
   value       String
+  webhook     Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt
   providerId  Int
   description String
-  webhook     Boolean     @default(false)
+  premium     Boolean     @default(false)
+  key         String      @unique
   flows       Flow[]
   Provider    Provider    @relation(fields: [providerId], references: [id])
   variables   Variables[]
@@ -149,19 +153,22 @@ model Trigger {
 
 model Variables {
   id        Int       @id @default(autoincrement())
-  name      String
+  key       String
   value     String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   triggerId Int?
   title     String
+  type      String    @default("text")
+  required  Boolean   @default(true)
+  webhook   Boolean   @default(false)
   trigger   Trigger?  @relation(fields: [triggerId], references: [id])
   actions   Action[]  @relation("ActionToVariables")
 }
 
 model FlowVariables {
   id        Int       @id @default(autoincrement())
-  name      String
+  key       String
   value     String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt

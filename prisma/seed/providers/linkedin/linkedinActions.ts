@@ -12,8 +12,10 @@ export async function createPostAction(providerId: number) {
         create: [
           {
             title: "Post content",
-            name: "linkedin_post_content",
+            key: "linkedin_post_content",
             value: "{linkedin_post_content}",
+            type: "textarea",
+            required: true,
           },
         ],
       },

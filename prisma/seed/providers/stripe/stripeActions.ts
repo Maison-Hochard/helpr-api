@@ -11,19 +11,22 @@ export async function createCustomerAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Customer Name",
-            name: "stripe_customer_name",
+            title: "Create customer name",
+            key: "stripe_customer_name",
             value: "{stripe_customer_name}",
+            required: true,
           },
           {
-            title: "Create Customer Email",
-            name: "stripe_customer_email",
+            title: "Create customer email",
+            key: "stripe_customer_email",
             value: "{stripe_customer_email}",
+            required: true,
           },
           {
-            title: "Create Customer Phone",
-            name: "stripe_customer_phone",
+            title: "Create customer phone",
+            key: "stripe_customer_phone",
             value: "{stripe_customer_phone}",
+            required: true,
           },
         ],
       },
@@ -42,24 +45,30 @@ export async function createPaymentAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Payment Amount",
-            name: "stripe_payment_amount",
+            title: "Create payment amount",
+            key: "stripe_payment_amount",
             value: "{stripe_payment_amount}",
+            required: true,
           },
           {
-            title: "Create Payment Currency",
-            name: "stripe_payment_currency",
+            title: "Create payment currency",
+            key: "stripe_payment_currency",
             value: "{stripe_payment_currency}",
+            type: "select",
+            required: true,
           },
           {
-            title: "Create Payment Customer",
-            name: "stripe_payment_customer",
+            title: "Create payment customer",
+            key: "stripe_payment_customer",
             value: "{stripe_payment_customer}",
+            required: true,
           },
           {
-            title: "Create Payment Description",
-            name: "stripe_payment_description",
+            title: "Create payment description",
+            key: "stripe_payment_description",
             value: "{stripe_payment_description}",
+            type: "textarea",
+            required: false,
           },
         ],
       },
@@ -78,24 +87,30 @@ export async function createProductAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Product Name",
-            name: "stripe_product_name",
+            title: "Create product name",
+            key: "stripe_product_name",
             value: "{stripe_product_name}",
+            required: true,
           },
           {
-            title: "Create Product Description",
-            name: "stripe_product_description",
+            title: "Create product description",
+            key: "stripe_product_description",
             value: "{stripe_product_description}",
+            type: "textarea",
+            required: false,
           },
           {
-            title: "Create Product Price",
-            name: "stripe_product_price",
+            title: "Create product price",
+            key: "stripe_product_price",
             value: "{stripe_product_price}",
+            required: true,
           },
           {
-            title: "Create Product Currency",
-            name: "stripe_product_currency",
+            title: "Create product currency",
+            key: "stripe_product_currency",
             value: "{stripe_product_currency}",
+            type: "select",
+            required: true,
           },
         ],
       },
@@ -114,14 +129,16 @@ export async function createPaymentLinkAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Link Price",
-            name: "stripe_link_price",
+            title: "Create link price",
+            key: "stripe_link_price",
             value: "{stripe_link_price}",
+            required: true,
           },
           {
-            title: "Create Link Quantity",
-            name: "stripe_link_quantity",
+            title: "Create link quantity",
+            key: "stripe_link_quantity",
             value: "{stripe_link_quantity}",
+            required: true,
           },
         ],
       },
