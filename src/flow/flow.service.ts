@@ -116,6 +116,7 @@ export class FlowService {
         actions: flow.actions.map((action) => {
           return {
             id: action.id,
+            index: action.index,
             action: action.action,
             payload: JSON.parse(action.payload),
           };

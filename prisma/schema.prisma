@@ -126,6 +126,7 @@ model Action {
 model FlowActions {
   id        Int       @id @default(autoincrement())
   flowId    Int
+  index     Int?
   actionId  Int
   payload   String
   createdAt DateTime  @default(now())
