@@ -131,9 +131,10 @@ export class FlowService {
   }
 
   async getFlowById(flowId: number) {
-    const flow = await this.prisma.flow.findUnique({
+    const flow = await this.prisma.flow.findFirst({
       where: {
         id: flowId,
+        public: true,
       },
       include: {
         trigger: {
