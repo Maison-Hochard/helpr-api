@@ -130,6 +130,55 @@ export class FlowService {
     };
   }
 
+  async getFlowById(flowId: number) {
+    const flow = await this.prisma.flow.findUnique({
+      where: {
+        id: flowId,
+      },
+      include: {
+        trigger: {
+          include: {
+            Provider: true,
+          },
+        },
+        actions: {
+          include: {
+            action: {
+              include: {
+                provider: true,
+                variables: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    const providers = flow.actions.map((action) => action.action.provider);
+    const flowData = {
+      id: flow.id,
+      name: flow.name,
+      description: flow.description,
+      status: flow.status,
+      enabled: flow.enabled,
+      public: flow.public,
+      trigger: flow.trigger,
+      providers: providers,
+      actions: flow.actions.map((action) => {
+        return {
+          id: action.id,
+          index: action.index,
+          action: action.action,
+          payload: JSON.parse(action.payload),
+        };
+      }),
+    };
+    return {
+      message: "flow_found",
+      data: flowData,
+    };
+  }
+
   async getFlowToRun(trigger: Trigger) {
     const flows = await this.prisma.flow.findMany({
       where: {

@@ -32,6 +32,12 @@ export class ProviderService {
             variables: true,
           },
         },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
       },
     });
   }
@@ -185,6 +191,12 @@ export class ProviderService {
         triggers: {
           include: {
             variables: true,
+          },
+        },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
           },
         },
       },

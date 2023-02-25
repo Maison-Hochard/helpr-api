@@ -126,11 +126,11 @@ model Action {
 model FlowActions {
   id        Int       @id @default(autoincrement())
   flowId    Int
-  index     Int?
   actionId  Int
   payload   String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  index     Int
   action    Action    @relation(fields: [actionId], references: [id], onDelete: Cascade)
   flow      Flow      @relation(fields: [flowId], references: [id], onDelete: Cascade)
 }

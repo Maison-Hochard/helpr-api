@@ -25,6 +25,16 @@ export class FlowController {
     return await this.flowService.getUserFlows(user.id);
   }
 
+  @Get("/:id")
+  async getFlow(@Param("id", ParseIntPipe) id: number) {
+    return await this.flowService.getFlowById(id);
+  }
+
+  @Get("/user/:id")
+  async getFlowByUser(@Param("id", ParseIntPipe) id: number) {
+    return await this.flowService.getUserFlows(id);
+  }
+
   @Get("get-flows")
   async getFlowsByTrigger(trigger: Trigger) {
     return await this.flowService.getFlowToRun(trigger);
