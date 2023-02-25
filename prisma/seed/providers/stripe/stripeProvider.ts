@@ -18,6 +18,7 @@ export async function createStripeProvider() {
       description:
         "Stripe is a suite of payment APIs that powers commerce for online businesses. You can create customers, products and payments.",
       logo: "stripe-logo",
+      tokenLink: "https://dashboard.stripe.com/apikeys",
     },
   });
   // Actions
