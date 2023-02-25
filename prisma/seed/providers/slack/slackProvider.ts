@@ -5,9 +5,8 @@ export async function createSlackProvider() {
   const provider = await prisma.provider.create({
     data: {
       name: "Slack",
-      description:
-        "Send messages, create channels, and more in Slack from Helpr",
-      logo: "https://storage.cloud.google.com/helpr/slack-logo-white.svg",
+      description: "Send messages, create channels, and more in Slack.",
+      logo: "slack-logo",
     },
   });
   // Action

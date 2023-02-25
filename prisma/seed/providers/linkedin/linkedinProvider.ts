@@ -5,9 +5,8 @@ export async function createLinkedinProvider() {
   const provider = await prisma.provider.create({
     data: {
       name: "Linkedin",
-      description:
-        "Linkeding is the world's largest professional network. You can post from Helpr",
-      logo: "https://storage.cloud.google.com/helpr/linkedin-logo-white.svg",
+      description: "Linkeding is the world's largest professional network.",
+      logo: "linkedin-logo",
     },
   });
   // Action
