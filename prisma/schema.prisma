@@ -23,8 +23,10 @@ model User {
   refreshToken        String?               @unique
   authToken           String?               @unique
   id                  Int                   @id @default(autoincrement())
-  avatar              String                @default("https://storage.cloud.google.com/helpr/default-avatar.jpeg")
+  avatar              String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/default-avatar.jpeg")
   providerId          Int?
+  bio                 String?               @default("No bio yet")
+  cover               String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/banner.avif")
   emailVerification   EmailVerification[]
   flow                Flow[]
   providerCredentials ProviderCredentials[]
@@ -85,6 +87,7 @@ model Flow {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime?       @updatedAt
   triggerId   Int
+  public      Boolean         @default(false)
   trigger     Trigger         @relation(fields: [triggerId], references: [id], onDelete: Cascade)
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   actions     FlowActions[]
@@ -138,6 +141,7 @@ model Trigger {
   updatedAt   DateTime?   @updatedAt
   providerId  Int
   description String
+  webhook     Boolean     @default(false)
   flows       Flow[]
   Provider    Provider    @relation(fields: [providerId], references: [id])
   variables   Variables[]

@@ -53,6 +53,7 @@ export class FlowService {
         userId: userId,
         triggerId: trigger.id,
         status: Status.STANDBY,
+        public: flowData.public,
         accessToken: accessToken,
         enabled: flowData.enabled,
       },
