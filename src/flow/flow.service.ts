@@ -110,6 +110,7 @@ export class FlowService {
         description: flow.description,
         status: flow.status,
         enabled: flow.enabled,
+        public: flow.public,
         trigger: flow.trigger,
         providers: providers[flows.indexOf(flow)],
         actions: flow.actions.map((action) => {
