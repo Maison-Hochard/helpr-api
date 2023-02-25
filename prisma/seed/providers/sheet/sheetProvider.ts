@@ -5,8 +5,8 @@ export async function createSheetProvider() {
   const provider = await prisma.provider.create({
     data: {
       name: "Google Sheet",
-      description: "Create or update a sheet from Helpr",
-      logo: "https://storage.cloud.google.com/helpr/sheet-logo-white.svg",
+      description: "Create or update a sheet in Google Sheets.",
+      logo: "sheet-logo",
     },
   });
   // Action

@@ -11,9 +11,10 @@ export async function createSheetAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Create Sheet Title",
-            name: "sheet_create_title",
+            title: "Create sheet title",
+            key: "sheet_create_title",
             value: "{sheet_create_title}",
+            required: true,
           },
         ],
       },
@@ -32,14 +33,16 @@ export async function updateSheetAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Update Sheet ID",
-            name: "sheet_update_id",
+            title: "Update sheet ID",
+            key: "sheet_update_id",
             value: "{sheet_update_id}",
+            required: true,
           },
           {
-            title: "Update Sheet Title",
-            name: "sheet_update_title",
+            title: "Update sheet title",
+            key: "sheet_update_title",
             value: "{sheet_update_title}",
+            required: true,
           },
         ],
       },

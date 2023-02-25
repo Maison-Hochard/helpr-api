@@ -6,8 +6,8 @@ export async function createGmailProvider() {
     data: {
       name: "Gmail",
       description:
-        "Gmail is an email service developed by Google. You can use Gmail from Helpr to create drafts and send emails.",
-      logo: "https://storage.cloud.google.com/helpr/gmail-logo-white.svg",
+        "Gmail is an email service developed by Google. You can use Gmail to create drafts and send emails.",
+      logo: "gmail-logo",
     },
   });
   // Action
