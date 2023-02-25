@@ -23,6 +23,7 @@ export class LinearController {
   async createWebhook(
     @CurrentUser() user: JwtPayload,
     @Body("teamId") teamId: string,
+    @Body("name") name: string,
   ) {
     return await this.linearService.createWebhook(user.id, teamId);
   }
