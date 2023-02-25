@@ -63,6 +63,7 @@ export class FlowService {
         return {
           actionId: action.id,
           flowId: flow.id,
+          index: action.index,
           payload: JSON.stringify(action.payload),
         };
       }),
