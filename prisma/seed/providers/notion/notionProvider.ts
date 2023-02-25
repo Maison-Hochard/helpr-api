@@ -12,6 +12,7 @@ export async function createNotionProvider() {
       description:
         "Create databases, add items to databases, comments, and more with Notion.",
       logo: "notion-logo",
+      tokenLink: "https://www.notion.so/my-integrations",
     },
   });
   // Actions

@@ -8,6 +8,7 @@ export async function createLinearProvider() {
       name: "Linear",
       description: "Create tasks, issues, projects, and more in Linear",
       logo: "linear-logo",
+      tokenLink: "https://linear.app/settings/api",
     },
   });
   // Actions

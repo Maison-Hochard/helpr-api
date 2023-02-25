@@ -16,6 +16,7 @@ export async function createGithubProvider() {
       name: "Github",
       description: "Create branches, issues, pull requests, etc... on GitHub",
       logo: "github-logo",
+      tokenLink: "https://github.com/settings/tokens?type=beta",
     },
   });
   // Actions
