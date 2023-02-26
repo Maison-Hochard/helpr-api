@@ -25,7 +25,7 @@ export class LinearController {
     @Body("teamId") teamId: string,
     @Body("name") name: string,
   ) {
-    return await this.linearService.createWebhook(user.id, teamId);
+    return await this.linearService.createWebhook(user.id, teamId, name);
   }
 
   @Post("add-credentials")

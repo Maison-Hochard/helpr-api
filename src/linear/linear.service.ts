@@ -7,6 +7,7 @@ import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
 import { createIssueInput } from "./linear.type";
 import { FlowService } from "../flow/flow.service";
+import { NgrokService } from "../ngrok";
 
 @Injectable()
 export class LinearService {
@@ -16,6 +17,7 @@ export class LinearService {
     private userService: UserService,
     private providerService: ProviderService,
     private flowService: FlowService,
+    private readonly ngrokService: NgrokService,
   ) {}
 
   async getTeams(accessToken: string) {
@@ -59,7 +61,7 @@ export class LinearService {
     }*/
   }
 
-  async createWebhook(userId: number, teamId: string) {
+  async createWebhook(userId: number, teamId: string, name: string) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linear",
@@ -71,14 +73,13 @@ export class LinearService {
     const env = this.configService.get("env");
     const webhookProdUrl =
       this.configService.get("api_url") + "/linear/webhook";
-    const webhookDevUrl =
-      "https://81a2-78-126-205-77.eu.ngrok.io/linear/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
+    const ngrokUrl = await this.ngrokService.connect();
+    const finalUrl = env === "production" ? webhookProdUrl : ngrokUrl;
     await linearClient.createWebhook({
       url: finalUrl,
       resourceTypes: ["Issue", "Project"],
       teamId: teamId,
-      label: "Helpr " + env + " webhook - " + new Date().toISOString(),
+      label: name,
     });
     return {
       message: "webhook_created",
