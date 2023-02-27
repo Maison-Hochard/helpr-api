@@ -24,7 +24,7 @@ export async function createTicketAction(providerId: number) {
           },
           {
             title: "Ticket assignee",
-            key: "linear_ticket_assignee",
+            key: "linear_ticket_assignee_id",
             value: "{linear_ticket_assignee}",
             type: "select",
             required: false,
@@ -68,13 +68,6 @@ export async function createProjectAction(providerId: number) {
             key: "linear_project_description",
             value: "{linear_project_description}",
             type: "textarea",
-            required: false,
-          },
-          {
-            title: "Project assignee",
-            key: "linear_project_assignee",
-            value: "{linear_project_assignee}",
-            type: "select",
             required: false,
           },
           {

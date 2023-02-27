@@ -5,8 +5,12 @@ import { PrismaService } from "../prisma.service";
 import { UserService } from "../user/user.service";
 import { Octokit } from "octokit";
 import { ProviderService } from "../provider/provider.service";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { JwtPayload } from "../auth/auth.service";
+import {
+  createReleaseInput,
+  createBranchInput,
+  createPullRequestInput,
+  createIssueInput,
+} from "./github.type";
 
 @Injectable()
 export class GithubService {
@@ -67,7 +71,6 @@ export class GithubService {
     console.log(`EventName: ${eventName}`);
   }
 
-  // provider id, status : push - pull - issue,
   async createCredentials(userId: number, accessToken: string) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("User not found");
@@ -95,12 +98,7 @@ export class GithubService {
     return githubUser;
   }
 
-  async createBranch(
-    userId: number,
-    repo: string,
-    newBranch: string,
-    fromBranch: string,
-  ) {
+  async createBranch(userId: number, createBranchInput: createBranchInput) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
@@ -110,16 +108,18 @@ export class GithubService {
     const user = await this.getUser(userId, accessToken);
     const { data: latestCommit } = await octokit.rest.repos.getBranch({
       owner: user.login,
-      repo: repo,
-      branch: fromBranch,
+      repo: createBranchInput.github_repository,
+      branch: createBranchInput.github_from_branch,
     });
 
-    newBranch = newBranch.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
+    createBranchInput.github_branch_name = createBranchInput.github_branch_name
+      .replace(/[^a-zA-Z0-9-_]/g, "-")
+      .toLowerCase();
 
-    const { data } = await octokit.rest.git.createRef({
+    await octokit.rest.git.createRef({
       owner: user.login,
-      repo: repo,
-      ref: `refs/heads/${newBranch}`,
+      repo: createBranchInput.github_repository,
+      ref: `refs/heads/${createBranchInput.github_branch_name}`,
       sha: latestCommit.commit.sha,
     });
 
@@ -128,36 +128,23 @@ export class GithubService {
     };
   }
 
-  async createRelease(
-    userId: number,
-    repo: string,
-    tagName: string,
-    targetCommitish: string,
-    name: string,
-    body: string,
-    draft: boolean,
-    prerelease: boolean,
-  ) {
+  async createRelease(userId: number, createRealeaseInput: createReleaseInput) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
       true,
     );
-
     const octokit = new Octokit({ auth: accessToken });
     const user = await this.getUser(userId, accessToken);
-
     const releaseData = {
       owner: user.login,
-      repo,
-      tag_name: tagName,
-      target_commitish: targetCommitish,
-      name: name,
-      body: body,
-      draft: draft,
-      prerelease: prerelease,
+      repo: createRealeaseInput.github_repository,
+      tag_name: createRealeaseInput.github_release_tag,
+      target_commitish: createRealeaseInput.github_release_target_commitish,
+      name: createRealeaseInput.github_release_title,
+      body: createRealeaseInput.github_release_body || "",
+      draft: createRealeaseInput.github_release_draft || false,
     };
-
     try {
       const response = await octokit.rest.repos.createRelease(releaseData);
       return {
@@ -172,11 +159,7 @@ export class GithubService {
 
   async createPullRequest(
     userId: number,
-    repo: string,
-    title: string,
-    description: string,
-    base: string,
-    head: string,
+    createPullRequestInput: createPullRequestInput,
   ) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
@@ -188,22 +171,16 @@ export class GithubService {
 
     const { data } = await octokit.rest.pulls.create({
       owner: user.login,
-      repo,
-      title,
-      body: description,
-      head,
-      base,
+      repo: createPullRequestInput.github_repository,
+      title: createPullRequestInput.github_pull_request_title,
+      body: createPullRequestInput.github_pull_request_body,
+      head: createPullRequestInput.github_pull_request_head,
+      base: createPullRequestInput.github_pull_request_base,
     });
     return { message: "pull_request_created", data };
   }
 
-  async createIssue(
-    userId: number,
-    repo: string,
-    title: string,
-    description: string,
-    label: string[],
-  ) {
+  async createIssue(userId: number, createIssueInput: createIssueInput) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
@@ -214,10 +191,10 @@ export class GithubService {
 
     const { data } = await octokit.rest.issues.create({
       owner: user.login,
-      repo,
-      title,
-      body: description,
-      labels: label,
+      repo: createIssueInput.github_repository,
+      title: createIssueInput.github_issue_title,
+      body: createIssueInput.github_issue_body,
+      labels: createIssueInput.github_issue_labels || [],
     });
 
     return { message: "issue_created", data };

@@ -5,7 +5,7 @@ import { LinearClient } from "@linear/sdk";
 import { UserService } from "../user/user.service";
 import { ProviderService } from "../provider/provider.service";
 import { ProviderCredentials } from "@prisma/client";
-import { createIssueInput } from "./linear.type";
+import { createIssueInput, createProjectInput } from "./linear.type";
 import { FlowService } from "../flow/flow.service";
 import { NgrokService } from "../ngrok";
 
@@ -121,14 +121,40 @@ export class LinearService {
     });
     const linearUser = await linearClient.viewer;
     if (!linearUser) throw new BadRequestException("invalid_credentials");
-    const team = await linearClient.team(createIssueInput.teamId);
+    const team = await linearClient.team(createIssueInput.linear_team_id);
     if (!team) throw new BadRequestException("team_not_found");
     await linearClient.createIssue({
-      title: createIssueInput.title,
-      teamId: createIssueInput.teamId,
+      title: createIssueInput.linear_ticket_title,
+      teamId: createIssueInput.linear_team_id,
+      description: createIssueInput.linear_ticket_description || "",
+      assigneeId: createIssueInput.linear_ticket_assignee_id || linearUser.id,
+      projectId: createIssueInput.linear_ticket_project_id || "",
     });
     return {
       message: "issue_created",
+    };
+  }
+
+  async createProject(userId: number, createProjectInput: createProjectInput) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "linear",
+      true,
+    );
+    const linearClient = new LinearClient({
+      apiKey: accessToken,
+    });
+    const linearUser = await linearClient.viewer;
+    if (!linearUser) throw new BadRequestException("invalid_credentials");
+    const team = await linearClient.team(createProjectInput.linear_team_id);
+    if (!team) throw new BadRequestException("team_not_found");
+    await linearClient.createProject({
+      name: createProjectInput.linear_project_title,
+      teamIds: [createProjectInput.linear_team_id],
+      description: createProjectInput.linear_project_description || "",
+    });
+    return {
+      message: "project_created",
     };
   }
 }

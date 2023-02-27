@@ -1,11 +1,16 @@
 import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 import { RoleGuard } from "../auth/guards/role.guard";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-
 import { Public } from "../auth/decorators/public.decorator";
 import { GithubService } from "./github.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import {
+  createBranchInput,
+  createReleaseInput,
+  createPullRequestInput,
+  createIssueInput,
+} from "./github.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("github")
@@ -37,73 +42,34 @@ export class GithubController {
   @Post("create-issue")
   async createIssue(
     @CurrentUser() user: JwtPayload,
-    @Body("repo") repo: string,
-    @Body("title") title: string,
-    @Body("body") body: string,
-    @Body("labels") labels: string[],
+    @Body() createIssueInput: createIssueInput,
   ) {
-    return await this.githubService.createIssue(
-      user.id,
-      repo,
-      title,
-      body,
-      labels,
-    );
+    return await this.githubService.createIssue(user.id, createIssueInput);
   }
 
   @Post("create-release")
   async createRelease(
     @CurrentUser() user: JwtPayload,
-    @Body("repo") repo: string,
-    @Body("tagName") tagName: string,
-    @Body("targetCommitish") targetCommitish: string,
-    @Body("name") name: string,
-    @Body("body") body: string,
-    @Body("draft") draft: boolean,
-    @Body("prerelease") prerelease: boolean,
+    @Body() createReleaseInput: createReleaseInput,
   ) {
-    return await this.githubService.createRelease(
-      user.id,
-      repo,
-      tagName,
-      targetCommitish,
-      name,
-      body,
-      draft,
-      prerelease,
-    );
+    return await this.githubService.createRelease(user.id, createReleaseInput);
   }
   @Post("create-branch")
   async createBranch(
     @CurrentUser() user: JwtPayload,
-    @Body("repo") repo: string,
-    @Body("newBranch") newBranch: string,
-    @Body("fromBranch") fromBranch: string,
+    @Body() createBranchInput: createBranchInput,
   ) {
-    return await this.githubService.createBranch(
-      user.id,
-      repo,
-      newBranch,
-      fromBranch,
-    );
+    return await this.githubService.createBranch(user.id, createBranchInput);
   }
 
   @Post("create-pull-request")
   async createPullRequest(
     @CurrentUser() user: JwtPayload,
-    @Body("repo") repo: string,
-    @Body("title") title: string,
-    @Body("body") body: string,
-    @Body("head") head: string,
-    @Body("base") base: string,
+    @Body() createPullRequestInput: createPullRequestInput,
   ) {
     return await this.githubService.createPullRequest(
       user.id,
-      repo,
-      title,
-      body,
-      head,
-      base,
+      createPullRequestInput,
     );
   }
 }
