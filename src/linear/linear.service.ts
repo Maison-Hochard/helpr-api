@@ -76,12 +76,16 @@ export class LinearService {
       this.configService.get("api_url") + "/linear/webhook";
     const ngrokUrl = await this.ngrokService.connect();
     const finalUrl = env === "production" ? webhookProdUrl : ngrokUrl;
-    await linearClient.createWebhook({
-      url: finalUrl,
-      resourceTypes: ["Issue", "Project"],
-      teamId: teamId,
-      label: name,
-    });
+    try {
+      await linearClient.createWebhook({
+        url: finalUrl,
+        resourceTypes: ["Issue", "Project"],
+        teamId: teamId,
+        label: name,
+      });
+    } catch (error) {
+      throw new BadRequestException("webhook_creation_failed", error);
+    }
     return {
       message: "webhook_created",
     };
