@@ -28,6 +28,11 @@ export async function translateTextAction(providerId: number) {
             value: "{deepl_target_lang}",
             type: "select",
           },
+          {
+            title: "Deepl Response",
+            key: "deepl_response",
+            value: "{deepl_response}",
+          },
         ],
       },
     },

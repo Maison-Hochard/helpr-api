@@ -180,7 +180,7 @@ export class FlowService {
     };
   }
 
-  async getFlowToRun(trigger: Trigger) {
+  async getFlowsToRun(trigger: Trigger) {
     const flows = await this.prisma.flow.findMany({
       where: {
         triggerId: trigger,

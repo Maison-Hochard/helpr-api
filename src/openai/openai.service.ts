@@ -37,7 +37,9 @@ export class OpenaiService {
     });
     return {
       message: "completion_created",
-      data: response.data.choices[0].text,
+      variables: {
+        openai_response: response.data.choices[0].text,
+      },
     };
   }
 }

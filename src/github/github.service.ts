@@ -197,6 +197,13 @@ export class GithubService {
       labels: createIssueInput.github_issue_labels || [],
     });
 
-    return { message: "issue_created", data };
+    return {
+      message: "issue_created",
+      variables: {
+        last_github_issue_title: createIssueInput.github_issue_title,
+        last_github_issue_body: createIssueInput.github_issue_body,
+        last_github_issue_labels: createIssueInput.github_issue_labels,
+      },
+    };
   }
 }

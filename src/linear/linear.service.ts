@@ -132,6 +132,11 @@ export class LinearService {
     });
     return {
       message: "issue_created",
+      variables: {
+        last_linear_ticket_title: createIssueInput.linear_ticket_title,
+        last_linear_ticket_description:
+          createIssueInput.linear_ticket_description,
+      },
     };
   }
 
