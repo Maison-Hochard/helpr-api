@@ -71,11 +71,24 @@ export class ProviderService {
     return credentials;
   }
 
+  async getRefreshTokenByProvider(userId: number, provider: string) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new BadRequestException("User not found");
+    const credentials = await this.prisma.providerCredentials.findFirst({
+      where: {
+        userId: user.id,
+        provider,
+      },
+    });
+    return decrypt(credentials.refreshToken);
+  }
+
   async addCredentials(
     userId: number,
     providerId: string,
     provider: string,
     accessToken: string,
+    refreshToken = "",
   ) {
     return await this.prisma.providerCredentials.upsert({
       where: {
@@ -83,12 +96,14 @@ export class ProviderService {
       },
       update: {
         accessToken: encrypt(accessToken),
+        refreshToken: encrypt(refreshToken),
       },
       create: {
         userId,
         providerId,
         provider,
         accessToken: encrypt(accessToken),
+        refreshToken: encrypt(refreshToken),
       },
     });
   }
