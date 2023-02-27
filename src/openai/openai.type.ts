@@ -1,7 +1,7 @@
 export type createCompletionInput = {
-  openai_completion_model: number;
-  openai_completion_prompt: string;
-  openai_completion_size: number;
+  openai_model: number;
+  openai_prompt: string;
+  openai_max_tokens: number;
 };
 
 export enum Model {

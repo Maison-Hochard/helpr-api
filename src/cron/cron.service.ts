@@ -62,6 +62,7 @@ export class CronService {
         ];
         const accessToken = flow.accessToken;
         for (const flowActions of flow.actions) {
+          console.log("Running action: ", flowActions.action.name);
           const endpoint = flowActions.action.endpoint;
           const name = flowActions.action.name;
           const payload = JSON.parse(flowActions.payload);
@@ -85,7 +86,6 @@ export class CronService {
           );
           if (data && data.variables) {
             variables = [...variables, data.variables];
-            console.log("Variables: ", variables);
           }
         }
         await this.flowService.updateFlowStatus(flow.id, Status.STANDBY);
@@ -93,7 +93,7 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.INSTANT,
