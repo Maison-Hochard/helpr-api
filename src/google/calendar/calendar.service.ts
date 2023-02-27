@@ -71,10 +71,10 @@ export class CalendarService {
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
     const res = await calendar.calendars.insert({
       requestBody: {
-        summary: createCalendarInput.summary,
-        location: createCalendarInput.location,
-        description: createCalendarInput.description,
-        timeZone: createCalendarInput.timeZone,
+        summary: createCalendarInput.calendar_calendar_summary,
+        location: createCalendarInput.calendar_calendar_location,
+        description: createCalendarInput.calendar_calendar_description,
+        timeZone: createCalendarInput.calendar_calendar_timezone,
       },
     });
     return {
@@ -102,18 +102,18 @@ export class CalendarService {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const res = await calendar.events.insert({
-      calendarId: createEventInput.calendarId,
+      calendarId: createEventInput.calendar_event_calendar_id,
       resource: {
-        summary: createEventInput.summary,
-        location: createEventInput.location,
-        description: createEventInput.description,
+        summary: createEventInput.calendar_event_summary,
+        location: createEventInput.calendar_event_location,
+        description: createEventInput.calendar_event_description,
         start: {
-          dateTime: createEventInput.startDateTime,
-          timeZone: createEventInput.timeZone,
+          dateTime: createEventInput.calendar_event_start_date_time,
+          timeZone: createEventInput.calendar_event_timezone,
         },
         end: {
-          dateTime: createEventInput.endDateTime,
-          timeZone: createEventInput.timeZone,
+          dateTime: createEventInput.calendar_event_end_date_time,
+          timeZone: createEventInput.calendar_event_timezone,
         },
       },
     });

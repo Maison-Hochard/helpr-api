@@ -32,6 +32,12 @@ export class ProviderService {
             variables: true,
           },
         },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
       },
     });
   }
@@ -65,11 +71,24 @@ export class ProviderService {
     return credentials;
   }
 
+  async getRefreshTokenByProvider(userId: number, provider: string) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new BadRequestException("User not found");
+    const credentials = await this.prisma.providerCredentials.findFirst({
+      where: {
+        userId: user.id,
+        provider,
+      },
+    });
+    return decrypt(credentials.refreshToken);
+  }
+
   async addCredentials(
     userId: number,
     providerId: string,
     provider: string,
     accessToken: string,
+    refreshToken = "",
   ) {
     return await this.prisma.providerCredentials.upsert({
       where: {
@@ -77,18 +96,20 @@ export class ProviderService {
       },
       update: {
         accessToken: encrypt(accessToken),
+        refreshToken: encrypt(refreshToken),
       },
       create: {
-        userId: userId,
+        userId,
         providerId,
         provider,
         accessToken: encrypt(accessToken),
+        refreshToken: encrypt(refreshToken),
       },
     });
   }
 
   async createOrUpdateAction(createActionInput: createActionInput) {
-    const action = await this.prisma.action.upsert({
+    return await this.prisma.action.upsert({
       where: {
         name: createActionInput.name,
       },
@@ -107,23 +128,23 @@ export class ProviderService {
         providerId: createActionInput.providerId,
       },
     });
-    return action;
   }
 
   async createOrUpdateTrigger(createTriggerInput: createTriggerInput) {
     return await this.prisma.trigger.upsert({
       where: {
-        name: createTriggerInput.name,
+        key: createTriggerInput.key,
       },
       update: {
-        name: createTriggerInput.name,
+        key: createTriggerInput.key,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
         provider: createTriggerInput.provider,
         providerId: createTriggerInput.providerId,
       },
       create: {
-        name: createTriggerInput.name,
+        title: createTriggerInput.title,
+        key: createTriggerInput.key,
         description: createTriggerInput.description,
         value: createTriggerInput.value,
         provider: createTriggerInput.provider,
@@ -170,7 +191,32 @@ export class ProviderService {
         },
       },
     );
-    return await this.prisma.provider.findMany({
+    const defaultProviders = await this.prisma.provider.findMany({
+      where: {
+        name: {
+          in: ["Helpr", "DeepL", "OpenAI"],
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
+      },
+    });
+    const providers = await this.prisma.provider.findMany({
       where: {
         name: {
           in: providersCredentials.map(
@@ -186,7 +232,29 @@ export class ProviderService {
             variables: true,
           },
         },
-        triggers: true,
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
+      },
+    });
+    return [...providers, ...defaultProviders];
+  }
+
+  async deconnectProvider(userId: number, provider: string) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new BadRequestException("User not found");
+    return await this.prisma.providerCredentials.deleteMany({
+      where: {
+        userId,
+        provider,
       },
     });
   }

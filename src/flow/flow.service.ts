@@ -39,6 +39,13 @@ export class FlowService {
     });
     if (!trigger) throw new BadRequestException("trigger_not_found");
     const accessToken = await this.authService.createAccessToken(user);
+    const isFlowExist = await this.prisma.flow.findFirst({
+      where: {
+        name: flowData.name,
+        userId: userId,
+      },
+    });
+    if (isFlowExist) throw new BadRequestException("Flow already exist");
     const flow = await this.prisma.flow.create({
       data: {
         name: flowData.name,
@@ -46,7 +53,9 @@ export class FlowService {
         userId: userId,
         triggerId: trigger.id,
         status: Status.STANDBY,
+        public: flowData.public,
         accessToken: accessToken,
+        enabled: flowData.enabled,
       },
     });
     await this.prisma.flowActions.createMany({
@@ -54,8 +63,8 @@ export class FlowService {
         return {
           actionId: action.id,
           flowId: flow.id,
+          index: action.index,
           payload: JSON.stringify(action.payload),
-          order: action.order,
         };
       }),
     });
@@ -65,19 +74,25 @@ export class FlowService {
     };
   }
 
-  async getUserFlows(userId: number) {
+  async getUserFlows(userId: number, publicOnly = false) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new BadRequestException("user_not_found");
     const flows = await this.prisma.flow.findMany({
       where: {
         userId: userId,
+        public: publicOnly ? true : undefined,
       },
       include: {
-        trigger: true,
+        trigger: {
+          include: {
+            Provider: true,
+          },
+        },
         actions: {
           include: {
             action: {
               include: {
+                provider: true,
                 variables: true,
               },
             },
@@ -85,13 +100,87 @@ export class FlowService {
         },
       },
     });
+    const providers = flows.map((flow) => {
+      const trigger = flow.trigger.Provider;
+      const actions = flow.actions.map((action) => action.action.provider);
+      return [trigger, ...actions];
+    });
+    const flowsData = flows.map((flow) => {
+      return {
+        id: flow.id,
+        name: flow.name,
+        description: flow.description,
+        status: flow.status,
+        enabled: flow.enabled,
+        public: flow.public,
+        trigger: flow.trigger,
+        providers: providers[flows.indexOf(flow)],
+        actions: flow.actions.map((action) => {
+          return {
+            id: action.id,
+            index: action.index,
+            action: action.action,
+            payload: JSON.parse(action.payload),
+          };
+        }),
+      };
+    });
     return {
       message: "flows_found",
-      data: flows,
+      data: flowsData,
     };
   }
 
-  async getFlowToRun(trigger: Trigger) {
+  async getFlowById(flowId: number) {
+    const flow = await this.prisma.flow.findUnique({
+      where: {
+        id: flowId,
+      },
+      include: {
+        trigger: {
+          include: {
+            Provider: true,
+          },
+        },
+        actions: {
+          include: {
+            action: {
+              include: {
+                provider: true,
+                variables: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    const providers = flow.actions.map((action) => action.action.provider);
+    const flowData = {
+      id: flow.id,
+      name: flow.name,
+      description: flow.description,
+      status: flow.status,
+      enabled: flow.enabled,
+      public: flow.public,
+      trigger: flow.trigger,
+      providers: providers,
+      actions: flow.actions.map((action) => {
+        return {
+          id: action.id,
+          index: action.index,
+          action: action.action,
+          payload: JSON.parse(action.payload),
+        };
+      }),
+    };
+    return {
+      message: "flow_found",
+      data: flowData,
+    };
+  }
+
+  async getFlowsToRun(trigger: Trigger) {
     const flows = await this.prisma.flow.findMany({
       where: {
         triggerId: trigger,
@@ -110,7 +199,7 @@ export class FlowService {
               include: {
                 variables: {
                   select: {
-                    name: true,
+                    key: true,
                     value: true,
                   },
                 },
@@ -135,6 +224,47 @@ export class FlowService {
         status: status,
       },
     });
+  }
+
+  async updateFlowEnabled(userId: number, flowId: number, enabled: boolean) {
+    const flow = await this.prisma.flow.findFirst({
+      where: {
+        id: flowId,
+        userId: userId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    return await this.prisma.flow.update({
+      where: {
+        id: flowId,
+      },
+      data: {
+        enabled: enabled,
+      },
+    });
+  }
+
+  async deleteFlow(userId: number, flowId: number) {
+    const flow = await this.prisma.flow.findFirst({
+      where: {
+        id: flowId,
+        userId: userId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    await this.prisma.flowActions.deleteMany({
+      where: {
+        flowId: flowId,
+      },
+    });
+    await this.prisma.flow.delete({
+      where: {
+        id: flowId,
+      },
+    });
+    return {
+      message: "flow_deleted",
+    };
   }
 
   /*async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {

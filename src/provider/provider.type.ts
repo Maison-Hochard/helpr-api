@@ -14,7 +14,8 @@ export type createActionInput = {
 };
 
 export type createTriggerInput = {
-  name: string;
+  title: string;
+  key: string;
   description: string;
   value: string;
   providerId: number;

@@ -6,7 +6,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { LinearService } from "./linear.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { createIssueInput } from "./linear.type";
+import { createIssueInput, createProjectInput } from "./linear.type";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller("linear")
@@ -23,8 +23,9 @@ export class LinearController {
   async createWebhook(
     @CurrentUser() user: JwtPayload,
     @Body("teamId") teamId: string,
+    @Body("name") name: string,
   ) {
-    return await this.linearService.createWebhook(user.id, teamId);
+    return await this.linearService.createWebhook(user.id, teamId, name);
   }
 
   @Post("add-credentials")
@@ -41,6 +42,14 @@ export class LinearController {
     @Body() issue: createIssueInput,
   ) {
     return await this.linearService.createIssue(user.id, issue);
+  }
+
+  @Post("create-project")
+  async createProject(
+    @CurrentUser() user: JwtPayload,
+    @Body() project: createProjectInput,
+  ) {
+    return await this.linearService.createProject(user.id, project);
   }
 
   @Get("teams")

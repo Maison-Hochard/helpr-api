@@ -11,19 +11,36 @@ export async function createTicketAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Ticket Title",
-            name: "linear_ticket_title",
+            title: "Ticket title",
+            key: "linear_ticket_title",
             value: "{linear_ticket_title}",
           },
           {
-            title: "Ticket Description",
-            name: "linear_ticket_description",
+            title: "Ticket description",
+            key: "linear_ticket_description",
             value: "{linear_ticket_description}",
+            type: "textarea",
+            required: false,
           },
           {
-            title: "Ticket Assignee",
-            name: "linear_ticket_assignee",
+            title: "Ticket assignee",
+            key: "linear_ticket_assignee_id",
             value: "{linear_ticket_assignee}",
+            type: "select",
+            required: false,
+          },
+          {
+            title: "Team",
+            key: "linear_team_id",
+            value: "{linear_team_id}",
+            type: "select",
+          },
+          {
+            title: "Project",
+            key: "linear_project_id",
+            value: "{linear_project_id}",
+            type: "select",
+            required: false,
           },
         ],
       },
@@ -42,19 +59,22 @@ export async function createProjectAction(providerId: number) {
       variables: {
         create: [
           {
-            title: "Project Title",
-            name: "linear_project_title",
+            title: "Project title",
+            key: "linear_project_title",
             value: "{linear_project_title}",
           },
           {
-            title: "Project Description",
-            name: "linear_project_description",
+            title: "Project description",
+            key: "linear_project_description",
             value: "{linear_project_description}",
+            type: "textarea",
+            required: false,
           },
           {
-            title: "Project Assignee",
-            name: "linear_project_assignee",
-            value: "{linear_project_assignee}",
+            title: "Team",
+            key: "linear_team_id",
+            value: "{linear_team_id}",
+            type: "select",
           },
         ],
       },

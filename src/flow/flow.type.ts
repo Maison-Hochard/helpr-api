@@ -2,9 +2,9 @@ import { Flow } from "@prisma/client";
 
 type createActionInput = {
   id: number;
+  index: number;
   name: string;
   payload: string;
-  order: number;
 };
 
 export type createFlowInput = Flow & {

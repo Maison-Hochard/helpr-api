@@ -13,53 +13,58 @@ export class CronService {
     private readonly configService: ConfigService,
   ) {}
 
-  async replaceVariables(variables: any, payload: any): Promise<any> {
-    for (const key of Object.keys(payload)) {
-      const value = payload[key];
-      if (typeof value === "object" && value !== null) {
-        payload[key] = await this.replaceVariables(variables, value);
-      } else if (
-        typeof value === "string" &&
-        value.startsWith("{") &&
-        value.endsWith("}")
-      ) {
-        const variableName = value.substring(1, value.length - 1);
-        const variable = variables.find((v) => v.hasOwnProperty(variableName));
-        if (variable) {
-          payload[key] = variable[variableName];
-        } else {
-          console.warn(`Variable ${variableName} not found`);
-        }
+  replaceVariables(variables: any, payload: any) {
+    // The function will replace the variables in the payload
+    // The payload looks like this:
+    // {
+    //   github_branch_name: 'feature-{last_linear_ticket_title}',
+    //   github_from_branch: 'master',
+    //   github_repository: 'nuxtjs-boilerplate'
+    // }
+    // The variables looks like this:
+    // [
+    //   {
+    //     last_linear_ticket_title: 'ticket-test'
+    //   },
+    //   {
+    //     last_linear_ticket_description: 'Ticket Test Description'
+    //   }
+    // ]
+    // The function will return:
+    // {
+    //   github_branch_name: 'feature-ticket-test',
+    //   github_from_branch: 'master',
+    //   github_repository: 'nuxtjs-boilerplate'
+    // }
+    const payloadKeys = Object.keys(payload);
+    for (const key of payloadKeys) {
+      for (const variable of variables) {
+        const variableKey = Object.keys(variable)[0];
+        const variableValue = Object.values(variable)[0];
+        payload[key] = payload[key].replace(`{${variableKey}}`, variableValue);
       }
     }
     return payload;
   }
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
-  async runInstantFlow() {
-    const { data: flows } = await this.flowService.getFlowToRun(
-      Trigger.INSTANT,
-    );
-    if (flows.length === 0) {
-      console.log("No flow to run");
-    }
+  async runFlow(flows) {
     for (const flow of flows) {
       if (flow.status === Status.READY) {
         console.log("Running flow: ", flow.name);
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
+        let variables = [
+          {
+            last_linear_ticket_title: "ticket-test",
+          },
+          {
+            last_linear_ticket_description: "Ticket Test Description",
+          },
+        ];
         const accessToken = flow.accessToken;
-        /*const { data: webhookData } = await this.flowService.getWebhookData(
-          flow.userId,
-          flow.trigger.value,
-        );*/
-        const variables = [];
-        /*if (webhookData) {
-          variables.push(JSON.parse(webhookData.data));
-        }*/
-        for (const actions of flow.actions) {
-          const endpoint = actions.action.endpoint;
-          const name = actions.action.name;
-          const payload = JSON.parse(actions.payload);
+        for (const flowActions of flow.actions) {
+          const endpoint = flowActions.action.endpoint;
+          const name = flowActions.action.name;
+          const payload = JSON.parse(flowActions.payload);
           const payloadWithVariables = await this.replaceVariables(
             variables,
             payload,
@@ -73,11 +78,29 @@ export class CronService {
               Authorization: "Bearer " + accessToken,
             },
           });
-          const data = await response.json();
-          console.log(data.message);
+          const { data, message, statusCode } = await response.json();
+          console.log(
+            flowActions.action.name + " " + message + ":",
+            statusCode,
+          );
+          if (data && data.variables) {
+            variables = [...variables, data.variables];
+            console.log("Variables: ", variables);
+          }
         }
         await this.flowService.updateFlowStatus(flow.id, Status.STANDBY);
       }
     }
+  }
+
+  // @Cron(CronExpression.EVERY_5_SECONDS)
+  async runInstantFlow() {
+    const { data: flows } = await this.flowService.getFlowsToRun(
+      Trigger.INSTANT,
+    );
+    if (flows.length === 0) {
+      console.log("No flow to run");
+    }
+    await this.runFlow(flows);
   }
 }
