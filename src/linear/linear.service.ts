@@ -62,6 +62,7 @@ export class LinearService {
   }
 
   async createWebhook(userId: number, teamId: string, name: string) {
+    if (!teamId) throw new BadRequestException("team_id_required");
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linear",
