@@ -50,6 +50,7 @@ export class CronService {
   async runFlow(flows) {
     for (const flow of flows) {
       if (flow.status === Status.READY) {
+        // TODO: add try catch
         console.log("Running flow: ", flow.name);
         await this.flowService.updateFlowStatus(flow.id, Status.RUNNING);
         let variables = [

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -67,16 +68,14 @@ export class UserController {
 
   @Patch(":userId")
   async updateUser(
-    @Param("userId") userId: number,
+    @Param("userId", ParseIntPipe) userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.updateUser(userId, updateUserDto);
   }
 
   @Delete(":userId")
-  async deleteUser(
-    @Param("userId") userId: number,
-  ): Promise<{ message: string }> {
+  async deleteUser(@Param("userId", ParseIntPipe) userId: number) {
     return this.userService.deleteUser(userId);
   }
 }
