@@ -64,12 +64,4 @@ export class AuthController {
   async refresh(@Req() request: Request): Promise<{ authToken: string }> {
     return this.authService.refreshToken(request);
   }
-
-  /*@Post("google")
-  async googleAuth(
-    @Body("token") token: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return this.authService.googleAuth(token, response);
-  }*/
 }
