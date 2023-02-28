@@ -4,7 +4,7 @@ import { createEventAction, createCalendarAction } from "./calendarActions";
 export async function createCalendarProvider() {
   const provider = await prisma.provider.create({
     data: {
-      name: "Google Calendar",
+      name: "Calendar",
       description: "Create a new calendar or events in Google Calendar.",
       logo: "calendar-logo",
     },

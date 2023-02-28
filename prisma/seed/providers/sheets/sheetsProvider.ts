@@ -1,12 +1,12 @@
 import { prisma } from "../../../seed";
-import { createSheetAction, updateSheetAction } from "./sheetActions";
+import { createSheetAction, updateSheetAction } from "./sheetsActions";
 
-export async function createSheetProvider() {
+export async function createSheetsProvider() {
   const provider = await prisma.provider.create({
     data: {
-      name: "Google Sheet",
+      name: "Sheets",
       description: "Create or update a sheet in Google Sheets.",
-      logo: "sheet-logo",
+      logo: "sheets-logo",
     },
   });
   // Action

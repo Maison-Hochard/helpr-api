@@ -251,7 +251,7 @@ export class ProviderService {
     const googleProvider = await this.prisma.provider.findMany({
       where: {
         name: {
-          in: ["Google Calendar", "Google Sheet", "Gmail"],
+          in: ["Calendar", "Sheets", "Gmail"],
         },
       },
       include: {
