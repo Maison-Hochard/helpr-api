@@ -18,22 +18,26 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const findUser = await this.prisma.user.findFirst({
+    const foundUser = await this.prisma.user.findFirst({
       where: {
         OR: [
-          { email: createUserDto.email },
-          { username: createUserDto.username },
+          {
+            username: createUserDto.username,
+          },
+          {
+            email: createUserDto.email,
+          },
         ],
       },
     });
-    if (findUser) {
+    if (foundUser) {
       throw new BadRequestException("user_already_exists");
     }
-    const hashedPassword = await hash(createUserDto.password);
+    const password = await hash(createUserDto.password);
     const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
-        password: hashedPassword,
+        password,
       },
     });
     const url = await this.createVerificationUrl(user, false);
@@ -52,7 +56,7 @@ export class UserService {
           token: await generateCode(),
         },
       });
-    const url = `${this.configService.get("frontend_url")}/verify-user-${
+    const url = `${this.configService.get("frontend_url")}/verify/user?token=${
       resetEntity.token
     }`;
     if (isEmail) {
@@ -93,10 +97,18 @@ export class UserService {
         authToken,
         refreshToken: encryptedRefreshToken,
       },
+      include: {
+        subscription: true,
+      },
     });
     switch (app_env) {
       case "development":
         response.cookie("refreshToken", resetToken, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          path: "/",
+        });
+        response.cookie("authToken", authToken, {
           httpOnly: true,
           maxAge: 1000 * 60 * 60 * 24 * 7,
           path: "/",
@@ -110,11 +122,18 @@ export class UserService {
           sameSite: "none",
           secure: true,
         });
+        response.cookie("authToken", authToken, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          path: "/",
+          sameSite: "none",
+          secure: true,
+        });
     }
     return formatUser(user);
   }
 
-  async deleteRefreshToken(
+  async deleteTokens(
     userId: number,
     response: Response,
   ): Promise<{ message: string }> {
@@ -125,11 +144,16 @@ export class UserService {
       sameSite: "none",
       secure: true,
     });
+    response.clearCookie("authToken", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
     await this.prisma.user.update({
       where: { id: userId },
-      data: { refreshToken: null },
+      data: { refreshToken: null, authToken: null },
     });
-    return { message: "refresh_token_deleted" };
+    return { message: "tokens_deleted" };
   }
 
   async getAllUsers(): Promise<User[]> {

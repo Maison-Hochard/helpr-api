@@ -29,11 +29,6 @@ export async function createCompletionAction(providerId: number) {
             value: "{openai_max_tokens}",
             type: "number",
           },
-          {
-            title: "OpenAI Response",
-            key: "openai_response",
-            value: "{openai_response}",
-          },
         ],
       },
     },

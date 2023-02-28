@@ -24,13 +24,13 @@ model User {
   refreshToken        String?               @unique
   authToken           String?               @unique
   id                  Int                   @id @default(autoincrement())
-  avatar              String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/default-avatar.jpeg")
-  cover               String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/banner.avif")
+  avatar              String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/default-avatar")
+  cover               String                @default("https://uynsrkwqyplqhfrmdaqw.supabase.co/storage/v1/object/public/avatars/default-cover")
   providerId          Int?
-  emailVerification   EmailVerification[]
+  emailVerification   EmailVerification?
   flow                Flow[]
   providerCredentials ProviderCredentials[]
-  resetPassword       ResetPassword[]
+  resetPassword       ResetPassword?
   subscription        Subscription[]
   providers           Provider[]            @relation("ProviderToUser")
 }
@@ -64,7 +64,7 @@ model ResetPassword {
   token     String   @unique
   createdAt DateTime @default(now())
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -72,7 +72,7 @@ model EmailVerification {
   token     String   @unique
   createdAt DateTime @default(now())
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

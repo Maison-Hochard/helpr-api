@@ -31,5 +31,9 @@ export class CreateUserDto {
   @IsOptional()
   avatar?: string;
 
+  @IsString()
+  @IsOptional()
+  cover?: string;
+
   role?: number;
 }

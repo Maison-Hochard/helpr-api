@@ -56,7 +56,7 @@ export class AuthController {
     @CurrentUser() user: JwtPayload,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
-    return this.userService.deleteRefreshToken(user.id, response);
+    return this.userService.deleteTokens(user.id, response);
   }
 
   @HttpCode(HttpStatus.OK)
