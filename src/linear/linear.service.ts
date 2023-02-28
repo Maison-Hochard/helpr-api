@@ -129,6 +129,7 @@ export class LinearService {
       description: createIssueInput.linear_ticket_description || "",
       assigneeId: createIssueInput.linear_ticket_assignee_id || linearUser.id,
       projectId: createIssueInput.linear_ticket_project_id || "",
+      labelIds: createIssueInput.linear_ticket_label_ids || [],
     });
     return {
       message: "issue_created",
@@ -160,6 +161,33 @@ export class LinearService {
     });
     return {
       message: "project_created",
+    };
+  }
+
+  async getData(userId: number) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "linear",
+      true,
+    );
+    const linearClient = new LinearClient({
+      apiKey: accessToken,
+    });
+    const linearUser = await linearClient.viewer;
+    if (!linearUser) throw new BadRequestException("invalid_credentials");
+    const teams = await linearUser.teams();
+    const users = await linearClient.users();
+    const labels = await linearClient.issueLabels();
+    return {
+      linear_team_id: teams.nodes.map((team) => {
+        return { name: team.name, value: team.id };
+      }),
+      linear_ticket_assignee_id: users.nodes.map((user) => {
+        return { name: user.name, value: user.id };
+      }),
+      linear_ticket_labels_id: labels.nodes.map((label) => {
+        return { name: label.name, value: label.id };
+      }),
     };
   }
 }

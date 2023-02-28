@@ -19,6 +19,11 @@ export class LinearController {
     return await this.linearService.handleWebhook(body);
   }
 
+  @Get("data")
+  async getData(@CurrentUser() user: JwtPayload) {
+    return await this.linearService.getData(user.id);
+  }
+
   @Post("create-webhook")
   async createWebhook(
     @CurrentUser() user: JwtPayload,

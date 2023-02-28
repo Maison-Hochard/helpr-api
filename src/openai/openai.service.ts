@@ -46,4 +46,20 @@ export class OpenaiService {
       },
     };
   }
+
+  async getData() {
+    const openai_model = [
+      {
+        name: "Davinci",
+        value: Model.Davinci,
+      },
+      {
+        name: "Curie",
+        value: Model.Curie,
+      },
+    ];
+    return {
+      openai_model: openai_model,
+    };
+  }
 }

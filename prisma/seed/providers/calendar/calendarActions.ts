@@ -40,6 +40,7 @@ export async function createEventAction(providerId: number) {
             title: "Create event end date time",
             key: "calendar_event_end_date_time",
             value: "{calendar_event_end_date_time}",
+            type: "date",
             required: true,
           },
           {
@@ -52,6 +53,7 @@ export async function createEventAction(providerId: number) {
             title: "Create event start date time",
             key: "calendar_event_start_date_time",
             value: "{calendar_event_start_date_time}",
+            type: "date",
             required: true,
           },
         ],

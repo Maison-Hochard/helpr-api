@@ -25,7 +25,14 @@ export async function createTicketAction(providerId: number) {
           {
             title: "Ticket assignee",
             key: "linear_ticket_assignee_id",
-            value: "{linear_ticket_assignee}",
+            value: "{linear_ticket_assignee_id}",
+            type: "select",
+            required: false,
+          },
+          {
+            title: "Ticket labels",
+            key: "linear_ticket_labels_id",
+            value: "{linear_ticket_labels_id}",
             type: "select",
             required: false,
           },

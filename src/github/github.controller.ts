@@ -32,6 +32,11 @@ export class GithubController {
   @Get("user")
   async getUser(@CurrentUser() user: JwtPayload) {}
 
+  @Get("data")
+  async getData(@CurrentUser() user: JwtPayload) {
+    return await this.githubService.getData(user.id);
+  }
+
   @Post("add-credentials")
   async createCredential(
     @CurrentUser() user: JwtPayload,

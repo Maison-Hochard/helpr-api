@@ -11,6 +11,7 @@ import {
   createPullRequestInput,
   createIssueInput,
 } from "./github.type";
+import { Model } from "../openai/openai.type";
 
 @Injectable()
 export class GithubService {
@@ -204,6 +205,24 @@ export class GithubService {
         last_github_issue_body: createIssueInput.github_issue_body,
         last_github_issue_labels: createIssueInput.github_issue_labels,
       },
+    };
+  }
+
+  async getData(userId: number) {
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "github",
+      true,
+    );
+    const octokit = new Octokit({ auth: accessToken });
+    const repositories = await octokit.rest.repos.listForAuthenticatedUser();
+    return {
+      github_repository: repositories.data.map((repo) => {
+        return {
+          name: repo.name,
+          value: repo.name,
+        };
+      }),
     };
   }
 }

@@ -94,11 +94,20 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async runInstantFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.INSTANT,
     );
+    if (flows.length === 0) {
+      console.log("No flow to run");
+    }
+    await this.runFlow(flows);
+  }
+
+  @Cron(CronExpression.EVERY_5_SECONDS)
+  async runDailyFlow() {
+    const { data: flows } = await this.flowService.getFlowsToRun(10);
     if (flows.length === 0) {
       console.log("No flow to run");
     }
