@@ -244,6 +244,24 @@ export class FlowService {
     });
   }
 
+  async updateFlowPublic(userId: number, flowId: number, publicFlow: boolean) {
+    const flow = await this.prisma.flow.findFirst({
+      where: {
+        id: flowId,
+        userId: userId,
+      },
+    });
+    if (!flow) throw new BadRequestException("flow_not_found");
+    return await this.prisma.flow.update({
+      where: {
+        id: flowId,
+      },
+      data: {
+        public: publicFlow,
+      },
+    });
+  }
+
   async deleteFlow(userId: number, flowId: number) {
     const flow = await this.prisma.flow.findFirst({
       where: {

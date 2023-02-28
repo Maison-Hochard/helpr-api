@@ -191,6 +191,9 @@ export class ProviderService {
         },
       },
     );
+    const isGoogleConnected = providersCredentials.find(
+      (provider) => provider.provider === "google",
+    );
     const defaultProviders = await this.prisma.provider.findMany({
       where: {
         name: {
@@ -245,7 +248,36 @@ export class ProviderService {
         },
       },
     });
-    return [...providers, ...defaultProviders];
+    const googleProvider = await this.prisma.provider.findMany({
+      where: {
+        name: {
+          in: ["Google Calendar", "Google Sheet", "Gmail"],
+        },
+      },
+      include: {
+        actions: {
+          include: {
+            variables: true,
+          },
+        },
+        triggers: {
+          include: {
+            variables: true,
+          },
+        },
+        _count: {
+          select: {
+            actions: true,
+            triggers: true,
+          },
+        },
+      },
+    });
+    if (isGoogleConnected) {
+      return [...providers, ...defaultProviders, ...googleProvider];
+    } else {
+      return [...providers, ...defaultProviders];
+    }
   }
 
   async deconnectProvider(userId: number, provider: string) {

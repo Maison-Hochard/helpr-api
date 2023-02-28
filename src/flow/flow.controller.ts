@@ -57,6 +57,15 @@ export class FlowController {
     return await this.flowService.updateFlowEnabled(user.id, id, enabled);
   }
 
+  @Put(":id/public")
+  async updateFlowPublic(
+    @CurrentUser() user: JwtPayload,
+    @Param("id", ParseIntPipe) id: number,
+    @Body("public") isPublic: boolean,
+  ) {
+    return await this.flowService.updateFlowPublic(user.id, id, isPublic);
+  }
+
   @Delete(":id")
   async deleteFlow(
     @CurrentUser() user: JwtPayload,
