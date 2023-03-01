@@ -24,33 +24,34 @@ export class GithubService {
   ) {}
 
   /**
-   * Create a webhook Github
-   * @param accessToken
+   * Create a webhook GitHub
+   * @param userId
+   * @param name
+   * @param where
    */
-  async createWebhook(userId: number): Promise<any> {
-    // Get credentials
+  async createWebhook(
+    userId: number,
+    name: string,
+    where: string,
+  ): Promise<any> {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
       true,
     );
-    // Create client
     const githubClient = new Octokit({
       auth: accessToken,
     });
-
-    // Inits
+    const user = await this.getUser(userId, accessToken);
     const env = this.configService.get("env");
     const webhookProdUrl =
       this.configService.get("api_url") + "/github/webhook";
     const webhookDevUrl =
       "https://7aa5-78-126-205-77.eu.ngrok.io/github/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
-
-    // Return the response
     return await githubClient.request("POST /repos/{owner}/{repo}/hooks", {
-      owner: "cavalluccijohann",
-      repo: "IMC-Calculator",
+      owner: user.login,
+      repo: where,
       name: "web",
       active: true,
       events: ["push", "pull_request"],

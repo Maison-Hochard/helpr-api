@@ -27,10 +27,10 @@ export class LinearController {
   @Post("create-webhook")
   async createWebhook(
     @CurrentUser() user: JwtPayload,
-    @Body("teamId") teamId: string,
     @Body("name") name: string,
+    @Body("where") where: string,
   ) {
-    return await this.linearService.createWebhook(user.id, teamId, name);
+    return await this.linearService.createWebhook(user.id, name, where);
   }
 
   @Post("add-credentials")
@@ -55,10 +55,5 @@ export class LinearController {
     @Body() project: createProjectInput,
   ) {
     return await this.linearService.createProject(user.id, project);
-  }
-
-  @Get("teams")
-  async getTeams(@Body("accessToken") accessToken: string) {
-    return await this.linearService.getTeams(accessToken);
   }
 }

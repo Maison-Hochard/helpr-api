@@ -20,17 +20,6 @@ export class LinearService {
     private readonly ngrokService: NgrokService,
   ) {}
 
-  async getTeams(accessToken: string) {
-    const linearClient = new LinearClient({
-      apiKey: accessToken,
-    });
-    const linearUser = await linearClient.viewer;
-    const teams = await linearUser.teams();
-    return teams.nodes.map((team) => {
-      return { id: team.id, name: team.name };
-    });
-  }
-
   async handleWebhook(body: any) {
     if (body.action === "create" && body.type === "Issue") {
       const user = await this.userService.getUserByProviderId(
@@ -61,8 +50,8 @@ export class LinearService {
     }*/
   }
 
-  async createWebhook(userId: number, teamId: string, name: string) {
-    if (!teamId) throw new BadRequestException("team_id_required");
+  async createWebhook(userId: number, name: string, where: string) {
+    if (!where) throw new BadRequestException("team_id_required");
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linear",
@@ -76,16 +65,19 @@ export class LinearService {
       this.configService.get("api_url") + "/linear/webhook";
     const ngrokUrl = await this.ngrokService.connect();
     const finalUrl = env === "production" ? webhookProdUrl : ngrokUrl;
-    try {
-      await linearClient.createWebhook({
-        url: finalUrl,
-        resourceTypes: ["Issue", "Project"],
-        teamId: teamId,
-        label: name,
-      });
-    } catch (error) {
-      throw new BadRequestException("webhook_creation_failed", error);
-    }
+    // check if webhook already exists
+    const webhooks = await linearClient.webhooks();
+    console.log(webhooks.nodes);
+    const webhookExists = webhooks.nodes.find(
+      (webhook) => webhook.url === finalUrl,
+    );
+    if (webhookExists) return { message: "webhook_exists" };
+    await linearClient.createWebhook({
+      url: finalUrl,
+      resourceTypes: ["Issue", "Project"],
+      teamId: where,
+      label: name,
+    });
     return {
       message: "webhook_created",
     };
