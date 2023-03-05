@@ -136,7 +136,7 @@ export class CronService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  // @Cron(CronExpression.EVERY_5_SECONDS)
   async runProviderTriggerFlow() {
     const { data: flows } = await this.flowService.getTriggerFlows();
     if (flows.length === 0) {
@@ -145,7 +145,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  // @Cron(CronExpression.EVERY_DAY_AT_6AM)
   async runDailyFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_DAY,
@@ -156,7 +156,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  // @Cron(CronExpression.EVERY_10_MINUTES)
   async runEvery10MinutesFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_10_MINUTES,
@@ -167,7 +167,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  // @Cron(CronExpression.EVERY_HOUR)
   async runEvery1HourFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_1_HOUR,
