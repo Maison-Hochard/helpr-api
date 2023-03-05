@@ -12,8 +12,8 @@ export async function createItemInDatabaseAction(providerId: number) {
         create: [
           {
             title: "Database",
-            key: "notion_item_database_id",
-            value: "{notion_item_database_id}",
+            key: "notion_item_databaseId",
+            value: "{notion_item_databaseId}",
             type: "select",
           },
           {
@@ -45,8 +45,8 @@ export async function createDatabaseAction(providerId: number) {
         create: [
           {
             title: "Database Page",
-            key: "notion_database_page_id",
-            value: "{notion_database_page_id}",
+            key: "notion_database_pageId",
+            value: "{notion_database_pageId}",
             type: "select",
           },
           {
@@ -79,8 +79,8 @@ export async function createCommentAction(providerId: number) {
         create: [
           {
             title: "Comment Page",
-            key: "notion_comment_page_id",
-            value: "{notion_comment_page_id}",
+            key: "notion_comment_pageId",
+            value: "{notion_comment_pageId}",
             type: "select",
           },
           {
