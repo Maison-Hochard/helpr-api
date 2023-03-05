@@ -8,6 +8,7 @@ import { ProviderCredentials } from "@prisma/client";
 import { createIssueInput, createProjectInput } from "./linear.type";
 import { FlowService } from "../flow/flow.service";
 import { NgrokService } from "../ngrok";
+import { Status, Trigger } from "../flow/flow.type";
 
 @Injectable()
 export class LinearService {
@@ -25,29 +26,37 @@ export class LinearService {
       const user = await this.userService.getUserByProviderId(
         body.data.subscriberIds[0],
       );
-      const linear_ticket_title = body.data.title;
-      const linear_ticket_description = body.data.description;
-      const linear_team_id = body.data.teamId;
-      /*await this.flowService.addOrUpdateWebhookData({
-        userId: user.id,
-        provider: "linear",
-        type: "linear_issue_created",
-        data: JSON.stringify({
-          linear_ticket_title,
-          linear_ticket_description,
-          linear_team_id,
-        }),
-      });*/
+      const { data: flows } = await this.flowService.getFlowsToTrigger(
+        Trigger.TICKET_CREATED,
+        user.id,
+      );
+      const last_linear_ticket_title = body.data.title;
+      const last_linear_ticket_description = body.data.description;
+      const last_linear_team_id = body.data.teamId;
+      const last_linear_ticket_number = body.data.number.toString();
+      const variables = [
+        {
+          key: "last_linear_ticket_title",
+          value: last_linear_ticket_title,
+        },
+        {
+          key: "last_linear_ticket_description",
+          value: last_linear_ticket_description,
+        },
+        {
+          key: "last_linear_team_id",
+          value: last_linear_team_id,
+        },
+        {
+          key: "last_linear_ticket_number",
+          value: last_linear_ticket_number,
+        },
+      ];
+      for (const flow of flows) {
+        await this.flowService.updateFlowStatus(flow.id, Status.READY);
+        await this.flowService.addFlowData(flow.id, variables);
+      }
     }
-    /*if (body.data) {
-      const { title, number, labels, team } = body.data;
-      const prefix = (
-        labels && labels[0].name ? labels[0].name : "feature"
-      ).toLowerCase();
-      const teamName = (team && team.name ? team.name : title).toLowerCase();
-      const branchName = `${prefix}/${teamName}-${number}`;
-      console.log(branchName);
-    }*/
   }
 
   checkIfWebhookExists(webhook, teamId: string, url: string) {

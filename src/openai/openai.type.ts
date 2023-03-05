@@ -5,6 +5,7 @@ export type createCompletionInput = {
 };
 
 export enum Model {
-  Davinci = 1,
+  DaVinci = 1,
   Curie = 2,
+  GPT_TURBO = 3,
 }

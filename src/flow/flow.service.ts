@@ -2,12 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
-import {
-  webhookDataInput,
-  createFlowInput,
-  Status,
-  Trigger,
-} from "./flow.type";
+import { createFlowInput, Status, Trigger } from "./flow.type";
 import { AuthService } from "../auth/auth.service";
 
 @Injectable()
@@ -38,7 +33,7 @@ export class FlowService {
       },
     });
     if (!trigger) throw new BadRequestException("trigger_not_found");
-    const accessToken = await this.authService.createAccessToken(user);
+    const accessToken = await this.authService.createAccessToken(user, true);
     const isFlowExist = await this.prisma.flow.findFirst({
       where: {
         name: flowData.name,
@@ -183,9 +178,94 @@ export class FlowService {
   async getFlowsToRun(trigger: Trigger) {
     const flows = await this.prisma.flow.findMany({
       where: {
-        triggerId: trigger,
         status: Status.READY,
         enabled: true,
+        trigger: {
+          value: trigger,
+        },
+      },
+      include: {
+        trigger: {
+          select: {
+            value: true,
+          },
+        },
+        actions: {
+          include: {
+            action: {
+              include: {
+                variables: {
+                  select: {
+                    key: true,
+                    value: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
+  }
+
+  async getFlowsToTrigger(trigger: Trigger, userId: number) {
+    const flows = await this.prisma.flow.findMany({
+      where: {
+        status: Status.STANDBY,
+        enabled: true,
+        trigger: {
+          value: trigger,
+        },
+        userId: userId,
+      },
+      include: {
+        trigger: {
+          select: {
+            value: true,
+          },
+        },
+        actions: {
+          include: {
+            action: {
+              include: {
+                variables: {
+                  select: {
+                    key: true,
+                    value: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
+  }
+
+  async getTriggerFlows() {
+    const flows = await this.prisma.flow.findMany({
+      where: {
+        status: Status.READY,
+        enabled: true,
+        AND: {
+          trigger: {
+            value: {
+              notIn: [
+                Trigger.EVERY_DAY,
+                Trigger.EVERY_1_HOUR,
+                Trigger.EVERY_10_MINUTES,
+              ],
+            },
+          },
+        },
       },
       include: {
         trigger: {
@@ -285,33 +365,58 @@ export class FlowService {
     };
   }
 
-  /*async addOrUpdateWebhookData(addWebhookDataInput: webhookDataInput) {
-    return await this.prisma.webhookData.upsert({
-      where: {
-        type: addWebhookDataInput.type,
-      },
-      create: {
-        userId: addWebhookDataInput.userId,
-        provider: addWebhookDataInput.provider,
-        data: addWebhookDataInput.data,
-        type: addWebhookDataInput.type,
-      },
-      update: {
-        data: addWebhookDataInput.data,
-      },
+  async addFlowData(
+    flowId: number,
+    variables: { key: string; value: string }[],
+  ) {
+    const data = variables.map((variable) => {
+      return {
+        key: variable.key,
+        value: variable.value,
+        flowId: flowId,
+      };
     });
-  }*/
+    for (const variable of data) {
+      const flowVariable = await this.prisma.flowVariables.findFirst({
+        where: {
+          key: variable.key,
+          flowId: variable.flowId,
+        },
+      });
+      if (flowVariable) {
+        await this.prisma.flowVariables.upsert({
+          where: {
+            id: flowVariable.id,
+          },
+          update: {
+            value: variable.value,
+          },
+          create: {
+            key: variable.key,
+            value: variable.value,
+          },
+        });
+      } else {
+        await this.prisma.flowVariables.create({
+          data: {
+            key: variable.key,
+            value: variable.value,
+            flowId: variable.flowId,
+          },
+        });
+      }
+    }
+  }
 
-  /*async getWebhookData(userId: number, type: string) {
-    const webhookData = await this.prisma.webhookData.findFirst({
+  async getFlowData(flowId: number) {
+    const flowVariables = await this.prisma.flowVariables.findMany({
       where: {
-        userId: userId,
-        type: type,
+        flowId: flowId,
       },
     });
     return {
-      message: "webhook_data_found",
-      data: webhookData,
+      message: "flow_data_found",
+      data: flowVariables,
     };
-  }*/
+  }
 }

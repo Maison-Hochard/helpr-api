@@ -7,8 +7,19 @@ type createActionInput = {
   payload: string;
 };
 
+type updateActionInput = {
+  id: number;
+  index: number;
+  name: string;
+  payload: string;
+};
+
 export type createFlowInput = Flow & {
   actions: createActionInput[];
+};
+
+export type updateFlowInput = Flow & {
+  actions: updateActionInput[];
 };
 
 export type webhookDataInput = {
@@ -19,11 +30,16 @@ export type webhookDataInput = {
 };
 
 export enum Trigger {
-  INSTANT = 1,
-  EVERY_1_MINUTE = 2,
-  EVERY_5_MINUTES = 3,
-  EVERY_10_MINUTES = 4,
-  EVERY_30_MINUTES = 5,
+  EVERY_10_MINUTES = "every_10_minutes",
+  EVERY_1_HOUR = "every_1_hour",
+  EVERY_DAY = "every_day",
+  TICKET_CREATED = "ticket-created",
+  PROJECT_CREATED = "project-created",
+  ISSUE_CREATED = "issue-created",
+  PULL_REQUEST_CREATED = "pull-request-created",
+  CUSTOMER_CREATED = "customer-created",
+  PAYMENT_CREATED = "payment-created",
+  PRODUCT_CREATED = "product-created",
 }
 
 export enum Status {
@@ -31,3 +47,12 @@ export enum Status {
   READY = 2,
   RUNNING = 3,
 }
+
+export type FlowVariable = {
+  key: string;
+  value: string;
+};
+
+export type Payload = {
+  [key: string]: string;
+};
