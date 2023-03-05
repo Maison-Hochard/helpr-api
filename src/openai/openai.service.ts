@@ -19,21 +19,18 @@ export class OpenaiService {
       apiKey: this.configService.get("openai.api_key"),
     });
     const davinci_model = "text-davinci-003"; // Type 1
-    const curie_model = "text-curie-001"; // Type 2
-    const gpt_turbo_model = "gpt-3.5-turbo"; // Type 3
+    const gpt_turbo_model = "gpt-3.5-turbo"; // Type 2
     const openai = new OpenAIApi(configuration);
     const model =
-      createCompletionInput.openai_model === Model.DaVinci
-        ? davinci_model
-        : createCompletionInput.openai_model === Model.Curie
-        ? curie_model
-        : gpt_turbo_model;
+      createCompletionInput.openai_model === Model.GPT_TURBO
+        ? gpt_turbo_model
+        : davinci_model;
     const max_tokens =
       typeof createCompletionInput.openai_max_tokens === "string"
         ? parseInt(createCompletionInput.openai_max_tokens)
         : createCompletionInput.openai_max_tokens;
     const response = await openai.createCompletion({
-      model: davinci_model,
+      model: model,
       prompt: createCompletionInput.openai_prompt,
       temperature: 0.9,
       max_tokens: max_tokens ?? 256,
@@ -54,16 +51,12 @@ export class OpenaiService {
   async getData() {
     const openai_model = [
       {
-        name: "GPT Turbo",
+        name: "GPT-3 Turbo",
         value: Model.GPT_TURBO,
       },
       {
-        name: "Davinci",
+        name: "DaVinci",
         value: Model.DaVinci,
-      },
-      {
-        name: "Curie",
-        value: Model.Curie,
       },
     ];
     return {
