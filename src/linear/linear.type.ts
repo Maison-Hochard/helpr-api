@@ -42,14 +42,17 @@ export type createIssueInput = {
   linear_ticket_title: string;
   linear_ticket_description?: string;
   linear_team_id: string;
-  linear_ticket_assignee_id?: string;
-  linear_ticket_project_id?: string;
+  linear_assignee_id?: string;
+  linear_ticket_label_ids?: string[];
+  linear_ticket_state_id?: string;
 };
 
 export type createProjectInput = {
   linear_project_title: string;
   linear_project_description?: string;
   linear_team_id: string;
+  linear_ticket_state_id?: string;
+  linear_assignee_id?: string;
 };
 
 /*

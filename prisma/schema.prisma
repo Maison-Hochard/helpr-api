@@ -169,10 +169,10 @@ model Variables {
 
 model FlowVariables {
   id        Int       @id @default(autoincrement())
-  key       String
+  key       String    @unique
   value     String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   flowId    Int?
-  flow      Flow?     @relation(fields: [flowId], references: [id])
+  flow      Flow?     @relation(fields: [flowId], references: [id], onDelete: Cascade)
 }
