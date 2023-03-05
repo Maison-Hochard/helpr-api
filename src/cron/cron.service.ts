@@ -124,7 +124,7 @@ export class CronService {
             flowActions.action.name + " " + message + ":",
             statusCode,
           );
-          if (data && data.variables.length > 0) {
+          if (data && data.variables && data.variables.length > 0) {
             variables = [...variables, ...data.variables];
           }
         }
@@ -136,7 +136,7 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async runProviderTriggerFlow() {
     const { data: flows } = await this.flowService.getTriggerFlows();
     if (flows.length === 0) {
@@ -176,5 +176,35 @@ export class CronService {
       console.log("Flow runner [Every 1 Hour Flow]: No flow to run");
     }
     await this.runFlow(flows);
+  }
+
+  // @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  async setToReadyEveryDayFlows() {
+    const { data: flows } = await this.flowService.getFlowsToRun(
+      Trigger.EVERY_DAY,
+    );
+    for (const flow of flows) {
+      await this.flowService.updateFlowStatus(flow.id, Status.READY);
+    }
+  }
+
+  // @Cron(CronExpression.EVERY_10_MINUTES)
+  async setToReadyEvery10MinutesFlows() {
+    const { data: flows } = await this.flowService.getFlowsToRun(
+      Trigger.EVERY_10_MINUTES,
+    );
+    for (const flow of flows) {
+      await this.flowService.updateFlowStatus(flow.id, Status.READY);
+    }
+  }
+
+  // @Cron(CronExpression.EVERY_HOUR)
+  async setToReadyEvery1HourFlows() {
+    const { data: flows } = await this.flowService.getFlowsToRun(
+      Trigger.EVERY_1_HOUR,
+    );
+    for (const flow of flows) {
+      await this.flowService.updateFlowStatus(flow.id, Status.READY);
+    }
   }
 }

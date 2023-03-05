@@ -6,6 +6,7 @@ import { ProviderService } from "../provider/provider.service";
 import * as deepl from "deepl-node";
 import { translateTextInput } from "./deepl.type";
 import { SourceLanguageCode, TargetLanguageCode } from "deepl-node";
+import { Model } from "../openai/openai.type";
 
 @Injectable()
 export class DeeplService {
@@ -24,8 +25,87 @@ export class DeeplService {
       <TargetLanguageCode>translateTextInput.deepl_target_lang,
     );
     return {
-      message: "text_translated",
-      data: response,
+      variables: [
+        {
+          key: "deepl_response",
+          value: response.text,
+        },
+      ],
+    };
+  }
+
+  async getData() {
+    const deepl_source_lang = [
+      {
+        value: "en-US",
+        name: "🇺🇸 English",
+      },
+      {
+        value: "FR",
+        name: "🇫🇷 French",
+      },
+      {
+        value: "ES",
+        name: "🇪🇸 Spanish",
+      },
+      {
+        value: "IT",
+        name: "🇮🇹 Italian",
+      },
+      {
+        value: "DE",
+        name: "🇩🇪 German",
+      },
+      {
+        value: "NL",
+        name: "🇳🇱 Dutch",
+      },
+      {
+        value: "CH",
+        name: "🇨🇭 Chinese",
+      },
+      {
+        value: "JP",
+        name: "🇯🇵 Japanese",
+      },
+    ];
+    const deepl_target_lang = [
+      {
+        value: "en-US",
+        name: "🇺🇸 English",
+      },
+      {
+        value: "FR",
+        name: "🇫🇷 French",
+      },
+      {
+        value: "ES",
+        name: "🇪🇸 Spanish",
+      },
+      {
+        value: "IT",
+        name: "🇮🇹 Italian",
+      },
+      {
+        value: "DE",
+        name: "🇩🇪 German",
+      },
+      {
+        value: "NL",
+        name: "🇳🇱 Dutch",
+      },
+      {
+        value: "CH",
+        name: "🇨🇭 Chinese",
+      },
+      {
+        value: "JP",
+        name: "🇯🇵 Japanese",
+      },
+    ];
+    return {
+      deepl_source_lang: deepl_source_lang,
+      deepl_target_lang: deepl_target_lang,
     };
   }
 }
