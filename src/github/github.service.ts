@@ -300,13 +300,53 @@ export class GithubService {
   }
 
   async getData(userId: number, variables: any) {
+    let github_repository = "";
+    if (variables && variables.github_repository) {
+      github_repository = variables.github_repository;
+    }
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
       true,
     );
     const octokit = new Octokit({ auth: accessToken });
+    const user = await this.getUser(userId, accessToken);
     const repositories = await octokit.rest.repos.listForAuthenticatedUser();
+    let branches = [];
+    let targetCommitish = [];
+    let issuesLabels = [];
+    if (github_repository) {
+      const responseBranches = await octokit.rest.repos.listBranches({
+        owner: user.login,
+        repo: github_repository,
+      });
+      branches = responseBranches.data.map((branch) => {
+        return {
+          name: branch.name,
+          value: branch.name,
+        };
+      });
+      const responseTargetCommitish = await octokit.rest.repos.listCommits({
+        owner: user.login,
+        repo: github_repository,
+      });
+      targetCommitish = responseTargetCommitish.data.map((commit) => {
+        return {
+          name: commit.url,
+          value: commit.sha,
+        };
+      });
+      const responseIssuesLabels = await octokit.rest.issues.listLabelsForRepo({
+        owner: user.login,
+        repo: github_repository,
+      });
+      issuesLabels = responseIssuesLabels.data.map((label) => {
+        return {
+          name: label.name,
+          value: label.name,
+        };
+      });
+    }
     return {
       github_repository: repositories.data.map((repo) => {
         return {
@@ -314,6 +354,11 @@ export class GithubService {
           value: repo.name,
         };
       }),
+      github_from_branch: branches,
+      github_pull_request_head: branches,
+      github_pull_request_base: branches,
+      github_release_target_commitish: targetCommitish,
+      github_issue_labels: issuesLabels,
     };
   }
 }
