@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Injectable, Post } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { MailingService } from "../mailing/mailing.service";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
@@ -11,7 +11,9 @@ import {
   createPullRequestInput,
   createIssueInput,
 } from "./github.type";
-import { Model } from "../openai/openai.type";
+import { NgrokService } from "../ngrok";
+import { Status, Trigger } from "../flow/flow.type";
+import { FlowService } from "../flow/flow.service";
 
 @Injectable()
 export class GithubService {
@@ -21,6 +23,7 @@ export class GithubService {
     private configService: ConfigService,
     private userService: UserService,
     private providerService: ProviderService,
+    private flowService: FlowService,
   ) {}
 
   checkIfWebhookExists(webhook, repo: string, url: string) {
@@ -54,9 +57,8 @@ export class GithubService {
     const env = this.configService.get("env");
     const webhookProdUrl =
       this.configService.get("api_url") + "/github/webhook";
-    const webhookDevUrl =
-      "https://7aa5-78-126-205-77.eu.ngrok.io/github/webhook";
-    const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
+    const ngrokUrl = "https://0d95-78-126-205-77.eu.ngrok.io/github/webhook";
+    const finalUrl = env === "production" ? webhookProdUrl : ngrokUrl;
     const webhooks = await githubClient.request(
       "GET /repos/{owner}/{repo}/hooks",
       {
@@ -64,7 +66,7 @@ export class GithubService {
         repo: where,
       },
     );
-    const webhookExist = await this.checkIfWebhookExists(
+    const webhookExist = this.checkIfWebhookExists(
       webhooks.data[0],
       where,
       finalUrl,
@@ -88,14 +90,77 @@ export class GithubService {
     });
   }
 
-  async handleWebhook(body: any) {
+  async issueTriggered(body: any) {
     const { repository } = body;
     const { owner } = repository;
     const { id } = owner;
-    const eventName = body.event_name;
+    const user = await this.userService.getUserByProviderId(id.toString());
+    const { data: flows } = await this.flowService.getFlowsToTrigger(
+      Trigger.ISSUE_CREATED,
+      user.id,
+    );
+    const last_github_issue_title = body.issue.title;
+    const last_github_issue_body = body.issue.body;
+    const github_repository = repository.name;
+    const variables = [
+      {
+        key: "last_github_issue_title",
+        value: last_github_issue_title,
+      },
+      {
+        key: "last_github_issue_body",
+        value: last_github_issue_body,
+      },
+      {
+        key: "github_repository",
+        value: github_repository,
+      },
+    ];
+    for (const flow of flows) {
+      await this.flowService.updateFlowStatus(flow.id, Status.READY);
+      await this.flowService.addFlowData(flow.id, variables);
+    }
+  }
 
-    console.log(`The repository owner's id is: ${id}`);
-    console.log(`EventName: ${eventName}`);
+  async pullRequestTriggered(body: any) {
+    const { repository } = body;
+    const { owner } = repository;
+    const { id } = owner;
+    const user = await this.userService.getUserByProviderId(id.toString());
+    const { data: flows } = await this.flowService.getFlowsToTrigger(
+      Trigger.PULL_REQUEST_CREATED,
+      user.id,
+    );
+    const last_github_pull_request_title = body.pull_request.title;
+    const last_github_pull_request_body = body.pull_request.body;
+    const github_repository = repository.name;
+    const variables = [
+      {
+        key: "last_github_pull_request_title",
+        value: last_github_pull_request_title,
+      },
+      {
+        key: "last_github_pull_request_body",
+        value: last_github_pull_request_body,
+      },
+      {
+        key: "github_repository",
+        value: github_repository,
+      },
+    ];
+    for (const flow of flows) {
+      await this.flowService.updateFlowStatus(flow.id, Status.READY);
+      await this.flowService.addFlowData(flow.id, variables);
+    }
+  }
+
+  async handleWebhook(body: any) {
+    if (body.action === "opened" && body.issue) {
+      await this.issueTriggered(body);
+    }
+    if (body.action === "opened" && body.pull_request) {
+      await this.pullRequestTriggered(body);
+    }
   }
 
   async createCredentials(userId: number, accessToken: string) {

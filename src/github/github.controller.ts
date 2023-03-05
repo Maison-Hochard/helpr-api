@@ -20,7 +20,6 @@ export class GithubController {
   @Public()
   @Post("webhook")
   async webhook(@Body() body) {
-    console.log("webhook", body);
     return await this.githubService.handleWebhook(body);
   }
 
