@@ -19,7 +19,7 @@ export class OpenaiController {
     return await this.openaiService.createCompletion(user.id, completion);
   }
 
-  @Get("data")
+  @Post("data")
   async getData() {
     return await this.openaiService.getData();
   }

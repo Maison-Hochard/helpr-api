@@ -9,6 +9,8 @@ import { createIssueInput, createProjectInput } from "./linear.type";
 import { FlowService } from "../flow/flow.service";
 import { NgrokService } from "../ngrok";
 import { Status, Trigger } from "../flow/flow.type";
+import { Scope } from "eslint";
+import Variable = Scope.Variable;
 
 @Injectable()
 export class LinearService {
@@ -179,7 +181,11 @@ export class LinearService {
     };
   }
 
-  async getData(userId: number) {
+  async getData(userId: number, variables: any) {
+    let teamId = "";
+    if (variables && variables.linear_team_id) {
+      teamId = variables.linear_team_id;
+    }
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "linear",
@@ -193,7 +199,19 @@ export class LinearService {
     const teams = await linearUser.teams();
     const users = await linearClient.users();
     const labels = await linearClient.issueLabels();
-    const states = await linearClient.workflowStates();
+    let states = [];
+    if (teamId) {
+      const foundStates = await linearClient.workflowStates({
+        filter: {
+          team: {
+            id: {
+              eq: teamId,
+            },
+          },
+        },
+      });
+      states = foundStates.nodes;
+    }
     return {
       linear_team_id: teams.nodes.map((team) => {
         return { name: team.name, value: team.id };
@@ -204,7 +222,7 @@ export class LinearService {
       linear_ticket_labels_id: labels.nodes.map((label) => {
         return { name: label.name, value: label.id };
       }),
-      linear_ticket_state_id: states.nodes.map((state) => {
+      linear_ticket_state_id: states.map((state) => {
         return { name: state.name, value: state.id };
       }),
     };

@@ -32,9 +32,12 @@ export class GithubController {
     return await this.githubService.createWebhook(user.id, name, where);
   }
 
-  @Get("data")
-  async getData(@CurrentUser() user: JwtPayload) {
-    return await this.githubService.getData(user.id);
+  @Post("data")
+  async getData(
+    @CurrentUser() user: JwtPayload,
+    @Body("variables") variables: string,
+  ) {
+    return await this.githubService.getData(user.id, variables);
   }
 
   @Post("add-credentials")

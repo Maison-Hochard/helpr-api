@@ -299,7 +299,7 @@ export class GithubService {
     };
   }
 
-  async getData(userId: number) {
+  async getData(userId: number, variables: any) {
     const { accessToken } = await this.providerService.getCredentialsByProvider(
       userId,
       "github",
