@@ -23,6 +23,14 @@ export class GithubService {
     private providerService: ProviderService,
   ) {}
 
+  checkIfWebhookExists(webhook, repo: string, url: string) {
+    if (!webhook) {
+      return false;
+    }
+    const { config, events } = webhook;
+    return !!(config.url === url && events.includes("push"));
+  }
+
   /**
    * Create a webhook GitHub
    * @param userId
@@ -49,12 +57,29 @@ export class GithubService {
     const webhookDevUrl =
       "https://7aa5-78-126-205-77.eu.ngrok.io/github/webhook";
     const finalUrl = env === "production" ? webhookProdUrl : webhookDevUrl;
+    const webhooks = await githubClient.request(
+      "GET /repos/{owner}/{repo}/hooks",
+      {
+        owner: user.login,
+        repo: where,
+      },
+    );
+    const webhookExist = await this.checkIfWebhookExists(
+      webhooks.data[0],
+      where,
+      finalUrl,
+    );
+    if (webhookExist) {
+      return {
+        message: "webhook_already_exists",
+      };
+    }
     return await githubClient.request("POST /repos/{owner}/{repo}/hooks", {
       owner: user.login,
       repo: where,
       name: "web",
       active: true,
-      events: ["push", "pull_request"],
+      events: ["push", "pull_request", "issues"],
       config: {
         url: finalUrl,
         content_type: "json",
