@@ -86,30 +86,4 @@ export class AuthService {
       throw new UnauthorizedException("invalid_refresh_token");
     }
   }
-
-  /*async googleAuth(token, response) {
-    const client = new OAuth2Client(this.configService.get("google.client_id"));
-    client.setCredentials({ access_token: token });
-    const googleUser = await client.request({
-      url: "https://www.googleapis.com/oauth2/v3/userinfo",
-    });
-    const userInfo = googleUser.data as GooglePayload;
-    const user = await this.userService.getUserByLogin(userInfo.email);
-    if (user) {
-      return this.getTokens(user, response);
-    } else {
-      const newUser = new User();
-      newUser.username =
-        userInfo.given_name +
-        userInfo.family_name +
-        Math.floor(Math.random() * 1000);
-      newUser.email = userInfo.email;
-      newUser.firstname = userInfo.given_name;
-      newUser.lastname = userInfo.family_name;
-      newUser.password = await utils.encrypt(token);
-      newUser.avatar = userInfo.picture;
-      const createdUser = await this.userService.create(newUser);
-      return this.getTokens(createdUser, response);
-    }
-  }*/
 }
