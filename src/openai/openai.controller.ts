@@ -19,6 +19,11 @@ export class OpenaiController {
     return await this.openaiService.createCompletion(user.id, completion);
   }
 
+  @Post("enhance")
+  async enhance(@Body("text") text: string) {
+    return await this.openaiService.enhance(text);
+  }
+
   @Post("data")
   async getData() {
     return await this.openaiService.getData();
