@@ -136,12 +136,22 @@ export class LinearService {
     if (!linearUser) throw new BadRequestException("invalid_credentials");
     const team = await linearClient.team(createIssueInput.linear_team_id);
     if (!team) throw new BadRequestException("team_not_found");
+    console.log(createIssueInput);
+    const labels = [];
+    if (createIssueInput.linear_ticket_label_id) {
+      labels.push(createIssueInput.linear_ticket_label_id);
+    }
+    let cycleId = null;
+    if (createIssueInput.linear_cycle_id) {
+      cycleId = createIssueInput.linear_cycle_id;
+    }
     await linearClient.createIssue({
       title: createIssueInput.linear_ticket_title,
       teamId: createIssueInput.linear_team_id,
       description: createIssueInput.linear_ticket_description || "",
       assigneeId: createIssueInput.linear_assignee_id || linearUser.id,
-      labelIds: createIssueInput.linear_ticket_label_ids || [],
+      labelIds: labels,
+      cycleId,
     });
     return {
       message: "issue_created",
@@ -199,6 +209,7 @@ export class LinearService {
     const teams = await linearUser.teams();
     const users = await linearClient.users();
     const labels = await linearClient.issueLabels();
+    let cycles = [];
     let states = [];
     if (teamId) {
       const foundStates = await linearClient.workflowStates({
@@ -210,7 +221,17 @@ export class LinearService {
           },
         },
       });
+      const foundCycles = await linearClient.cycles({
+        filter: {
+          team: {
+            id: {
+              eq: teamId,
+            },
+          },
+        },
+      });
       states = foundStates.nodes;
+      cycles = foundCycles.nodes;
     }
     return {
       linear_team_id: teams.nodes.map((team) => {
@@ -219,11 +240,14 @@ export class LinearService {
       linear_assignee_id: users.nodes.map((user) => {
         return { name: user.name, value: user.id };
       }),
-      linear_ticket_labels_id: labels.nodes.map((label) => {
+      linear_ticket_label_id: labels.nodes.map((label) => {
         return { name: label.name, value: label.id };
       }),
       linear_ticket_state_id: states.map((state) => {
         return { name: state.name, value: state.id };
+      }),
+      linear_cycle_id: cycles.map((cycle) => {
+        return { name: cycle.name, value: cycle.id };
       }),
     };
   }
