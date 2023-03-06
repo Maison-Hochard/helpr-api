@@ -21,10 +21,7 @@ export class OpenaiService {
     const davinci_model = "text-davinci-003"; // Type 1
     const gpt_turbo_model = "gpt-3.5-turbo"; // Type 2
     const openai = new OpenAIApi(configuration);
-    const model =
-      createCompletionInput.openai_model === Model.GPT_TURBO
-        ? gpt_turbo_model
-        : davinci_model;
+    const model = davinci_model;
     const max_tokens =
       typeof createCompletionInput.openai_max_tokens === "string"
         ? parseInt(createCompletionInput.openai_max_tokens)
@@ -42,9 +39,29 @@ export class OpenaiService {
       variables: [
         {
           key: "openai_response",
-          value: response.data.choices[0].text,
+          value: response.data.choices[0].text.replace(/^\n{2}/, ""),
         },
       ],
+    };
+  }
+
+  async enhance(text: string) {
+    const prompt = `Please enhance the following text: ${text} Please provide a more detailed and accurate version of the text above.`;
+    const configuration = new Configuration({
+      apiKey: this.configService.get("openai.api_key"),
+    });
+    const openai = new OpenAIApi(configuration);
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: prompt,
+      temperature: 0.9,
+      max_tokens: 500,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+    return {
+      openai_response: response.data.choices[0].text.replace(/^\n{2}/, ""),
     };
   }
 
