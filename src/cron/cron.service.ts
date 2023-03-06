@@ -136,7 +136,7 @@ export class CronService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  // @Cron(CronExpression.EVERY_5_SECONDS)
   async runProviderTriggerFlow() {
     const { data: flows } = await this.flowService.getTriggerFlows();
     if (flows.length === 0) {
