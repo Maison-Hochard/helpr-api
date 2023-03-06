@@ -26,6 +26,14 @@ export class CalendarController {
     return await this.calendarService.createWebhook(user.id, teamId);
   }*/
 
+  @Post("data")
+  async getData(
+    @CurrentUser() user: JwtPayload,
+    @Body("variables") variables: string,
+  ) {
+    return await this.calendarService.getData(user.id, variables);
+  }
+
   @Post("create-calendar")
   async createCalendar(
     @CurrentUser() user: JwtPayload,

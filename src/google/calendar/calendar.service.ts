@@ -1,10 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma.service";
 import { UserService } from "../../user/user.service";
 import { ProviderService } from "../../provider/provider.service";
 import { createCalendarInput, createEventInput } from "./calendar.type";
 import { google } from "googleapis";
+import { FlowService } from "../../flow/flow.service";
+import { LinearClient } from "@linear/sdk";
 
 @Injectable()
 export class CalendarService {
@@ -12,6 +14,7 @@ export class CalendarService {
     private prisma: PrismaService,
     private configService: ConfigService,
     private userService: UserService,
+    private flowService: FlowService,
     private providerService: ProviderService,
   ) {}
 
@@ -120,6 +123,35 @@ export class CalendarService {
     return {
       message: "event_created",
       data: res,
+    };
+  }
+
+  async getData(userId: number, variables: any) {
+    let calendarId = "";
+    if (variables && variables.calendar_event_calendar_id) {
+      calendarId = variables.calendar_event_calendar_id;
+    }
+    const { accessToken } = await this.providerService.getCredentialsByProvider(
+      userId,
+      "google",
+      true,
+    );
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get("google.client_id"),
+      this.configService.get("google.client_secret"),
+      this.configService.get("google.callback_url"),
+    );
+    oauth2Client.setCredentials({ access_token: accessToken });
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    const res = await calendar.calendarList.list({
+      minAccessRole: "writer",
+    });
+    const calendars = res.data.items;
+    const calendarList = calendars.map((calendar) => {
+      return { name: calendar.summary, value: calendar.id };
+    });
+    return {
+      calendar_event_calendar_id: calendarList,
     };
   }
 }
