@@ -11,6 +11,15 @@ import { translateTextInput } from "./deepl.type";
 export class DeeplController {
   constructor(private readonly deeplService: DeeplService) {}
 
+  @Post()
+  async translate(
+    @Body("text") text: string,
+    @Body("from") from: string,
+    @Body("to") to: string,
+  ) {
+    return await this.deeplService.translate(text, from, to);
+  }
+
   @Post("data")
   async getData() {
     return await this.deeplService.getData();
