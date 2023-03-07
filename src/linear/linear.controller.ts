@@ -7,8 +7,10 @@ import { LinearService } from "./linear.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { createIssueInput, createProjectInput } from "./linear.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Linear")
 @Controller("linear")
 export class LinearController {
   constructor(private readonly linearService: LinearService) {}

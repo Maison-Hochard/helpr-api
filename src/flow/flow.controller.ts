@@ -14,8 +14,10 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { JwtPayload } from "../auth/auth.service";
 import { Body, Post } from "@nestjs/common";
 import { createFlowInput, Trigger } from "./flow.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Flow")
 @Controller("flow")
 export class FlowController {
   constructor(private readonly flowService: FlowService) {}

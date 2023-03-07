@@ -9,8 +9,10 @@ import {
   createItemInDatabaseInput,
   createComment,
 } from "./notion.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Notion")
 @Controller("notion")
 export class NotionController {
   constructor(private readonly notionService: NotionService) {}
