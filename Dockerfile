@@ -13,22 +13,30 @@ ARG STRIPE_SECRET_KEY
 ARG FRONTEND_URL
 ARG APP_ENV
 ARG API_URL
+ARG GOOGLE_CLIENT_ID
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ARG GITHUB_CALLBACK_URL
+ARG LINEAR_CLIENT_ID
+ARG LINEAR_CLIENT_SECRET
+ARG LINEAR_CALLBACK_URL
+ARG LINKEDIN_CLIENT_ID
+ARG LINKEDIN_CLIENT_SECRET
+ARG LINKEDIN_CALLBACK_URL
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
+ARG LINEAR_API_KEY
 ARG OPENAI_API_KEY
 ARG DEEPL_API_KEY
 
-WORKDIR /app
-
-RUN npm install -g pnpm
-
-RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
-
 COPY . .
 
-RUN pnpm install
-RUN pnpm build
+RUN npm install --force
+
+RUN npm run build
 
 RUN npx prisma generate
 
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]
 
 EXPOSE 3000
