@@ -3,8 +3,10 @@ import { RoleGuard } from "../auth/guards/role.guard";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { SlackService } from "./slack.service";
 import { postMessageInput, createChannelInput } from "./slack.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Slack")
 @Controller("slack")
 export class SlackController {
   constructor(private readonly slackService: SlackService) {}

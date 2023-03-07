@@ -5,8 +5,10 @@ import { Public } from "../auth/decorators/public.decorator";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { GoogleService } from "./google.service";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Google")
 @Controller("google")
 export class GoogleController {
   constructor(private readonly googleService: GoogleService) {}

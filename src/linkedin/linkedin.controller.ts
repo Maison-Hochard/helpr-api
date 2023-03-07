@@ -4,8 +4,10 @@ import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { LinkedinService } from "./linkedin.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Linkedin")
 @Controller("linkedin")
 export class LinkedinController {
   constructor(private readonly linkedinService: LinkedinService) {}

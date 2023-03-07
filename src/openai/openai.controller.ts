@@ -5,8 +5,10 @@ import { OpenaiService } from "./openai.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { createCompletionInput } from "./openai.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("OpenAI")
 @Controller("openai")
 export class OpenaiController {
   constructor(private readonly openaiService: OpenaiService) {}

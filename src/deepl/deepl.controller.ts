@@ -5,8 +5,10 @@ import { DeeplService } from "./deepl.service";
 import { JwtPayload } from "../auth/auth.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { translateTextInput } from "./deepl.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Deepl")
 @Controller("deepl")
 export class DeeplController {
   constructor(private readonly deeplService: DeeplService) {}

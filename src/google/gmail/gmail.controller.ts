@@ -6,8 +6,10 @@ import { GmailService } from "./gmail.service";
 import { JwtPayload } from "../../auth/auth.service";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { createDraftInput, createMailInput } from "./gmail.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Gmail")
 @Controller("gmail")
 export class GmailController {
   constructor(private readonly sheetService: GmailService) {}
