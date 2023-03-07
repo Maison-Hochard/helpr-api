@@ -6,8 +6,10 @@ import { CalendarService } from "./calendar.service";
 import { JwtPayload } from "../../auth/auth.service";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { createCalendarInput, createEventInput } from "./calendar.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Calendar")
 @Controller("calendar")
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}

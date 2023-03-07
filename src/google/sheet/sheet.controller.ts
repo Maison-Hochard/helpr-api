@@ -6,8 +6,10 @@ import { SheetService } from "./sheet.service";
 import { JwtPayload } from "../../auth/auth.service";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { createSheetInput, updateSheetTitleInput } from "./sheet.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Sheet")
 @Controller("sheet")
 export class SheetController {
   constructor(private readonly sheetService: SheetService) {}

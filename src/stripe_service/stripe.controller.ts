@@ -11,8 +11,10 @@ import {
   createLinkInput,
 } from "./stripe.type";
 import { Public } from "../auth/decorators/public.decorator";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Stripe")
 @Controller("stripe")
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}

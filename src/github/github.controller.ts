@@ -11,8 +11,10 @@ import {
   createPullRequestInput,
   createIssueInput,
 } from "./github.type";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiTags("Github")
 @Controller("github")
 export class GithubController {
   constructor(private readonly githubService: GithubService) {}
