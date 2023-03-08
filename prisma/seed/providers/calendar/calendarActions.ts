@@ -21,13 +21,13 @@ export async function createEventAction(providerId: number) {
             title: "Create event summary",
             key: "calendar_event_summary",
             value: "{calendar_event_summary}",
-            required: true,
+            required: false,
           },
           {
             title: "Create event location",
             key: "calendar_event_location",
             value: "{calendar_event_location}",
-            required: true,
+            required: false,
           },
           {
             title: "Create event description",
@@ -47,6 +47,7 @@ export async function createEventAction(providerId: number) {
             title: "Create event time zone",
             key: "calendar_event_timezone",
             value: "{calendar_event_timezone}",
+            type: "date",
             required: true,
           },
           {
@@ -82,7 +83,7 @@ export async function createCalendarAction(providerId: number) {
             title: "Create calendar location",
             key: "calendar_calendar_location",
             value: "{calendar_calendar_location}",
-            required: true,
+            required: false,
           },
           {
             title: "Create calendar description",
@@ -95,7 +96,8 @@ export async function createCalendarAction(providerId: number) {
             title: "Create calendar time Zone",
             key: "calendar_calendar_timezone",
             value: "{calendar_calendar_timezone}",
-            required: true,
+            required: false,
+            type: "date",
           },
         ],
       },
