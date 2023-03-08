@@ -14,64 +14,6 @@ export class CronService {
   ) {}
 
   replaceVariables(variables: FlowVariable[], payload: Payload) {
-    // The function will replace the variables in the payload
-    // The payload looks like this:
-    // {
-    //   github_branch_name: 'feature-{last_linear_ticket_title}',
-    //   github_from_branch: 'master',
-    //   github_repository: 'nuxtjs-boilerplate'
-    // } or {
-    //   openai_prompt: 'Create a ticket for {last_linear_ticket_title} with description {last_linear_ticket_description}'
-    //   openai_max_tokens: 100,
-    // }
-    // The variables looks like this:
-    // [
-    //   {
-    //     id: 13,
-    //     key: 'last_linear_ticket_title',
-    //     value: 'Test',
-    //     createdAt: 2023-03-05T00:36:14.889Z,
-    //     updatedAt: 2023-03-05T00:43:36.425Z,
-    //     flowId: 39
-    //   },
-    //   {
-    //     id: 14,
-    //     key: 'last_linear_ticket_description',
-    //     value: 'Juste pour voir si le système fonctionne',
-    //     createdAt: 2023-03-05T00:36:15.978Z,
-    //     updatedAt: 2023-03-05T00:43:38.134Z,
-    //     flowId: 39
-    //   },
-    //   {
-    //     id: 15,
-    //     key: 'last_linear_team_id',
-    //     value: '34b08c67-0366-4cc0-8a32-07d481c045f1',
-    //     createdAt: 2023-03-05T00:36:16.763Z,
-    //     updatedAt: 2023-03-05T00:43:39.236Z,
-    //     flowId: 39
-    //   },
-    //   {
-    //     id: 16,
-    //     key: 'last_linear_ticket_number',
-    //     value: '295',
-    //     createdAt: 2023-03-05T00:43:40.316Z,
-    //     updatedAt: 2023-03-05T00:43:40.316Z,
-    //     flowId: 39
-    //   },
-    //   {
-    //     key: 'openai_response',
-    //     value: 'Create a ticket for Test with description Juste pour voir si le système fonctionne',
-    //     createdAt: 2023-03-05T00:43:41.396Z,
-    //     updatedAt: 2023-03-05T00:43:41.396Z,
-    //     flowId: 39
-    //   }
-    // ]
-    // The function will return:
-    // {
-    //   github_branch_name: 'feature-ticket-test',
-    //   github_from_branch: 'master',
-    //   github_repository: 'nuxtjs-boilerplate'
-    // }
     for (const variable of variables) {
       for (const key in payload) {
         if (
@@ -136,7 +78,7 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async runProviderTriggerFlow() {
     const { data: flows } = await this.flowService.getTriggerFlows();
     if (flows.length === 0) {
@@ -145,7 +87,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  // @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  @Cron(CronExpression.EVERY_DAY_AT_6AM)
   async runDailyFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_DAY,
@@ -156,7 +98,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  // @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async runEvery10MinutesFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_10_MINUTES,
@@ -167,7 +109,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  // @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR)
   async runEvery1HourFlow() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_1_HOUR,
@@ -178,7 +120,7 @@ export class CronService {
     await this.runFlow(flows);
   }
 
-  // @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  @Cron(CronExpression.EVERY_DAY_AT_6AM)
   async setToReadyEveryDayFlows() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_DAY,
@@ -188,7 +130,7 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async setToReadyEvery10MinutesFlows() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_10_MINUTES,
@@ -198,7 +140,7 @@ export class CronService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR)
   async setToReadyEvery1HourFlows() {
     const { data: flows } = await this.flowService.getFlowsToRun(
       Trigger.EVERY_1_HOUR,
