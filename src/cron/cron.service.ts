@@ -122,7 +122,7 @@ export class CronService {
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM)
   async setToReadyEveryDayFlows() {
-    const { data: flows } = await this.flowService.getFlowsToRun(
+    const { data: flows } = await this.flowService.getFlowsToTriggerCron(
       Trigger.EVERY_DAY,
     );
     for (const flow of flows) {
@@ -132,7 +132,7 @@ export class CronService {
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async setToReadyEvery10MinutesFlows() {
-    const { data: flows } = await this.flowService.getFlowsToRun(
+    const { data: flows } = await this.flowService.getFlowsToTriggerCron(
       Trigger.EVERY_10_MINUTES,
     );
     for (const flow of flows) {
@@ -142,7 +142,7 @@ export class CronService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async setToReadyEvery1HourFlows() {
-    const { data: flows } = await this.flowService.getFlowsToRun(
+    const { data: flows } = await this.flowService.getFlowsToTriggerCron(
       Trigger.EVERY_1_HOUR,
     );
     for (const flow of flows) {

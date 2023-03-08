@@ -250,6 +250,43 @@ export class FlowService {
     };
   }
 
+  async getFlowsToTriggerCron(trigger: Trigger) {
+    const flows = await this.prisma.flow.findMany({
+      where: {
+        status: Status.STANDBY,
+        enabled: true,
+        trigger: {
+          value: trigger,
+        },
+      },
+      include: {
+        trigger: {
+          select: {
+            value: true,
+          },
+        },
+        actions: {
+          include: {
+            action: {
+              include: {
+                variables: {
+                  select: {
+                    key: true,
+                    value: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      message: "flows_found",
+      data: flows,
+    };
+  }
+
   async getTriggerFlows() {
     const flows = await this.prisma.flow.findMany({
       where: {
